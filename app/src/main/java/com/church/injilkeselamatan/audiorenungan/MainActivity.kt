@@ -1,12 +1,14 @@
 package com.church.injilkeselamatan.audiorenungan
 
+import android.media.AudioManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
-import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,13 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.res.integerArrayResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
@@ -38,7 +41,6 @@ import com.church.injilkeselamatan.audiorenungan.util.Resource
 import com.church.injilkeselamatan.audiorenungan.viewmodels.MainViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @ExperimentalCoilApi
@@ -54,6 +56,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        volumeControlStream = AudioManager.STREAM_MUSIC
+
         setContent {
             val navController = rememberNavController()
             val mainViewModel: MainViewModel = hiltViewModel()
@@ -74,7 +79,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         composable(route = Screen.HomeScreen.route) {
-                            HomeScreen(navController)
+                            val mediaId by mainViewModel.rootMediaId.observeAsState()
+                            mediaId?.let {
+                                HomeScreen(navController = navController, mediaId = it)
+                            }
                         }
                         composable(
                             route = Screen.EpisodeScreen.route + "/{album}",

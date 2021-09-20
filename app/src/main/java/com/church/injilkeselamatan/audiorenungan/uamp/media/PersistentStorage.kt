@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.church.injilkeselamatan.audiorenungan.exoplayer.media
+package com.church.injilkeselamatan.audiorenungan.uamp.media
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -28,7 +28,7 @@ import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.asAl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class PersistentStorage(val context: Context) {
+class PersistentStorage private constructor(val context: Context) {
 
     /**
      * Store any data which must persist between restarts, such as the most recently played song.
@@ -37,6 +37,17 @@ class PersistentStorage(val context: Context) {
         PREFERENCES_NAME,
         Context.MODE_PRIVATE
     )
+
+    companion object {
+
+        @Volatile
+        private var instance: PersistentStorage? = null
+
+        fun getInstance(context: Context) =
+            instance ?: synchronized(this) {
+                instance ?: PersistentStorage(context).also { instance = it }
+            }
+    }
 
     suspend fun saveRecentSong(description: MediaDescriptionCompat, position: Long) {
 

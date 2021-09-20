@@ -6,11 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.data.SongRepository
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
-import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.uamp.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.util.Resource
-import com.google.accompanist.pager.rememberPagerState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -71,9 +70,9 @@ class PlayerViewModel @Inject constructor
         viewModelScope.launch {
             songRepository.getSongs().collect { resource ->
                 when (resource) {
-                is Resource.Success -> _songs.postValue(resource.data)
-                is Resource.Loading -> Unit // Show loading indicator
-                is Resource.Error -> Unit //Show error message
+                    is Resource.Success -> _songs.postValue(resource.data)
+                    is Resource.Loading -> Unit // Show loading indicator
+                    is Resource.Error -> Unit //Show error message
                 }
 
             }
@@ -84,7 +83,7 @@ class PlayerViewModel @Inject constructor
                 val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
                 if (curPlayerPosition.value != pos) {
                     _curPlayerPosition.postValue(pos)
-                    _curSongDuration.postValue(MusicService.curPlayingSong)
+                    _curSongDuration.postValue(MusicService.curSongDuration)
                     _curSongIndex.postValue(MusicService.curSongIndex)
                 }
                 delay(100L)

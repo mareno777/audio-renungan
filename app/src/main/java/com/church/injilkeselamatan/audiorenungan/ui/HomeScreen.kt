@@ -9,8 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +31,7 @@ import coil.compose.rememberImagePainter
 import coil.transform.CircleCropTransformation
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.Screen
-import com.church.injilkeselamatan.audiorenungan.data.models.Category
+import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.album
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.artist
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
@@ -41,7 +40,13 @@ import com.church.injilkeselamatan.audiorenungan.viewmodels.HomeViewModel
 
 @ExperimentalCoilApi
 @Composable
-fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    navController: NavController,
+    mediaId: String,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
+
+    homeViewModel.mediaId = mediaId
 
     val constraints = ConstraintSet {
         val topSection = createRefFor("topSection")
@@ -73,13 +78,10 @@ fun HomeScreen(navController: NavController, homeViewModel: HomeViewModel = hilt
         constraintSet = constraints,
         modifier = Modifier.fillMaxSize()
     ) {
+        val mediaItems by homeViewModel.mediaItems.observeAsState(mutableListOf())
         TopHomeSection(modifier = Modifier.layoutId("topSection"))
         CardCategoriesSection(
-            cardItems = listOf(
-                Category(id = 1, name = "Pohon Kehidupan"),
-                Category(id = 2, name = "Saat Teduh Bersama Tuhan"),
-                Category(id = 3, name = "Belajar Takut Akan Tuhan"),
-            ),
+            cardItems = mediaItems,
             navController = navController,
             modifier = Modifier.layoutId("categoriesSection")
         )
@@ -180,13 +182,13 @@ fun PlayingNowSectionHome(
                 Spacer(modifier = Modifier.width(4.dp))
                 Column {
                     Text(
-                        text = mediaMetadataCompat?.title ?: "Unknown",
+                        text = mediaMetadataCompat?.title ?: "",
                         style = MaterialTheme.typography.caption,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp
                     )
                     Text(
-                        text = mediaMetadataCompat?.artist ?: "Unknown",
+                        text = mediaMetadataCompat?.artist ?: "",
                         style = MaterialTheme.typography.caption,
                         fontSize = 14.sp
                     )
@@ -222,7 +224,7 @@ fun PlayingNowSectionHome(
 @ExperimentalCoilApi
 @Composable
 private fun CardCategoriesSection(
-    cardItems: List<Category>,
+    cardItems: List<MediaItemData>,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -232,7 +234,7 @@ private fun CardCategoriesSection(
     ) {
         items(cardItems.size) {
             CardItem(cardItems[it]) { category ->
-                navController.navigate(Screen.EpisodeScreen.route + "/${category.name}")
+                navController.navigate(Screen.EpisodeScreen.route + "/${category.title}")
             }
             if (it != cardItems.size - 1) {
                 Spacer(modifier = Modifier.padding(bottom = 16.dp))
@@ -244,14 +246,14 @@ private fun CardCategoriesSection(
 @ExperimentalCoilApi
 @Composable
 private fun CardItem(
-    card: Category,
+    mediaItem: MediaItemData,
     modifier: Modifier = Modifier,
-    onCardClicked: (Category) -> Unit
+    onCardClicked: (MediaItemData) -> Unit
 ) {
     val painter = rememberImagePainter(
-        data = when (card.id) {
-            1 -> R.drawable.pohon_kehidupan
-            2 -> R.drawable.stbt
+        data = when (mediaItem.title) {
+            "Pohon Kehidupan" -> R.drawable.pohon_kehidupan
+            "Saat Teduh Bersama Tuhan" -> R.drawable.stbt
             else -> R.drawable.btat
         }
     )
@@ -260,7 +262,7 @@ private fun CardItem(
             .fillMaxWidth()
             .height(200.dp)
             .clickable {
-                onCardClicked(card)
+                onCardClicked(mediaItem)
             },
         shape = RoundedCornerShape(CornerSize(12.dp)),
         elevation = 8.dp
@@ -285,7 +287,7 @@ private fun CardItem(
                 )
         ) {
             Text(
-                text = card.name,
+                text = mediaItem.title,
                 fontSize = 24.sp,
                 maxLines = 1,
                 fontFamily = sourceSansPro,

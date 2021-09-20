@@ -17,15 +17,6 @@ import javax.inject.Singleton
 object NetworkModule {
 
     @Provides
-    fun provideApiService(): SongsApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://injilkeselamatan.com/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        return retrofit.create(SongsApi::class.java)
-    }
-
-    @Provides
     @Singleton
     fun provideHardwareId(@ApplicationContext context: Context): String =
         Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)

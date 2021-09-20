@@ -197,6 +197,13 @@ inline var MediaMetadataCompat.Builder.albumArt: Bitmap?
         putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, value)
     }
 
+inline var MediaMetadataCompat.Builder.displayIcon: Bitmap?
+    @Deprecated(NO_GET, level = DeprecationLevel.ERROR)
+    get() = throw IllegalAccessException("Cannot get from MediaMetadataCompat.Builder")
+    set(value) {
+        putBitmap(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON, value)
+    }
+
 inline var MediaMetadataCompat.Builder.trackNumber: Long
     @Deprecated(NO_GET, level = DeprecationLevel.ERROR)
     get() = throw IllegalAccessException("Cannot get from MediaMetadataCompat.Builder")

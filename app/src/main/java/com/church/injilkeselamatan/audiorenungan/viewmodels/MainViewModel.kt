@@ -1,32 +1,43 @@
 package com.church.injilkeselamatan.audiorenungan.viewmodels
 
-import android.support.v4.media.MediaBrowserCompat
-import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
-import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.UAMP_BROWSABLE_ROOT
+import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
-    ) :
-    ViewModel() {
+) : ViewModel() {
 
-        val rootMediaId: LiveData<String> =
-            Transformations.map(musicServiceConnection.isConnected) { isConnected ->
-                if (isConnected) musicServiceConnection.rootMediaId else null
-            }
-    init {
+    val rootMediaId: LiveData<String> =
+        Transformations.map(musicServiceConnection.isConnected) { isConnected ->
+            if (isConnected) musicServiceConnection.rootMediaId else null
+        }
+
+    private val _navigateToMediaItem = MutableLiveData<Event<String>>()
+    val navigateToMediaItem: LiveData<Event<String>> get() = _navigateToMediaItem
+
+
+    //TODO: this method will replaced with rememberNavController
+    fun mediaItemClicked(clickedItem: MediaItemData) {
+        if (clickedItem.browsable) {
+            //TODO: navigate to Episode Screen
+        } else {
+            playMedia(clickedItem, pauseAllowed = false)
+            //TODO: need to NowPlaying screen or not
+        }
     }
+
 
     fun playMedia(mediaItem: MediaItemData, pauseAllowed: Boolean = true) {
         val nowPlaying = musicServiceConnection.nowPlaying.value

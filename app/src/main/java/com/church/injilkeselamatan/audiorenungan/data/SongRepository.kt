@@ -1,10 +1,13 @@
 package com.church.injilkeselamatan.audiorenungan.data
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
 import com.church.injilkeselamatan.audiorenungan.data.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.exoplayer.*
@@ -15,18 +18,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import java.io.FileDescriptor
 import java.io.IOException
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
 class SongRepository @Inject constructor(
-    private val songsApi: SongsApi
-): AbstractMusicSource() {
+    private val songsApi: SongsApi, private val context: Context
+) : AbstractMusicSource() {
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
 
@@ -74,13 +75,16 @@ class SongRepository @Inject constructor(
                 MediaMetadataCompat.Builder()
                     .from(song)
                     .apply {
+                        val bitmap = getBitmapFromUri(imageUri, context)
                         displayIconUri = imageUri.toString() // Used by ExoPlayer and Notification
                         albumArtUri = imageUri.toString()
+                        albumArt = bitmap
+                        displayIcon = bitmap
                     }
                     .build()
             }.toList()
 
-            mediaMetadataCompats.forEach { it.description.extras?.putAll(it.bundle)}
+            mediaMetadataCompats.forEach { it.description.extras?.putAll(it.bundle) }
             mediaMetadataCompats
         }
     }
@@ -111,5 +115,15 @@ class SongRepository @Inject constructor(
 
         // Allow it to be used in the typical builder style.
         return this
+    }
+
+    @Throws(IOException::class)
+    private fun getBitmapFromUri(uri: Uri, context: Context): Bitmap {
+        val parcelFileDescriptor: ParcelFileDescriptor? =
+            context.contentResolver.openFileDescriptor(uri, "r")
+        val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
+        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
+        parcelFileDescriptor.close()
+        return image
     }
 }

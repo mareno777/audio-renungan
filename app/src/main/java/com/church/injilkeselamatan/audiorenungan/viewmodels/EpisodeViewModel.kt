@@ -10,11 +10,11 @@ import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.data.SongRepository
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
-import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
+import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
