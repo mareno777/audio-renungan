@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
+import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

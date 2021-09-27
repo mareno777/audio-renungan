@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.data.SongRepository
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
+import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
-import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
-import com.church.injilkeselamatan.audiorenungan.uamp.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

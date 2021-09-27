@@ -1,22 +1,21 @@
 package com.church.injilkeselamatan.audiorenungan.viewmodels
 
 import android.support.v4.media.MediaBrowserCompat
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.*
-import com.church.injilkeselamatan.audiorenungan.data.SongRepository
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
+import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.UAMP_ALBUMS_ROOT
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.UAMP_BROWSABLE_ROOT
-import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel

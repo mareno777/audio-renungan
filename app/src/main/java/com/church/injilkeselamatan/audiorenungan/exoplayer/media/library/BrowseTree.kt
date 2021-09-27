@@ -48,7 +48,7 @@ import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
 class BrowseTree(
     val context: Context,
     musicSource: MusicSource,
-    val recentMediaId: String? = null
+    private val recentMediaId: String? = null
 ) {
     private val mediaIdToChildren = mutableMapOf<String, MutableList<MediaMetadataCompat>>()
 
@@ -73,7 +73,7 @@ class BrowseTree(
             id = UAMP_RECOMMENDED_ROOT
             title = "Recommended"
             albumArtUri = RESOURCE_ROOT_URI +
-                    context.resources.getResourceEntryName(R.drawable.cast_ic_mini_controller_pause)
+                    context.resources.getResourceEntryName(R.drawable.ic_recommended)
             flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
         }.build()
 
@@ -81,12 +81,21 @@ class BrowseTree(
             id = UAMP_ALBUMS_ROOT
             title = "Album"
             albumArtUri = RESOURCE_ROOT_URI +
-                    context.resources.getResourceEntryName(R.drawable.ic_audiotrack_dark)
+                    context.resources.getResourceEntryName(R.drawable.ic_album)
+            flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
+        }.build()
+
+        val artistMetadata = MediaMetadataCompat.Builder().apply {
+            id = UAMP_ARTIST_ROOT
+            title = "Artist"
+            albumArtUri = RESOURCE_ROOT_URI +
+                    context.resources.getResourceEntryName(R.drawable.quantum_ic_stop_white_24)
             flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
         }.build()
 
         rootList += recommendedMetadata
         rootList += albumsMetadata
+        rootList += artistMetadata
         mediaIdToChildren[UAMP_BROWSABLE_ROOT] = rootList
 
         musicSource.forEach { mediaItem ->
@@ -94,13 +103,17 @@ class BrowseTree(
             val albumChildren = mediaIdToChildren[albumMediaId] ?: buildAlbumRoot(mediaItem)
             albumChildren += mediaItem
 
+            val artistMediaId = mediaItem.artist.urlEncoded
+            val artistChildren = mediaIdToChildren[artistMediaId] ?: buildArtistRoot(mediaItem)
+            artistChildren += mediaItem
+
             // Add the first track of each album to the 'Recommended' category
-            if (mediaItem.trackNumber == 1L) {
-                val recommendedChildren = mediaIdToChildren[UAMP_RECOMMENDED_ROOT]
-                    ?: mutableListOf()
-                recommendedChildren += mediaItem
-                mediaIdToChildren[UAMP_RECOMMENDED_ROOT] = recommendedChildren
-            }
+
+            val recommendedChildren = mediaIdToChildren[UAMP_RECOMMENDED_ROOT]
+                ?: mutableListOf()
+            recommendedChildren += mediaItem
+            mediaIdToChildren[UAMP_RECOMMENDED_ROOT] = recommendedChildren
+
 
             // If this was recently played, add it to the recent root.
             if (mediaItem.id == recentMediaId) {
@@ -141,12 +154,34 @@ class BrowseTree(
             mediaIdToChildren[albumMetadata.id!!] = it
         }
     }
+
+    private fun buildArtistRoot(mediaItem: MediaMetadataCompat): MutableList<MediaMetadataCompat> {
+        val artistMetadata = MediaMetadataCompat.Builder().apply {
+            id = mediaItem.artist.urlEncoded
+            title = mediaItem.artist
+            album = "Gospel"
+            albumArt = mediaItem.albumArt
+            albumArtUri = mediaItem.albumArtUri.toString()
+            flag = MediaItem.FLAG_BROWSABLE
+        }.build()
+
+        // Adds this album to the 'Artist' category.
+        val rootList = mediaIdToChildren[UAMP_ARTIST_ROOT] ?: mutableListOf()
+        rootList += artistMetadata
+        mediaIdToChildren[UAMP_ARTIST_ROOT] = rootList
+
+        // Insert the artist's root with an empty list for its children, and return the list.
+        return mutableListOf<MediaMetadataCompat>().also {
+            mediaIdToChildren[artistMetadata.id!!] = it
+        }
+    }
 }
 
 const val UAMP_BROWSABLE_ROOT = "/"
 const val UAMP_EMPTY_ROOT = "@empty@"
 const val UAMP_RECOMMENDED_ROOT = "__RECOMMENDED__"
 const val UAMP_ALBUMS_ROOT = "__ALBUMS__"
+const val UAMP_ARTIST_ROOT = "__ARTIST__"
 const val UAMP_RECENT_ROOT = "__RECENT__"
 
 const val MEDIA_SEARCH_SUPPORTED = "android.media.browse.SEARCH_SUPPORTED"

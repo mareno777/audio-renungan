@@ -61,7 +61,7 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".uamp.media.MusicService"
+        <service android:name=".exoplayer.media.MusicService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true"
             android:enabled="true"
@@ -88,7 +88,7 @@
         </receiver>
 
         <provider
-            android:name=".uamp.media.library.AlbumArtContentProvider"
+            android:name=".exoplayer.media.library.AlbumArtContentProvider"
             android:authorities="com.church.injilkeselamatan.audiorenungan"
             android:exported="true" />
     </application>

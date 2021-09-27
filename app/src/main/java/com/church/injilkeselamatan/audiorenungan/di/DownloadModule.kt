@@ -1,15 +1,12 @@
 package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.Context
-import android.os.Environment
 import com.church.injilkeselamatan.audiorenungan.R
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DownloadManager
-import com.google.android.exoplayer2.upstream.DataSink
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory
 import com.google.android.exoplayer2.upstream.cache.NoOpCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
@@ -17,11 +14,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import java.io.File
-import java.util.concurrent.Executor
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module

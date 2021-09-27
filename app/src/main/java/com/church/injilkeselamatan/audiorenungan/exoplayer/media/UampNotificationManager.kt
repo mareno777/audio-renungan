@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.church.injilkeselamatan.audiorenungan.uamp.media
+package com.church.injilkeselamatan.audiorenungan.exoplayer.media
 
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import androidx.core.app.NotificationCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -138,5 +136,3 @@ const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
 private val glideOptions = RequestOptions()
     .fallback(R.drawable.cast_album_art_placeholder)
     .diskCacheStrategy(DiskCacheStrategy.DATA)
-
-private const val MODE_READ_ONLY = "r"

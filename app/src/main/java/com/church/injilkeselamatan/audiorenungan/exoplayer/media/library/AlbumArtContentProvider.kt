@@ -21,6 +21,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import com.bumptech.glide.Glide
 import java.io.File
@@ -28,7 +29,7 @@ import java.io.FileNotFoundException
 import java.util.concurrent.TimeUnit
 
 // The amount of time to wait for the album art file to download before timing out.
-const val DOWNLOAD_TIMEOUT_SECONDS = 30L
+const val DOWNLOAD_TIMEOUT_SECONDS = 60L
 
 class AlbumArtContentProvider : ContentProvider() {
 
@@ -53,7 +54,7 @@ class AlbumArtContentProvider : ContentProvider() {
         val context = this.context ?: return null
         val remoteUri = uriMap[uri] ?: throw FileNotFoundException(uri.path)
 
-        var file = File(context.cacheDir, uri.path)
+        var file = File(Environment.getExternalStorageState(), uri.path)
 
         if (!file.exists()) {
             // Use Glide to download the album art.

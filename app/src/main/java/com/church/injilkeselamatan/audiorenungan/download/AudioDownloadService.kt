@@ -50,10 +50,6 @@ class AudioDownloadService : DownloadService
             Log.e("AudioDownloadManager", "onPause: $downloadsPaused")
             super.onDownloadsPausedChanged(downloadManager, downloadsPaused)
         }
-
-        override fun onIdle(downloadManager: DownloadManager) {
-            super.onIdle(downloadManager)
-        }
     }
 
     override fun getDownloadManager(): DownloadManager {
@@ -70,7 +66,6 @@ class AudioDownloadService : DownloadService
     override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
 
         val currentDownloads = downloadMananger.currentDownloads
-        // Log.e("AudioDownloadManager", "downloaded: ${downloadMananger.downloadIndex.getDownloads().download.request.customCacheKey}")
 
         if (currentDownloads.size <= 0) {
             return DownloadNotificationHelper(this, DOWNLOAD_CHANNEL_ID).buildProgressNotification(

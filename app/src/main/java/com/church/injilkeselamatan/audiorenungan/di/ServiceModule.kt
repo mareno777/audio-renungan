@@ -2,7 +2,6 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.Context
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
@@ -13,7 +12,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ServiceComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ServiceScoped
-import javax.inject.Named
 
 @Module
 @InstallIn(ServiceComponent::class)

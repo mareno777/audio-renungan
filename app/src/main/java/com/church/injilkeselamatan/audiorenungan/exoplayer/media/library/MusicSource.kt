@@ -16,7 +16,6 @@
 
 package com.church.injilkeselamatan.audiorenungan.exoplayer.media.library
 
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v4.media.MediaMetadataCompat
@@ -195,11 +194,8 @@ abstract class AbstractMusicSource : MusicSource {
      * own version of it.
      */
     private val EXTRA_MEDIA_GENRE
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        get() =
             MediaStore.EXTRA_MEDIA_GENRE
-        } else {
-            "android.intent.extra.genre"
-        }
 }
 
 private const val TAG = "MusicSource"

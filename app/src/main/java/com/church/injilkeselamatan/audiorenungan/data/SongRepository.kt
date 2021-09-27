@@ -8,14 +8,15 @@ import android.os.ParcelFileDescriptor
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
 import com.church.injilkeselamatan.audiorenungan.data.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.exoplayer.*
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.*
-import com.church.injilkeselamatan.audiorenungan.uamp.media.library.AbstractMusicSource
-import com.church.injilkeselamatan.audiorenungan.uamp.media.library.AlbumArtContentProvider
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.AbstractMusicSource
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.STATE_ERROR
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.STATE_INITIALIZED
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.STATE_INITIALIZING
 import com.church.injilkeselamatan.audiorenungan.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -90,7 +91,7 @@ class SongRepository @Inject constructor(
         }
     }
 
-    fun MediaMetadataCompat.Builder.from(jsonMusic: MusicX): MediaMetadataCompat.Builder {
+    private fun MediaMetadataCompat.Builder.from(jsonMusic: MusicX): MediaMetadataCompat.Builder {
         // The duration from the JSON is given in seconds, but the rest of the code works in
         // milliseconds. Here's where we convert to the proper units.
 

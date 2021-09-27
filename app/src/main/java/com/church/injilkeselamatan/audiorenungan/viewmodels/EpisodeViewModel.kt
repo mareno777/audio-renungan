@@ -1,33 +1,21 @@
 package com.church.injilkeselamatan.audiorenungan.viewmodels
 
 import android.os.Bundle
-import android.os.Parcelable
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.data.SongRepository
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
-import com.church.injilkeselamatan.audiorenungan.download.AudioDownloadService
+import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
-import com.church.injilkeselamatan.audiorenungan.uamp.media.library.UAMP_BROWSABLE_ROOT
-import com.church.injilkeselamatan.audiorenungan.util.Resource
 import com.google.android.exoplayer2.offline.DownloadManager
-import com.google.android.exoplayer2.offline.DownloadRequest
-import com.google.android.exoplayer2.offline.DownloadService
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import java.util.ArrayList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,7 +53,6 @@ class EpisodeViewModel @Inject constructor(
             _mediaItems.postValue(itemList)
         }
     }
-
 
 
     fun subscribe(parentId: String) {
@@ -120,4 +107,6 @@ class EpisodeViewModel @Inject constructor(
         musicServiceConnection.sendCommand("download_song", bundle)
     }
 }
-const val MEDIA_METADATA_COMPAT_FOR_DOWNLOAD = "com.church.injilkeselamatan.audiorenungan.bundles.mediametadata"
+
+const val MEDIA_METADATA_COMPAT_FOR_DOWNLOAD =
+    "com.church.injilkeselamatan.audiorenungan.bundles.mediametadata"
