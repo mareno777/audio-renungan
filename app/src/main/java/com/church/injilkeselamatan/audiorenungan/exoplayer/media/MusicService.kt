@@ -30,8 +30,6 @@ import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
 import com.google.android.gms.cast.framework.CastContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -72,19 +70,11 @@ open class MusicService : MediaBrowserServiceCompat() {
         BrowseTree(applicationContext, mediaSource)
     }
 
-    private val dataSourceFactory: DefaultDataSourceFactory by lazy {
-        DefaultDataSourceFactory(
-            this,
-            Util.getUserAgent(this, MY_USER_AGENT),
-            null
-        )
-    }
-
     private val TAG = this::class.java.simpleName
 
 
     @Inject
-    lateinit var exoPlayer: ExoPlayer
+    lateinit var exoPlayer: SimpleExoPlayer
 
     @Inject
     lateinit var songRepository: SongRepository
@@ -118,7 +108,7 @@ open class MusicService : MediaBrowserServiceCompat() {
 
     companion object {
         var curPlayingSong = 0L
-        private set
+            private set
         var curSongIndex = 0
             private set
     }
@@ -145,7 +135,7 @@ open class MusicService : MediaBrowserServiceCompat() {
                 curSongIndex = currentPlayer.currentWindowIndex
             }
 
-        mediaSource = songRepository
+        //mediaSource = songRepository()
         serviceScope.launch {
             mediaSource.load()
         }
@@ -260,7 +250,7 @@ open class MusicService : MediaBrowserServiceCompat() {
                         }
                         Log.e("MusicService", children.toString())
                         result.sendResult(children)
-                    } catch (e:IllegalStateException) {
+                    } catch (e: IllegalStateException) {
                         notifyChildrenChanged(parentMediaId)
                     }
 
@@ -341,21 +331,15 @@ open class MusicService : MediaBrowserServiceCompat() {
         currentPlayer.stop()
         currentPlayer.clearMediaItems()
         if (currentPlayer == exoPlayer) {
-            val mediaSource = metadataList.toMediaSource(dataSourceFactory)
-            exoPlayer.setMediaSource(mediaSource)
+//            val mediaSource = metadataList.toMediaSource(dataSourceFactory)
+//            exoPlayer.setMediaSource(mediaSource)
             exoPlayer.prepare()
             exoPlayer.seekTo(initialWindowIndex, playbackStartPositionMs)
         } else {
-            val items = metadataList.map {
-                it.toMediaQueueItem()
-            }.toTypedArray()
-
-            castPlayer!!.loadItems(
-                items,
-                initialWindowIndex,
-                playbackStartPositionMs,
-                Player.REPEAT_MODE_OFF
-            )
+            val items: List<MediaItem> = metadataList.map {
+                it.toMediaQueueItem(it)
+            }.toList()
+            castPlayer?.setMediaItems(items, initialWindowIndex, playbackStartPositionMs)
         }
     }
 
@@ -544,7 +528,7 @@ open class MusicService : MediaBrowserServiceCompat() {
             }
         }
 
-        override fun onPlayerError(error: ExoPlaybackException) {
+        override fun onPlayerError(error: PlaybackException) {
 
             Toast.makeText(
                 applicationContext,

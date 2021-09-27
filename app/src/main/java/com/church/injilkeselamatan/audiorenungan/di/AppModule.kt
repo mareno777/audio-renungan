@@ -7,6 +7,7 @@ import com.church.injilkeselamatan.audiorenungan.data.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.uamp.media.MusicService
+import com.church.injilkeselamatan.audiorenungan.uamp.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.util.ConnectionLiveData
 import dagger.Module
 import dagger.Provides

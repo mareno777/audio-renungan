@@ -1,15 +1,21 @@
 package com.church.injilkeselamatan.audiorenungan.ui
 
+import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.*
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -17,8 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,189 +33,98 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.Screen
+import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.album
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.artist
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.util.Constants
 import com.church.injilkeselamatan.audiorenungan.viewmodels.EpisodeViewModel
 
-@ExperimentalCoilApi
 @Composable
 fun EpisodeScreen(
     navController: NavController,
+    parentId: String?,
     album: String?,
     episodeViewModel: EpisodeViewModel = hiltViewModel()
 ) {
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        SongList(
-            viewModel = episodeViewModel,
-            albumType = album,
-            modifier = Modifier.align(Alignment.TopCenter)
-        ) { song ->
-            episodeViewModel.playMediaId(song.id)
-        }
-        PlayingNowSectionEpisode(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .clickable {
-                    // TODO: Open music player
-                    navController.navigate(Screen.PlayerScreen.route)
-                }, episodeViewModel
-        )
-    }
-}
-
-@Composable
-private fun TopSection(modifier: Modifier = Modifier) {
-    val scrollState = rememberScrollState()
+    val songs by episodeViewModel.mediaItems.observeAsState(mutableListOf())
     var isExpanded by remember {
         mutableStateOf(false)
     }
-    val description = buildAnnotatedString {
-        if (isExpanded) {
-            append(
-                """
-                Kalau kita mencari Tuhan setiap hari, 
-                mengisi hati dan pikiran kita dengan Kebenaran Firman Tuhan, 
-                maka kita akan lebih mudah mengenal Kehendak Tuhan.
+    //songs.filter { it.mediaId == album }
+    //Log.e("EpisodeScreen", "mediaId: ${songs[0].mediaId} title: ${songs[0].title}")
+    Log.e("EpisodeScreen", songs.toString())
 
-                Kita akan lebih bisa mengalami hatiNya, 
-                mengalami KehendakNya, mengalami didikanNya dan 
-                mengalami Anugerah KasihNya.
-
-                Apalagi kalau kita memperkatakan dan melakukan Firman Tuhan setiap hari, maka roh kita penuh dengan pengertian akan Firman Tuhan.  
-                Dan jiwa kita akan sehat, karena mental – pikiran – perasaan dan kehendak kita penuh dengan Kebijakan Tuhan.
-
-                Mari kita merenungkan dan melakukan Firman Tuhan setiap hari, 
-                supaya hidup kita sejalan dengan Kehendak Tuhan.
-                Dan hidup kita memuliakan Nama Tuhan.
-
-                Yosea Christiono
-                Gembala Jemaat JKI Injil Keselamatan Semarang
-
-            """.trimIndent()
-            )
-        } else {
-            append(
-                """Kalau kita mencari Tuhan setiap hari, mengisi hati dan pikiran kita dengan Keben... 
-                """.trimIndent()
-            )
+    LaunchedEffect(parentId) {
+        parentId?.let {
+            episodeViewModel.subscribe(it)
         }
     }
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .padding(start = 16.dp, end = 8.dp)
-            .scrollable(
-                state = scrollState,
-                orientation = Orientation.Vertical,
-                enabled = true
-            )
-    ) {
-        Text(
-            text = "Pohon Kehidupan",
-            fontFamily = sourceSansPro,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.h3,
-            color = MaterialTheme.colors.onSurface
-        )
 
-        Text(
-            text = description,
-            fontFamily = sourceSansPro,
-            style = MaterialTheme.typography.body1,
-            color = MaterialTheme.colors.onSurface
-        )
-        Text(
-            text = if (isExpanded) "Show less" else "Show more",
-            color = MaterialTheme.colors.primary,
-            modifier = Modifier.clickable {
-                isExpanded = !isExpanded
-            }
-        )
-
+    val description = when (album) {
+        "Pohon Kehidupan" -> Constants.DESC_PK
+        "Belajar Takut Akan Tuhan" -> Constants.DESC_BTAT
+        "Saat Teduh Bersama Tuhan" -> Constants.DESC_STBT
+        else -> ""
     }
-}
-
-@ExperimentalCoilApi
-@Composable
-fun PlayingNowSectionEpisode(
-    modifier: Modifier = Modifier,
-    viewModel: EpisodeViewModel = hiltViewModel()
-) {
-
-    val playbackStateCompat by viewModel.playbackStateCompat.observeAsState()
-    val mediaMetadataCompat by viewModel.mediaMetadataCompat.observeAsState()
-
-    val painter = rememberImagePainter(
-        data = when (mediaMetadataCompat?.album) {
-            "Pohon Kehidupan" -> R.drawable.pohon_kehidupan
-            "Belajar Takut Akan Tuhan" -> R.drawable.btat
-            "Saat Teduh Bersama Tuhan" -> R.drawable.stbt
-            else -> null
-        }
-    )
-
-    Surface(
-        elevation = 8.dp,
-        modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.08f)
-    ) {
-        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Image(
-                    painter = painter,
-                    modifier = Modifier
-                        .width(70.dp)
-                        .fillMaxHeight(),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            item {
+                Text(
+                    text = album ?: "",
+                    style = MaterialTheme.typography.h4,
+                    fontFamily = productSansGoogle,
+                    color = MaterialTheme.colors.onSurface,
+                    modifier = Modifier.padding(top = 20.dp, start = 20.dp)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Column {
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = description,
+                    fontFamily = productSansGoogle,
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface,
+                    maxLines = if (isExpanded) Int.MAX_VALUE else 4,
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                )
+                Spacer(modifier = Modifier.padding(vertical = 8.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 20.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            isExpanded = !isExpanded
+                        },
+                    horizontalArrangement = Arrangement.End
+                ) {
                     Text(
-                        text = mediaMetadataCompat?.title ?: "Unknown",
-                        style = MaterialTheme.typography.caption,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
+                        text = if (isExpanded) "show less" else "show more",
+                        color = Color(0xFF0073FF),
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
                     )
-                    Text(
-                        text = mediaMetadataCompat?.artist ?: "Unknown",
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 14.sp
+                    Icon(
+                        if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = Color(0xFF0073FF)
                     )
-
                 }
+                Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Episodes",
+                    fontFamily = productSansGoogle,
+                    style = MaterialTheme.typography.h6,
+                    color = MaterialTheme.colors.onSurface,
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+                Divider()
             }
-            if (playbackStateCompat?.isPlaying == true) {
-                Icon(
-                    painter = rememberImagePainter(data = R.drawable.ic_pause),
-                    contentDescription = null,
-                    tint = MaterialTheme.colors.onSurface,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .fillMaxHeight()
-                        .padding(end = 4.dp)
-                        .clickable {
-                            viewModel.transportControls.pause()
-                        }
-                )
-            } else {
-                Icon(
-                    painterResource(id = R.drawable.ic_play_arrow),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .fillMaxHeight()
-                        .clickable {
-                            //TODO: play or pause the music
-                            viewModel.transportControls.play()
-
-                        }
-                )
+            items(songs) { song ->
+                SongItem(song = song, episodeViewModel)
+                Divider()
             }
         }
     }
@@ -217,40 +132,20 @@ fun PlayingNowSectionEpisode(
 
 @ExperimentalCoilApi
 @Composable
-fun SongList(
-    viewModel: EpisodeViewModel,
-    albumType: String?,
-    modifier: Modifier = Modifier,
-    onItemClicked: (MusicX) -> Unit
-) {
-    var songList by remember {
-        viewModel.songList
-    }
-    albumType?.let { type ->
-        songList = songList.filter { it.album == type }
-    }
-
-    LazyColumn(modifier = modifier) {
-        items(songList.size) {
-            SongItem(songList[it], onItemClicked)
-            Divider(color = Color.LightGray, thickness = 1.dp)
-        }
-    }
-}
-
-@ExperimentalCoilApi
-@Composable
-fun SongItem(song: MusicX, onItemClicked: (MusicX) -> Unit) {
+fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClicked(song) }) {
+            .padding(end = 8.dp)
+            .clickable { episodeViewModel.playMediaId(song.mediaId) }
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = rememberImagePainter(
-                    data = song.image
+                    data = song.albumArtUri
                 ), modifier = Modifier.size(60.dp),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
@@ -265,7 +160,7 @@ fun SongItem(song: MusicX, onItemClicked: (MusicX) -> Unit) {
                     color = MaterialTheme.colors.onSurface
                 )
                 Text(
-                    text = song.artist,
+                    text = song.subtitle,
                     style = MaterialTheme.typography.subtitle1,
                     fontSize = 14.sp,
                     color = MaterialTheme.colors.onSurface
@@ -273,5 +168,18 @@ fun SongItem(song: MusicX, onItemClicked: (MusicX) -> Unit) {
 
             }
         }
+
+        Icon(
+            painterResource(
+                id = R.drawable.download),
+            contentDescription = "Download this media",
+            tint = MaterialTheme.colors.onSurface,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    // TODO: click to download media
+                    episodeViewModel.downloadSong(song.mediaId)
+                }
+        )
     }
 }

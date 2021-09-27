@@ -79,7 +79,7 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         val mediaItems by homeViewModel.mediaItems.observeAsState(mutableListOf())
-        TopHomeSection(modifier = Modifier.layoutId("topSection"))
+        TopHomeSection(modifier = Modifier.layoutId("topSection"), homeViewModel)
         CardCategoriesSection(
             cardItems = mediaItems,
             navController = navController,
@@ -99,7 +99,7 @@ fun HomeScreen(
 
 @ExperimentalCoilApi
 @Composable
-private fun TopHomeSection(modifier: Modifier = Modifier) {
+private fun TopHomeSection(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
     val painter = rememberImagePainter(
         data = "https://qph.fs.quoracdn.net/main-qimg-c7a526dfad7e78f9062521efd0a3ea70-c",
         builder = {
@@ -135,6 +135,7 @@ private fun TopHomeSection(modifier: Modifier = Modifier) {
                 .size(45.dp)
                 .clickable {
                     //TODO: click to open account settings
+                    viewModel.sendCommand("coba command")
                 }
         )
     }
@@ -234,7 +235,7 @@ private fun CardCategoriesSection(
     ) {
         items(cardItems.size) {
             CardItem(cardItems[it]) { category ->
-                navController.navigate(Screen.EpisodeScreen.route + "/${category.title}")
+                navController.navigate(Screen.EpisodeScreen.route + "/${category.title}/${category.mediaId}")
             }
             if (it != cardItems.size - 1) {
                 Spacer(modifier = Modifier.padding(bottom = 16.dp))

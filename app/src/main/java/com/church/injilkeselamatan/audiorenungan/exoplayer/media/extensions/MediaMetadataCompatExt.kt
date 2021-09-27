@@ -18,17 +18,16 @@ package com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions
 
 import android.graphics.Bitmap
 import android.net.Uri
-import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.MediaMetadata
+import com.google.android.exoplayer2.offline.StreamKey
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.gms.cast.MediaInfo
-import com.google.android.gms.cast.MediaMetadata
-import com.google.android.gms.cast.MediaQueueItem
-import com.google.android.gms.common.images.WebImage
 
 /**
  * Useful extensions for [MediaMetadataCompat].
@@ -269,8 +268,14 @@ inline var MediaMetadataCompat.Builder.flag: Int
  *
  * For convenience, place the [MediaDescriptionCompat] into the tag so it can be retrieved later.
  */
-fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory) =
-    ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaUri)
+fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory, mediaMetadataCompat: MediaMetadataCompat): ProgressiveMediaSource {
+    val mediaItem = MediaItem.Builder()
+        .setCustomCacheKey(mediaMetadataCompat.title)
+        .setUri(mediaMetadataCompat.mediaUri)
+        .build()
+    return ProgressiveMediaSource.Factory(dataSourceFactory)
+        .createMediaSource(mediaItem)
+    }
 
 /**
  * Extension method for building a [ConcatenatingMediaSource] given a [List]
@@ -282,34 +287,30 @@ fun List<MediaMetadataCompat>.toMediaSource(
 
     val concatenatingMediaSource = ConcatenatingMediaSource()
     forEach {
-        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory))
+        concatenatingMediaSource.addMediaSource(it.toMediaSource(dataSourceFactory, it))
     }
     return concatenatingMediaSource
 }
 
-fun MediaMetadataCompat.toMediaQueueItem(): MediaQueueItem {
-    val metadata: MediaMetadata = toCastMediaMetadata()
-    val mediaInfo = MediaInfo.Builder(this.mediaUri.toString())
-            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
-            .setContentType(MimeTypes.AUDIO_MPEG)
-            .setStreamDuration(this.duration)
-            .setMetadata(metadata)
-            .build()
-    return MediaQueueItem.Builder(mediaInfo).build()
+fun MediaMetadataCompat.toMediaQueueItem(metadataCompat: MediaMetadataCompat): MediaItem {
+    //val metadata: MediaMetadata = toCastMediaMetadata()
+//    val mediaInfo = MediaInfo.Builder(this.mediaUri.toString())
+//            .setStreamType(MediaInfo.STREAM_TYPE_BUFFERED)
+//            .setContentType(MimeTypes.AUDIO_MPEG)
+//            .setStreamDuration(this.duration)
+//            .setMetadata(metadata)
+//            .build()
+    return MediaItem.Builder()
+        .setMimeType(MimeTypes.AUDIO_MPEG)
+        .setMediaMetadata(metadataCompat.toCastMediaMetadata())
+        .build()
 }
 
 private fun MediaMetadataCompat.toCastMediaMetadata(): MediaMetadata {
-    val mediaMetadata = MediaMetadata(MediaMetadata.MEDIA_TYPE_MUSIC_TRACK)
-    mediaMetadata.putString(MediaMetadata.KEY_TITLE, this.title)
-    mediaMetadata.putString(MediaMetadata.KEY_ARTIST, this.artist)
-    mediaMetadata.putString(MediaMetadata.KEY_ALBUM_TITLE, this.album)
-    mediaMetadata.addImage(WebImage(this.albumArtUri))
-    mediaMetadata.addImage(WebImage(this.displayIconUri))
-    mediaMetadata.putString(MediaMetadata.KEY_ALBUM_ARTIST, this.albumArtist)
-    mediaMetadata.putString(MediaMetadata.KEY_COMPOSER, this.composer)
-    this.date?.let { date -> mediaMetadata.putString(MediaMetadata.KEY_RELEASE_DATE, date) }
-    mediaMetadata.putInt(MediaMetadata.KEY_TRACK_NUMBER, this.trackNumber.toInt())
-    mediaMetadata.putInt(MediaMetadata.KEY_DISC_NUMBER, this.discNumber.toInt())
+    val mediaMetadata = MediaMetadata.Builder()
+        .setMediaUri(this.mediaUri)
+        .setArtist(this.artist)
+        .build()
     return mediaMetadata
 }
 

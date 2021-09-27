@@ -11,7 +11,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.church.injilkeselamatan.audiorenungan.R
-import com.google.android.exoplayer2.DefaultControlDispatcher
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import kotlinx.coroutines.*
@@ -28,27 +27,27 @@ class MyNotificationManager(
 ) {
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
-    private var notificationManager: PlayerNotificationManager
+    private lateinit var notificationManager: PlayerNotificationManager
 
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
 
-        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
-            context,
-            NOW_PLAYING_CHANNEL_ID,
-            R.string.notification_channel,
-            R.string.notification_channel_description,
-            NOW_PLAYING_NOTIFICATION_ID,
-            DescriptionAdapter(mediaController),
-            notificationListener
-        ).apply {
-
-            setMediaSessionToken(sessionToken)
-            setUseChronometer(false)
-            setUseNextActionInCompactView(true)
-            setUsePreviousActionInCompactView(true)
-            setControlDispatcher(DefaultControlDispatcher(0, 0))
-        }
+//        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
+//            context,
+//            NOW_PLAYING_CHANNEL_ID,
+//            R.string.notification_channel,
+//            R.string.notification_channel_description,
+//            NOW_PLAYING_NOTIFICATION_ID,
+//            DescriptionAdapter(mediaController),
+//            notificationListener
+//        ).apply {
+//
+//            setMediaSessionToken(sessionToken)
+//            setUseChronometer(false)
+//            setUseNextActionInCompactView(true)
+//            setUsePreviousActionInCompactView(true)
+//            setControlDispatcher(DefaultControlDispatcher(0, 0))
+//        }
     }
 
     fun hideNotification() {

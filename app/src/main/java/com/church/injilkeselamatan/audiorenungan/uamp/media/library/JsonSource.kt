@@ -30,6 +30,7 @@ import java.net.URL
 import android.graphics.Bitmap
 
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import java.io.*
 
 
@@ -46,13 +47,12 @@ class JsonSource(
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
 
-    init {
-        state = STATE_INITIALIZING
-    }
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
     override suspend fun load() {
+        Log.e("JsonSource", "load the items")
+        state = STATE_INITIALIZING
         updateCatalog(source)?.let { updatedCatalog ->
             catalog = updatedCatalog
             state = STATE_INITIALIZED

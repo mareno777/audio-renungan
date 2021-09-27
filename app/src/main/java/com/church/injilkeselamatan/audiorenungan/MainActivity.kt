@@ -32,7 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import coil.annotation.ExperimentalCoilApi
-import com.church.injilkeselamatan.audiorenungan.experiment.EpisodeExperimentScreen
+import com.church.injilkeselamatan.audiorenungan.ui.EpisodeScreen
 import com.church.injilkeselamatan.audiorenungan.ui.HomeScreen
 import com.church.injilkeselamatan.audiorenungan.ui.PlayerScreen
 import com.church.injilkeselamatan.audiorenungan.ui.theme.AudioRenunganTheme
@@ -85,17 +85,22 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                         composable(
-                            route = Screen.EpisodeScreen.route + "/{album}",
+                            route = Screen.EpisodeScreen.route + "/{album}/{parentId}",
                             arguments = listOf(
                                 navArgument("album") {
                                     type = NavType.StringType
                                     nullable = true
+                                },
+                                navArgument("parentId") {
+                                    type = NavType.StringType
+                                    nullable = false
                                 }
                             )
                         ) { entry ->
-                            EpisodeExperimentScreen(
+                            EpisodeScreen(
                                 navController = navController,
-                                album = entry.arguments?.getString("album")
+                                album = entry.arguments?.getString("album"),
+                                parentId = entry.arguments?.getString("parentId")
                             )
                         }
                         composable(route = Screen.PlayerScreen.route) {

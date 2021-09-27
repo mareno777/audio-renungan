@@ -8,32 +8,29 @@ import android.os.ParcelFileDescriptor
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
 import com.church.injilkeselamatan.audiorenungan.data.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.exoplayer.*
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.library.*
+import com.church.injilkeselamatan.audiorenungan.uamp.media.library.AbstractMusicSource
+import com.church.injilkeselamatan.audiorenungan.uamp.media.library.AlbumArtContentProvider
 import com.church.injilkeselamatan.audiorenungan.util.Resource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.FileDescriptor
 import java.io.IOException
 import javax.inject.Inject
-import javax.inject.Singleton
+
 
 class SongRepository @Inject constructor(
     private val songsApi: SongsApi, private val context: Context
 ) : AbstractMusicSource() {
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
-
-    init {
-        state = STATE_INITIALIZING
-    }
 
     fun getSongs(): Flow<Resource<List<MusicX>>> = flow {
         try {
@@ -44,7 +41,7 @@ class SongRepository @Inject constructor(
             emit(Resource.Error<List<MusicX>>(e.localizedMessage ?: "An unexpected error occured"))
         }
 
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun load() {
         state = STATE_INITIALIZING
@@ -62,7 +59,11 @@ class SongRepository @Inject constructor(
     private suspend fun updateCatalog(): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             val response = try {
-                getSongs().first().data!!
+                val result: MutableList<MusicX> = mutableListOf()
+                getSongs().collectLatest {
+                    result.addAll(it.data!!)
+                }
+                result
             } catch (e: Exception) {
                 return@withContext null
             }

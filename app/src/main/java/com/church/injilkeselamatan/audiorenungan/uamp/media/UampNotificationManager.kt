@@ -18,23 +18,21 @@ package com.church.injilkeselamatan.audiorenungan.uamp.media
 
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
+import androidx.core.app.NotificationCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.church.injilkeselamatan.audiorenungan.R
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
-const val NOW_PLAYING_CHANNEL_ID = "com.example.android.uamp.media.NOW_PLAYING"
+const val NOW_PLAYING_CHANNEL_ID = "com.church.injilkeselamatan.audiorenungan.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification
 
 /**
@@ -55,21 +53,23 @@ class UampNotificationManager(
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
 
-        notificationManager = PlayerNotificationManager.createWithNotificationChannel(
-            context,
-            NOW_PLAYING_CHANNEL_ID,
-            R.string.notification_channel,
-            R.string.notification_channel_description,
-            NOW_PLAYING_NOTIFICATION_ID,
-            DescriptionAdapter(mediaController),
-            notificationListener
-        ).apply {
+        notificationManager = PlayerNotificationManager
+            .Builder(context, NOW_PLAYING_NOTIFICATION_ID, NOW_PLAYING_CHANNEL_ID)
+            .setNotificationListener(notificationListener)
+            .setMediaDescriptionAdapter(DescriptionAdapter(mediaController))
+            .setChannelDescriptionResourceId(R.string.notification_channel_description)
+            .setChannelNameResourceId(R.string.notification_channel)
+            .build()
 
+        notificationManager.apply {
             setMediaSessionToken(sessionToken)
-
-            // Don't display the rewind or fast-forward buttons.
-            setRewindIncrementMs(0)
-            setFastForwardIncrementMs(0)
+            setUseRewindAction(false)
+            setUseRewindActionInCompactView(false)
+            setUseFastForwardAction(false)
+            setUseNextActionInCompactView(true)
+            setUsePreviousActionInCompactView(true)
+            setUseChronometer(false)
+            setUseStopAction(false)
         }
     }
 
@@ -95,7 +95,7 @@ class UampNotificationManager(
 
         override fun getCurrentContentTitle(player: Player): CharSequence {
             newSongCallback()
-           return controller.metadata.description.title.toString()
+            return controller.metadata.description.title.toString()
         }
 
         override fun getCurrentLargeIcon(

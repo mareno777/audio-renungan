@@ -1,64 +1,75 @@
 package com.church.injilkeselamatan.audiorenungan.viewmodels
 
-import android.util.Log
-import androidx.compose.runtime.collectAsState
+import android.os.Bundle
+import android.os.Parcelable
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.data.SongRepository
 import com.church.injilkeselamatan.audiorenungan.data.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
+import com.church.injilkeselamatan.audiorenungan.download.AudioDownloadService
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.uamp.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.uamp.media.library.UAMP_BROWSABLE_ROOT
 import com.church.injilkeselamatan.audiorenungan.util.Resource
+import com.google.android.exoplayer2.offline.DownloadManager
+import com.google.android.exoplayer2.offline.DownloadRequest
+import com.google.android.exoplayer2.offline.DownloadService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 import javax.inject.Inject
 
 @HiltViewModel
 class EpisodeViewModel @Inject constructor(
     private val repository: SongRepository,
-    private val musicServiceConnection: MusicServiceConnection
+    private val musicServiceConnection: MusicServiceConnection,
+    private val downloadManager: DownloadManager
 ) : ViewModel() {
 
     var songList = mutableStateOf<List<MusicX>>(listOf())
 
-//    val rootMediaId: LiveData<String> =
-//        Transformations.map(musicServiceConnection.isConnected) { isConnected ->
-//            if (isConnected) {
-//                musicServiceConnection.rootMediaId
-//            } else {
-//                null
-//            }
-//        }
+    private val _mediaItems = MutableLiveData<List<MediaItemData>>()
+    val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
 
-    init {
-        getSongs()
-
-    }
 
     val playbackStateCompat = musicServiceConnection.playbackState
     val mediaMetadataCompat = musicServiceConnection.nowPlaying
-    val transportControls by lazy {
-        musicServiceConnection.transportControls
+
+    private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(
+            parentId: String,
+            children: MutableList<MediaBrowserCompat.MediaItem>
+        ) {
+            val itemList = children.map { child ->
+                val subtitle = child.description.subtitle ?: ""
+                MediaItemData(
+                    child.mediaId!!,
+                    child.description.title.toString(),
+                    subtitle.toString(),
+                    child.description.iconUri!!,
+                    child.isBrowsable,
+                    0 // we fix later for indicator now playing
+                )
+            }
+            _mediaItems.postValue(itemList)
+        }
     }
 
-    private fun getSongs() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.getSongs().collect { resource ->
-                when (resource) {
-                    is Resource.Success -> songList.value = resource.data ?: emptyList()
-                    else -> songList.value = emptyList()
-                }
-            }
-        }
+
+
+    fun subscribe(parentId: String) {
+        musicServiceConnection.subscribe(parentId, subscriptionCallback)
     }
 
     fun playMedia(mediaItem: MediaItemData, pauseAllowed: Boolean = true) {
@@ -103,4 +114,10 @@ class EpisodeViewModel @Inject constructor(
         }
     }
 
+    fun downloadSong(song: String) {
+        val bundle = Bundle()
+        bundle.putString(MEDIA_METADATA_COMPAT_FOR_DOWNLOAD, song)
+        musicServiceConnection.sendCommand("download_song", bundle)
+    }
 }
+const val MEDIA_METADATA_COMPAT_FOR_DOWNLOAD = "com.church.injilkeselamatan.audiorenungan.bundles.mediametadata"

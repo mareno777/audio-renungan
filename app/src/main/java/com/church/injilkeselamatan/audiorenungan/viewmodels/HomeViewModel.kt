@@ -21,8 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val musicServiceConnection: MusicServiceConnection,
-    private val songRepository: SongRepository
+    private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
     var mediaId by mutableStateOf(UAMP_ALBUMS_ROOT)
@@ -102,6 +101,10 @@ class HomeViewModel @Inject constructor(
         } else {
             transportControls.playFromMediaId(mediaId, null)
         }
+    }
+
+    fun sendCommand(command: String) {
+        musicServiceConnection.sendCommand(command, null)
     }
 
     override fun onCleared() {

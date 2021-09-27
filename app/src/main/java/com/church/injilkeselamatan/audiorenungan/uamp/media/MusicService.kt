@@ -20,10 +20,10 @@ import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -34,32 +34,34 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.data.SongRepository
+import com.church.injilkeselamatan.audiorenungan.download.AudioDownloadService
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.exoplayer.media.PersistentStorage
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.flag
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.id
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.toMediaQueueItem
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.toMediaSource
+import com.church.injilkeselamatan.audiorenungan.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.uamp.media.library.*
+import com.church.injilkeselamatan.audiorenungan.viewmodels.MEDIA_METADATA_COMPAT_FOR_DOWNLOAD
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
+import com.google.android.exoplayer2.offline.DownloadHelper
+import com.google.android.exoplayer2.offline.DownloadManager
+import com.google.android.exoplayer2.offline.DownloadRequest
+import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.exoplayer2.util.Util
-import com.google.android.gms.cast.MediaQueueItem
 import com.google.android.gms.cast.framework.CastContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 
 /**
@@ -80,6 +82,7 @@ import javax.inject.Inject
  */
 @AndroidEntryPoint
 open class MusicService : MediaBrowserServiceCompat() {
+
 
     private lateinit var notificationManager: UampNotificationManager
     private lateinit var mediaSource: MusicSource
@@ -103,7 +106,13 @@ open class MusicService : MediaBrowserServiceCompat() {
     lateinit var cache: SimpleCache
 
     @Inject
-    lateinit var httpDataSourceFactory: DefaultHttpDataSource.Factory
+    lateinit var cachedDataSourceFactory: DataSource.Factory
+
+    @Inject
+    lateinit var downloadManager: DownloadManager
+
+    @Inject
+    lateinit var songRepository: SongRepository
 
     /**
      * This must be `by lazy` because the source won't initially be ready.
@@ -114,14 +123,6 @@ open class MusicService : MediaBrowserServiceCompat() {
         BrowseTree(applicationContext, mediaSource)
     }
 
-//    private val dataSourceFactory: DefaultDataSourceFactory by lazy {
-//        DefaultDataSourceFactory(
-//            /* context= */ this,
-//            Util.getUserAgent(/* context= */ this, UAMP_USER_AGENT), /* listener= */
-//            null
-//        )
-//    }
-
     companion object {
         var curSongDuration = 0L
             private set
@@ -131,22 +132,10 @@ open class MusicService : MediaBrowserServiceCompat() {
 
     private var isForegroundService = false
 
-    private val remoteJsonSource: Uri =
-        Uri.parse("https://injilkeselamatan.com/wp-content/catalog.json")
-
-    private val uampAudioAttributes = AudioAttributes.Builder()
-        .setContentType(C.CONTENT_TYPE_MUSIC)
-        .setUsage(C.USAGE_MEDIA)
-        .build()
-
     private val playerListener = PlayerEventListener()
 
-    /**
-     * Configure ExoPlayer to handle audio focus for us.
-     * See [Player.AudioComponent.setAudioAttributes] for details.
-     */
     @Inject
-    lateinit var exoPlayer: ExoPlayer
+    lateinit var exoPlayer: SimpleExoPlayer
 
     /**
      * If Cast is available, create a CastPlayer to handle communication with a Cast session.
@@ -178,7 +167,11 @@ open class MusicService : MediaBrowserServiceCompat() {
         // Build a PendingIntent that can be used to launch the UI.
         val sessionActivityPendingIntent =
             packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                PendingIntent.getActivity(this, 0, sessionIntent, 0)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
+                } else {
+                    PendingIntent.getActivity(this, 0, sessionIntent, 0)
+                }
             }
 
         // Create a new MediaSession.
@@ -210,13 +203,17 @@ open class MusicService : MediaBrowserServiceCompat() {
             mediaSession.sessionToken,
             PlayerNotificationListener()
         ) {
+            //on playback change
             curSongDuration = currentPlayer.duration
             curSongIndex = currentPlayer.currentWindowIndex
+            if (!mediaSession.isActive) {
+                mediaSession.isActive = true
+            }
         }
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
-        mediaSource = JsonSource(source = remoteJsonSource, this)
+        mediaSource = songRepository
         serviceScope.launch {
             mediaSource.load()
         }
@@ -254,7 +251,11 @@ open class MusicService : MediaBrowserServiceCompat() {
          * The service will then remove itself as a foreground service, and will call
          * [stopSelf].
          */
-        currentPlayer.stop(/* reset= */true)
+        currentPlayer.stop()
+        currentPlayer.clearMediaItems()
+
+        mediaSession.isActive = false
+
     }
 
     override fun onDestroy() {
@@ -325,7 +326,7 @@ open class MusicService : MediaBrowserServiceCompat() {
      */
     override fun onLoadChildren(
         parentMediaId: String,
-        result: Result<List<MediaItem>>
+        result: Result<List<MediaBrowserCompat.MediaItem>>
     ) {
 
         /**
@@ -334,15 +335,30 @@ open class MusicService : MediaBrowserServiceCompat() {
         if (parentMediaId == UAMP_RECENT_ROOT) {
             result.sendResult(
                 storage.loadRecentSong()
-                    ?.let { song -> listOf(MediaItem(song.description, song.flags)) })
+                    ?.let { song ->
+                        listOf(
+                            MediaBrowserCompat.MediaItem(
+                                song.description,
+                                song.flags
+                            )
+                        )
+                    })
         } else {
             // If the media source is ready, the results will be set synchronously here.
+
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
-                    val children = browseTree[parentMediaId]?.map { item ->
-                        MediaItem(item.description, item.flag)
+                    try {
+                        // variable children hanya untuk ditampilkan ke pengguna
+                        val children = browseTree[parentMediaId]?.map { item ->
+                            MediaBrowserCompat.MediaItem(item.description, item.flag)
+                        }
+                        result.sendResult(children)
+                    } catch (e: IllegalStateException) {
+                        Log.e("JsonSource", e.toString())
+                        notifyChildrenChanged(parentMediaId)
                     }
-                    result.sendResult(children)
+
                 } else {
                     mediaSession.sendSessionEvent(NETWORK_FAILURE, null)
                     result.sendResult(null)
@@ -367,14 +383,14 @@ open class MusicService : MediaBrowserServiceCompat() {
     override fun onSearch(
         query: String,
         extras: Bundle?,
-        result: Result<List<MediaItem>>
+        result: Result<List<MediaBrowserCompat.MediaItem>>
     ) {
 
         val resultsSent = mediaSource.whenReady { successfullyInitialized ->
             if (successfullyInitialized) {
                 val resultsList = mediaSource.search(query, extras ?: Bundle.EMPTY)
                     .map { mediaMetadata ->
-                        MediaItem(mediaMetadata.description, mediaMetadata.flag)
+                        MediaBrowserCompat.MediaItem(mediaMetadata.description, mediaMetadata.flag)
                     }
                 result.sendResult(resultsList)
             }
@@ -401,27 +417,24 @@ open class MusicService : MediaBrowserServiceCompat() {
         currentPlaylistItems = metadataList
 
         currentPlayer.playWhenReady = playWhenReady
-        currentPlayer.stop(/* reset= */ true)
+        currentPlayer.stop()
+        currentPlayer.clearMediaItems()
         if (currentPlayer == exoPlayer) {
-            val cachedDataSourceFactory = CacheDataSource.Factory()
-                .setCache(cache)
-                .setUpstreamDataSourceFactory(httpDataSourceFactory)
+
+
+
             val mediaSource = metadataList.toMediaSource(cachedDataSourceFactory)
+
             exoPlayer.apply {
                 setMediaSource(mediaSource)
                 prepare()
                 seekTo(initialWindowIndex, playbackStartPositionMs)
             }
         } else /* currentPlayer == castPlayer */ {
-            val items: Array<MediaQueueItem> = metadataList.map {
-                it.toMediaQueueItem()
-            }.toTypedArray()
-            castPlayer!!.loadItems(
-                items,
-                initialWindowIndex,
-                playbackStartPositionMs,
-                Player.REPEAT_MODE_OFF
-            )
+            val items: List<MediaItem> = metadataList.map {
+                it.toMediaQueueItem(it)
+            }.toList()
+            castPlayer?.setMediaItems(items, initialWindowIndex, playbackStartPositionMs)
         }
     }
 
@@ -435,7 +448,8 @@ open class MusicService : MediaBrowserServiceCompat() {
             if (currentPlaylistItems.isEmpty()) {
                 // We are joining a playback session. Loading the session from the new player is
                 // not supported, so we stop playback.
-                currentPlayer.stop(/* reset= */true)
+                currentPlayer.stop()
+                currentPlayer.clearMediaItems()
             } else if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
                 preparePlaylist(
                     metadataList = currentPlaylistItems,
@@ -446,7 +460,8 @@ open class MusicService : MediaBrowserServiceCompat() {
             }
         }
         mediaSessionConnector.setPlayer(newPlayer)
-        previousPlayer?.stop(/* reset= */true)
+        previousPlayer?.stop()
+        previousPlayer?.clearMediaItems()
     }
 
     private fun saveRecentSongToStorage() {
@@ -573,7 +588,48 @@ open class MusicService : MediaBrowserServiceCompat() {
             command: String,
             extras: Bundle?,
             cb: ResultReceiver?
-        ) = false
+        ): Boolean {
+
+            if (command == "download_song") {
+                val mediaId: String? = extras?.getString(
+                    MEDIA_METADATA_COMPAT_FOR_DOWNLOAD
+                )
+                mediaId?.let { id ->
+                    serviceScope.launch {
+                        val metadata = currentPlaylistItems.find { it.description.mediaId == id }
+                        Log.e("MusicService", metadata?.description?.mediaId.toString())
+                        if (metadata == null) return@launch
+                        val jsonObject = JSONObject()
+                        jsonObject.put("metadata", metadata)
+
+
+                        val downloadRequest =
+                            DownloadRequest.Builder(
+                                id,
+                                metadata.mediaUri
+                            )
+                                .setCustomCacheKey(metadata.title)
+                                //.setData(Util.getUtf8Bytes(jsonObject.toString()))
+                                .build()
+
+                        DownloadService.sendAddDownload(
+                            this@MusicService,
+                            AudioDownloadService::class.java,
+                            downloadRequest,
+                            true
+                        )
+                    }
+                }
+
+            } else {
+                Log.e("JsonSource", "$command call load")
+                serviceScope.launch {
+                    mediaSource.load()
+                }
+            }
+
+            return true
+        }
 
         /**
          * Builds a playlist based on a [MediaMetadataCompat].
@@ -618,7 +674,7 @@ open class MusicService : MediaBrowserServiceCompat() {
     /**
      * Listen for events from ExoPlayer.
      */
-    private inner class PlayerEventListener : Player.EventListener {
+    private inner class PlayerEventListener : Player.Listener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             when (playbackState) {
                 Player.STATE_BUFFERING,
@@ -631,7 +687,7 @@ open class MusicService : MediaBrowserServiceCompat() {
                         // Search for "media resumption" for more information.
                         try {
                             saveRecentSongToStorage()
-                        } catch (e: ArrayIndexOutOfBoundsException) {
+                        } catch (e: Exception) {
                             // unknown crash
                         }
 
@@ -651,7 +707,7 @@ open class MusicService : MediaBrowserServiceCompat() {
             }
         }
 
-        override fun onPlayerError(error: ExoPlaybackException) {
+        override fun onPlayerError(error: PlaybackException) {
             Toast.makeText(
                 applicationContext,
                 error.message.toString(),
@@ -673,8 +729,6 @@ private const val CONTENT_STYLE_SUPPORTED = "android.media.browse.CONTENT_STYLE_
 private const val CONTENT_STYLE_LIST = 1
 private const val CONTENT_STYLE_GRID = 2
 
-private const val UAMP_USER_AGENT = "uamp.next"
-
-val MEDIA_DESCRIPTION_EXTRAS_START_PLAYBACK_POSITION_MS = "playback_start_position_ms"
+const val MEDIA_DESCRIPTION_EXTRAS_START_PLAYBACK_POSITION_MS = "playback_start_position_ms"
 
 private const val TAG = "MusicService"
