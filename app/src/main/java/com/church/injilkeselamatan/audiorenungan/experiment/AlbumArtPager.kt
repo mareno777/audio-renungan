@@ -1,31 +1,33 @@
 package com.church.injilkeselamatan.audiorenungan.experiment
 
-import androidx.compose.foundation.Image
+import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
-import coil.compose.ImagePainter
-import coil.compose.rememberImagePainter
-import com.church.injilkeselamatan.audiorenungan.data.models.MusicX
-import com.church.injilkeselamatan.audiorenungan.viewmodels.PlayerViewModel
-import com.google.accompanist.pager.*
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.dp
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.android.material.math.MathUtils.lerp
+import com.skydoves.landscapist.glide.GlideImage
 import kotlin.math.absoluteValue
-
 
 
 @ExperimentalPagerApi
 @Composable
-fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<MusicX>?) {
+fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<MediaMetadataCompat>?) {
 
 
     HorizontalPager(
@@ -55,14 +57,19 @@ fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<Musi
                 }
                 .fillMaxWidth(0.8f)
                 .aspectRatio(1f)
+                .clip(RoundedCornerShape(8.dp))
 
         ) {
             Box {
-                Image(
-                    painter = rememberImagePainter(songs?.get(page)?.image),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize()
-                )
+                songs?.get(page)?.description?.iconUri?.let {
+                    GlideImage(
+                        imageModel = it,
+                        requestOptions = RequestOptions()
+                            .diskCacheStrategy(DiskCacheStrategy.DATA),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.FillBounds
+                    )
+                }
             }
         }
     }

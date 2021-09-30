@@ -2,11 +2,15 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.ComponentName
 import android.content.Context
-import com.church.injilkeselamatan.audiorenungan.data.SongRepository
-import com.church.injilkeselamatan.audiorenungan.data.remote.SongsApi
-import com.church.injilkeselamatan.audiorenungan.exoplayer.common.MusicServiceConnection
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.MusicService
-import com.church.injilkeselamatan.audiorenungan.exoplayer.media.PersistentStorage
+import android.media.MediaMetadata
+import android.support.v4.media.MediaMetadataCompat
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.util.ConnectionLiveData
 import dagger.Module
 import dagger.Provides
@@ -48,6 +52,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSongRepository(@ApplicationContext context: Context, songsApi: SongsApi) =
-        SongRepository(songsApi, context)
+    fun provideSongRepository(@ApplicationContext context: Context, songsApi: SongsApi, database: MusicDatabase): SongRepository =
+        SongRepositoryImpl(songsApi, context, database)
+
+    @Singleton
+    @Provides
+    fun provideCurrrentPlaylist(): MutableList<MediaMetadataCompat> = mutableListOf()
 }
