@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -33,6 +34,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.ui.productSansGoogle
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.viewmodels.EpisodeViewModel
 import com.church.injilkeselamatan.audiorenungan.util.Constants
+import com.mikhaellopez.circularprogressbar.CircularProgressBar
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -139,6 +141,7 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
             .clickable { episodeViewModel.playMediaId(song.mediaId) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+
 //            Image(
 //                painter = rememberImagePainter(
 //                    data = song.albumArtUri
@@ -173,7 +176,26 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
 
             }
         }
+        val maxProgress by episodeViewModel.maxProgress.observeAsState(0)
+        val downloadedLength by episodeViewModel.downloadedLength.observeAsState(0)
+        AndroidView(
+            factory = {
+                CircularProgressBar(it)
+            },
+            modifier = Modifier
+                .size(24.dp)
+                .clickable {
+                    // TODO: click to download media
+                    episodeViewModel.downloadSong(song.mediaId)
+                    episodeViewModel.maxProgressDownload(song.mediaId)
+                }
+        ) { circularProgress ->
 
+            maxProgress?.let {
+                circularProgress.progressMax = maxProgress.toFloat()
+                circularProgress.progress = downloadedLength.toFloat()
+            }
+        }
         Icon(
             painterResource(
                 id = R.drawable.download

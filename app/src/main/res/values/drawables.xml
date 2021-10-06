@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <drawable name="exo_notification_play">@drawable/ic_play_arrow</drawable>
-    <drawable name="exo_notification_pause">@drawable/ic_pause</drawable>
-    <drawable name="exo_notification_next">@drawable/ic_skip_next</drawable>
-    <drawable name="exo_notification_previous">@drawable/ic_skip_previous</drawable>
-</resources>

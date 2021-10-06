@@ -20,6 +20,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import com.church.injilkeselamatan.audiorenungan.util.Resource
 import com.church.injilkeselamatan.audiorenungan.util.networkBoundResource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.io.FileDescriptor
@@ -40,7 +41,7 @@ class SongRepositoryImpl @Inject constructor(
     override fun getSongs(): Flow<Resource<List<Song>>> {
         return networkBoundResource(
             query = {
-                Log.e(TAG, "quering")
+                Log.d(TAG, "quering")
                 musicDao.getAllSongs().map { musicDb ->
                     musicDb.map {
                         Song(
@@ -57,11 +58,11 @@ class SongRepositoryImpl @Inject constructor(
 
             },
             fetch = {
-                Log.e(TAG, "fetching")
+                Log.d(TAG, "fetching")
                 songsApi.getSongs().music
             },
             saveFetchResult = { musicDtos ->
-                Log.e(TAG, "saving result from server")
+                Log.d(TAG, "saving result from server")
                 val musicDbs = musicDtos.map {
                     MusicDbEntity(
                         it.id,
@@ -79,8 +80,7 @@ class SongRepositoryImpl @Inject constructor(
                 }
             },
             shouldFetch = {
-                Log.e(TAG, "shouldFetch")
-                true
+                it.isEmpty()
             }
         )
     }
@@ -104,6 +104,11 @@ class SongRepositoryImpl @Inject constructor(
             val response = try {
                 val result: MutableList<Song> = mutableListOf()
                 val musicFromDb = musicDatabase.musicDao().getAllSongs().first()
+                while (musicFromDb.isEmpty()) {
+                    delay(200L)
+                }
+
+                Log.d(TAG, musicFromDb.size.toString())
                 result.addAll(
                     musicFromDb.map {
                         Song(

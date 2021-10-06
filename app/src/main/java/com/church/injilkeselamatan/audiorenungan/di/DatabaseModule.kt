@@ -21,8 +21,4 @@ object DatabaseModule {
         Room.databaseBuilder(context, MusicDatabase::class.java, "Music.db")
             .fallbackToDestructiveMigration().build()
 
-    @Singleton
-    @Provides
-    fun provideMusicDao(database: MusicDatabase): MusicDao = database.musicDao()
-
 }

@@ -215,6 +215,12 @@ class MusicService : MediaBrowserServiceCompat() {
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(UampPlaybackPreparer())
+        mediaSessionConnector.setEnabledPlaybackActions(
+            PlaybackStateCompat.ACTION_PLAY_PAUSE
+                    or PlaybackStateCompat.ACTION_PLAY
+                    or PlaybackStateCompat.ACTION_PAUSE
+                    or PlaybackStateCompat.ACTION_SEEK_TO
+        )
         mediaSessionConnector.setQueueNavigator(UampQueueNavigator(mediaSession))
 
         switchToPlayer(
@@ -340,6 +346,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
+                    Log.d(TAG, "musicSource successfully initialized")
                     try {
                         // variable children hanya untuk ditampilkan ke pengguna
                         val children = browseTree[parentMediaId]?.map { item ->
@@ -347,11 +354,11 @@ class MusicService : MediaBrowserServiceCompat() {
                         }
                         result.sendResult(children)
                     } catch (e: IllegalStateException) {
-                        Log.e("JsonSource", e.toString())
                         notifyChildrenChanged(parentMediaId)
                     }
 
                 } else {
+                    Log.d(TAG, "musicSource not successfully initialized")
                     mediaSession.sendSessionEvent(NETWORK_FAILURE, null)
                     result.sendResult(null)
                 }
@@ -510,6 +517,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
 
         override fun onPrepare(playWhenReady: Boolean) {
+            //execute from notification
             val recentSong = storage.loadRecentSong() ?: return
             onPrepareFromMediaId(
                 recentSong.mediaId!!,
@@ -523,6 +531,7 @@ class MusicService : MediaBrowserServiceCompat() {
             playWhenReady: Boolean,
             extras: Bundle?
         ) {
+            Log.d(TAG, "onPrepareFromMediaId: $mediaId")
             mediaSource.whenReady {
                 val itemToPlay: MediaMetadataCompat? = mediaSource.find { item ->
                     item.id == mediaId

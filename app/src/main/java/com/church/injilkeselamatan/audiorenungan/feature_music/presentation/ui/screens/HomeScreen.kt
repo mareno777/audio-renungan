@@ -125,16 +125,6 @@ private fun TopHomeSection(modifier: Modifier = Modifier, viewModel: HomeViewMod
                 fontSize = 16.sp
             )
         }
-//        Image(
-//            painter = painter,
-//            contentDescription = null,
-//            modifier = Modifier
-//                .size(45.dp)
-//                .clickable {
-//                    //TODO: click to open account settings
-//                    viewModel.sendCommand("coba command")
-//                }
-//        )
         GlideImage(
             imageModel = "https://qph.fs.quoracdn.net/main-qimg-c7a526dfad7e78f9062521efd0a3ea70-c",
             requestOptions = RequestOptions()
@@ -148,7 +138,6 @@ private fun TopHomeSection(modifier: Modifier = Modifier, viewModel: HomeViewMod
         )
     }
 }
-
 
 @Composable
 fun PlayingNowSectionHome(

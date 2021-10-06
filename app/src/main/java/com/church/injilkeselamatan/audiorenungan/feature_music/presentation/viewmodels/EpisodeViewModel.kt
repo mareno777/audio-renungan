@@ -2,10 +2,12 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.vie
 
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicDto
@@ -17,6 +19,8 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +31,9 @@ class EpisodeViewModel @Inject constructor(
 ) : ViewModel() {
 
     var songList = mutableStateOf<List<MusicDto>>(listOf())
+
+    var downloadedLength = MutableLiveData(0)
+    var maxProgress = MutableLiveData(0)
 
     private val _mediaItems = MutableLiveData<List<MediaItemData>>()
     val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
@@ -54,6 +61,23 @@ class EpisodeViewModel @Inject constructor(
             _mediaItems.postValue(itemList)
         }
     }
+
+    fun maxProgressDownload(title: String) {
+        viewModelScope.launch {
+            val download = downloadManager.currentDownloads.find {
+                it.request.id == title
+            }
+            delay(500L)
+            Log.e("EpisodeViewModel", download?.request?.id ?: "Download still empty")
+            while (true) {
+                maxProgress.postValue(download?.contentLength?.toInt())
+                downloadedLength.postValue(download?.contentLength?.toInt())
+                delay(200)
+            }
+        }
+    }
+
+
 
 
     fun subscribe(parentId: String) {
