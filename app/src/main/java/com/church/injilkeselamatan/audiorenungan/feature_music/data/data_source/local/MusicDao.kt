@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface MusicDao {
 
     @Query("SELECT * FROM MusicDbEntity")
-   fun getAllSongs(): Flow<List<MusicDbEntity>>
+    fun getAllSongs(): Flow<List<MusicDbEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSongs(songs: List<MusicDbEntity>)

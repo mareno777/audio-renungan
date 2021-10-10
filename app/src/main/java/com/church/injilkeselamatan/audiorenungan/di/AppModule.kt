@@ -2,7 +2,6 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.ComponentName
 import android.content.Context
-import android.media.MediaMetadata
 import android.support.v4.media.MediaMetadataCompat
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
@@ -11,7 +10,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
-import com.church.injilkeselamatan.audiorenungan.util.ConnectionLiveData
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

@@ -86,7 +86,7 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
-    kapt "androidx.hilt:hilt-compiler:1.0.0"
+    kapt  "androidx.hilt:hilt-compiler:1.0.0"
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
 
     // Coroutines
@@ -116,11 +116,11 @@ dependencies {
     //Circular Progressbar
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
 
-    def room_version = "2.3.0"
+    def room_version = "2.4.0-alpha05"
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation("androidx.room:room-ktx:$room_version")
     testImplementation("androidx.room:room-testing:$room_version")
-    implementation("androidx.room:room-paging:2.4.0-alpha04")
+    implementation("androidx.room:room-paging:$room_version")
 }

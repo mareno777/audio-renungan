@@ -8,7 +8,7 @@
         ]]>
     </string>
     <string name="notification_channel">Now Playing</string>
-    <string name="notification_channel_description">Shows what music is currently playing in UAMP</string>
+    <string name="notification_channel_description">Shows what music is currently playing</string>
     <string name="notification_channel_download">Downloads</string>
     <string name="notification_description_download">Downloading media</string>
 </resources>

@@ -13,14 +13,13 @@ import androidx.room.withTransaction
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.networkBoundResource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.*
-import com.church.injilkeselamatan.audiorenungan.util.Resource
-import com.church.injilkeselamatan.audiorenungan.util.networkBoundResource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import java.io.FileDescriptor
@@ -41,7 +40,6 @@ class SongRepositoryImpl @Inject constructor(
     override fun getSongs(): Flow<Resource<List<Song>>> {
         return networkBoundResource(
             query = {
-                Log.d(TAG, "quering")
                 musicDao.getAllSongs().map { musicDb ->
                     musicDb.map {
                         Song(
@@ -104,9 +102,6 @@ class SongRepositoryImpl @Inject constructor(
             val response = try {
                 val result: MutableList<Song> = mutableListOf()
                 val musicFromDb = musicDatabase.musicDao().getAllSongs().first()
-                while (musicFromDb.isEmpty()) {
-                    delay(200L)
-                }
 
                 Log.d(TAG, musicFromDb.size.toString())
                 result.addAll(

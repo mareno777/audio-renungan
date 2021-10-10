@@ -21,7 +21,7 @@
             android:value="com.church.injilkeselamatan.audiorenungan.cast.UampCastOptionsProvider"/>
 
         <activity
-            android:name="com.church.injilkeselamatan.audiorenungan.feature_music.presentation.ui.MainActivity"
+            android:name="com.church.injilkeselamatan.audiorenungan.feature_music.presentation.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:screenOrientation="portrait"

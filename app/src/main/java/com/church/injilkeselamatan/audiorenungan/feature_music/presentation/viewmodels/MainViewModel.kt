@@ -10,7 +10,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.util.Event
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

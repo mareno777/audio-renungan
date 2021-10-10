@@ -346,7 +346,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
-                    Log.d(TAG, "musicSource successfully initialized")
                     try {
                         // variable children hanya untuk ditampilkan ke pengguna
                         val children = browseTree[parentMediaId]?.map { item ->
