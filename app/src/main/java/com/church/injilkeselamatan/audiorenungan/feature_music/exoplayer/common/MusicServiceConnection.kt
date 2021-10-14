@@ -79,8 +79,6 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     private lateinit var mediaController: MediaControllerCompat
 
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {
-        Log.e(this@MusicServiceConnection::class.java.simpleName, parentId)
-        Log.e(this@MusicServiceConnection::class.java.simpleName, "init root: ${mediaBrowser.root}")
         mediaBrowser.subscribe(parentId, callback)
     }
 
@@ -96,11 +94,14 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
         parameters: Bundle?,
         resultCallback: ((Int, Bundle?) -> Unit)
     ) = if (mediaBrowser.isConnected) {
-        mediaController.sendCommand(command, parameters, object : ResultReceiver(Handler(Looper.getMainLooper())) {
-            override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
-                resultCallback(resultCode, resultData)
-            }
-        })
+        mediaController.sendCommand(
+            command,
+            parameters,
+            object : ResultReceiver(Handler(Looper.getMainLooper())) {
+                override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+                    resultCallback(resultCode, resultData)
+                }
+            })
         true
     } else {
         false
@@ -117,6 +118,8 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
                 registerCallback(MediaControllerCallback())
             }
+
+            Log.d(TAG, "connected")
 
             isConnected.postValue(true)
         }
@@ -178,12 +181,13 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     }
 }
 
-@Suppress("PropertyName")
+private const val TAG = "MusicServiceConnection"
+
+
 val EMPTY_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
     .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
     .build()
 
-@Suppress("PropertyName")
 val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
     .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)

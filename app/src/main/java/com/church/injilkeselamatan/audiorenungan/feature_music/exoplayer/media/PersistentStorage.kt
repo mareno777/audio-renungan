@@ -17,77 +17,93 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.net.Uri
-import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
-import com.bumptech.glide.Glide
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.asAlbumArtContentUri
+import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.google.android.exoplayer2.C
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
+
 class PersistentStorage(val context: Context) {
+
+    companion object {
+        private val RECENT_MEDIA_ID_KEY = stringPreferencesKey("recent_media_id")
+        private val RECENT_TITLE_KEY = stringPreferencesKey("recent_title")
+        private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
+        private val RECENT_ALBUM_KEY = stringPreferencesKey("recent_album")
+        private val RECENT_MEDIA_URI_KEY = stringPreferencesKey("recent_media_uri")
+        private val RECENT_ICON_URI_KEY = stringPreferencesKey("recent_icon_uri_subtitle")
+        private val RECENT_POSITION_KEY = longPreferencesKey("recent_position_subtitle")
+    }
 
     /**
      * Store any data which must persist between restarts, such as the most recently played song.
      */
-    private var preferences: SharedPreferences = context.getSharedPreferences(
-        PREFERENCES_NAME,
-        Context.MODE_PRIVATE
-    )
 
-    suspend fun saveRecentSong(description: MediaDescriptionCompat, position: Long) {
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
+
+    suspend fun saveRecentSong(description: MediaMetadataCompat, position: Long) {
 
         withContext(Dispatchers.IO) {
-
-            /**
-             * After booting, Android will attempt to build static media controls for the most
-             * recently played song. Artwork for these media controls should not be loaded
-             * from the network as it may be too slow or unavailable immediately after boot. Instead
-             * we convert the iconUri to point to the Glide on-disk cache.
-             */
-            val localIconUri = Glide.with(context).asFile().load(description.iconUri)
-                .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE).get()
-                .asAlbumArtContentUri()
-
-            preferences.edit()
-                .putString(RECENT_SONG_MEDIA_ID_KEY, description.mediaId)
-                .putString(RECENT_SONG_TITLE_KEY, description.title.toString())
-                .putString(RECENT_SONG_SUBTITLE_KEY, description.subtitle.toString())
-                .putString(RECENT_SONG_ICON_URI_KEY, localIconUri.toString())
-                .putLong(RECENT_SONG_POSITION_KEY, position)
-                .apply()
-        }
-    }
-
-    fun loadRecentSong(): MediaBrowserCompat.MediaItem? {
-        val mediaId = preferences.getString(RECENT_SONG_MEDIA_ID_KEY, null)
-        return if (mediaId == null) {
-            null
-        } else {
-            val extras = Bundle().also {
-                val position = preferences.getLong(RECENT_SONG_POSITION_KEY, 0L)
-                it.putLong(MEDIA_DESCRIPTION_EXTRAS_START_PLAYBACK_POSITION_MS, position)
+            try {
+                context.dataStore.edit { preferences ->
+                    preferences[RECENT_MEDIA_ID_KEY] = description.id.toString()
+                    preferences[RECENT_TITLE_KEY] = description.title.toString()
+                    preferences[RECENT_SUBTITLE_KEY] = description.artist.toString()
+                    preferences[RECENT_ALBUM_KEY] = description.album.toString()
+                    preferences[RECENT_MEDIA_URI_KEY] = description.mediaUri.toString()
+                    preferences[RECENT_ICON_URI_KEY] = description.displayIconUri.toString()
+                    preferences[RECENT_POSITION_KEY] = position
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, e.toString())
             }
 
-            MediaBrowserCompat.MediaItem(
-                MediaDescriptionCompat.Builder()
-                    .setMediaId(mediaId)
-                    .setTitle(preferences.getString(RECENT_SONG_TITLE_KEY, ""))
-                    .setSubtitle(preferences.getString(RECENT_SONG_SUBTITLE_KEY, ""))
-                    .setIconUri(Uri.parse(preferences.getString(RECENT_SONG_ICON_URI_KEY, "")))
-                    .setExtras(extras)
-                    .build(), FLAG_PLAYABLE
-            )
         }
+
+    }
+
+    fun loadRecentSong(): Flow<MediaMetadataCompat?> {
+        val media = context.dataStore.data.map { preferences ->
+            val mediaId = preferences[RECENT_MEDIA_ID_KEY]
+            if (mediaId != null) {
+                val mediaMetadataCompat = MediaMetadataCompat.Builder()
+                    .putLong(PREFERENCES_POSITION, preferences[RECENT_POSITION_KEY] ?: C.TIME_UNSET)
+                    .apply {
+                        id = mediaId
+                        title = preferences[RECENT_TITLE_KEY]
+                        album = preferences[RECENT_ALBUM_KEY]
+                        mediaUri = preferences[RECENT_MEDIA_URI_KEY]
+                        albumArtUri = preferences[RECENT_ICON_URI_KEY]
+                        flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+
+                        displayTitle = preferences[RECENT_TITLE_KEY]
+                        displaySubtitle = preferences[RECENT_SUBTITLE_KEY]
+                        displayDescription = preferences[RECENT_ALBUM_KEY]
+                        displayIconUri = preferences[RECENT_ICON_URI_KEY]
+                        downloadStatus = MediaDescriptionCompat.STATUS_NOT_DOWNLOADED
+                    }
+                    .build()
+                mediaMetadataCompat
+            } else {
+                null
+            }
+        }
+        return media
     }
 }
 
-private const val PREFERENCES_NAME = "uamp"
-private const val RECENT_SONG_MEDIA_ID_KEY = "recent_song_media_id"
-private const val RECENT_SONG_TITLE_KEY = "recent_song_title"
-private const val RECENT_SONG_SUBTITLE_KEY = "recent_song_subtitle"
-private const val RECENT_SONG_ICON_URI_KEY = "recent_song_icon_uri"
-private const val RECENT_SONG_POSITION_KEY = "recent_song_position"
+private const val PREFERENCES_NAME = "audio_renungan"
+private const val TAG = "PersistentStorage"
+const val PREFERENCES_POSITION = "preferences_position"

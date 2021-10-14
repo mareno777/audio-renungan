@@ -22,13 +22,9 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.church.injilkeselamatan.audiorenungan.R
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import kotlinx.coroutines.*
 
 const val NOW_PLAYING_CHANNEL_ID = "com.church.injilkeselamatan.audiorenungan.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to identify our notification
@@ -37,15 +33,13 @@ const val NOW_PLAYING_NOTIFICATION_ID = 0xb339 // Arbitrary number used to ident
  * A wrapper class for ExoPlayer's PlayerNotificationManager. It sets up the notification shown to
  * the user during audio playback and provides track metadata, such as track title and icon image.
  */
-class UampNotificationManager(
-    private val context: Context,
+class NotificationManager(
+    context: Context,
     sessionToken: MediaSessionCompat.Token,
     notificationListener: PlayerNotificationManager.NotificationListener,
     private val newSongCallback: () -> Unit
 ) {
 
-    private val serviceJob = SupervisorJob()
-    private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
     private val notificationManager: PlayerNotificationManager
 
     init {
@@ -106,33 +100,12 @@ class UampNotificationManager(
                 // Cache the bitmap for the current song so that successive calls to
                 // `getCurrentLargeIcon` don't cause the bitmap to be recreated.
                 currentIconUri = iconUri
-                serviceScope.launch {
-                    currentBitmap = iconUri?.let {
-                        resolveUriAsBitmap(it)
-                    }
-                    currentBitmap?.let { callback.onBitmap(it) }
-                }
-                null
+                currentBitmap = controller.metadata.description.iconBitmap
+                currentBitmap?.let { callback.onBitmap(it) }
+                controller.metadata.description.iconBitmap
             } else {
                 currentBitmap
             }
         }
-
-        private suspend fun resolveUriAsBitmap(uri: Uri): Bitmap? {
-            return withContext(Dispatchers.IO) {
-                // Block on downloading artwork.
-                Glide.with(context).applyDefaultRequestOptions(glideOptions)
-                    .asBitmap()
-                    .load(uri)
-                    .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                    .get()
-            }
-        }
     }
 }
-
-const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
-
-private val glideOptions = RequestOptions()
-    .fallback(R.drawable.cast_album_art_placeholder)
-    .diskCacheStrategy(DiskCacheStrategy.DATA)

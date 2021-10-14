@@ -23,7 +23,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
-import com.bumptech.glide.Glide
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.concurrent.TimeUnit
@@ -58,16 +57,17 @@ class AlbumArtContentProvider : ContentProvider() {
 
         if (!file.exists()) {
             // Use Glide to download the album art.
-            val cacheFile = Glide.with(context)
-                .asFile()
-                .load(remoteUri)
-                .submit()
-                .get(DOWNLOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+//            val cacheFile = Glide.with(context)
+//                .asFile()
+//                .load(remoteUri)
+//                .submit()
+//                .get(DOWNLOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+
 
             // Rename the file Glide created to match our own scheme.
-            cacheFile.renameTo(file)
-
-            file = cacheFile
+//            cacheFile.renameTo(file)
+//
+//            file = cacheFile
         }
         return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }

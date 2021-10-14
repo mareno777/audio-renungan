@@ -20,5 +20,4 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context): MusicDatabase =
         Room.databaseBuilder(context, MusicDatabase::class.java, "Music.db")
             .fallbackToDestructiveMigration().build()
-
 }

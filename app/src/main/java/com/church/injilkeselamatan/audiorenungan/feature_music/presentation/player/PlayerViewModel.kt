@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.viewmodels
+package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
 import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
@@ -17,8 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor
     (
-    private val musicServiceConnection: MusicServiceConnection,
-    private val globalPlaylist: MutableList<MediaMetadataCompat>
+    private val musicServiceConnection: MusicServiceConnection
 ) :
     ViewModel() {
 
@@ -40,7 +39,6 @@ class PlayerViewModel @Inject constructor
 
     init {
         updateCurrentPlayerPosition()
-        fetchSongs()
     }
 
     fun playMediaId(mediaId: String) {
@@ -78,11 +76,6 @@ class PlayerViewModel @Inject constructor
                 delay(100L)
             }
         }
-    }
-
-    private fun fetchSongs(): List<MediaMetadataCompat> {
-        _songs.value = globalPlaylist
-        return globalPlaylist
     }
 
     fun play() = musicServiceConnection.transportControls.play()

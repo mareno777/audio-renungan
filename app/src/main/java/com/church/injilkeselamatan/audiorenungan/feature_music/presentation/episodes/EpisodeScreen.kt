@@ -1,6 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
-import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -27,15 +27,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
+import coil.compose.rememberImagePainter
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MediaItemData
-import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.viewmodels.EpisodeViewModel
 import com.church.injilkeselamatan.audiorenungan.di.Constants
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
-import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun EpisodeScreen(
@@ -44,17 +41,17 @@ fun EpisodeScreen(
     album: String?,
     episodeViewModel: EpisodeViewModel = hiltViewModel()
 ) {
-    val songs by episodeViewModel.mediaItems.observeAsState(mutableListOf())
+    val state by episodeViewModel.state
     var isExpanded by remember {
         mutableStateOf(false)
     }
     //songs.filter { it.mediaId == album }
 
-    LaunchedEffect(parentId) {
-        parentId?.let {
-            episodeViewModel.subscribe(it)
-        }
-    }
+//    LaunchedEffect(parentId) {
+//        parentId?.let {
+//            episodeViewModel.subscribe(it)
+//        }
+    // }
 
     val description = when (album) {
         "Pohon Kehidupan" -> Constants.DESC_PK
@@ -119,7 +116,7 @@ fun EpisodeScreen(
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider()
             }
-            items(songs) { song ->
+            items(state.songs) { song ->
                 SongItem(song = song, episodeViewModel)
                 Divider()
             }
@@ -128,7 +125,7 @@ fun EpisodeScreen(
 }
 
 @Composable
-fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
+fun SongItem(song: Song, episodeViewModel: EpisodeViewModel) {
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -136,25 +133,16 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(end = 8.dp)
-            .clickable { episodeViewModel.playMediaId(song.mediaId) }
+            .clickable { episodeViewModel.playMediaId(song.id) }
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
 
-//            Image(
-//                painter = rememberImagePainter(
-//                    data = song.albumArtUri
-//                ), modifier = Modifier.size(60.dp),
-//                contentDescription = null,
-//                contentScale = ContentScale.FillBounds
-//            )
-            GlideImage(
-                imageModel = song.albumArtUri,
-                requestOptions = RequestOptions()
-                    .override(60)
-                    .diskCacheStrategy(DiskCacheStrategy.DATA),
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.size(60.dp)
-
+            Image(
+                painter = rememberImagePainter(
+                    data = song.imageUri
+                ), modifier = Modifier.size(60.dp),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds
             )
             Spacer(modifier = Modifier.width(4.dp))
             Column {
@@ -166,7 +154,7 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
                     color = MaterialTheme.colors.onSurface
                 )
                 Text(
-                    text = song.subtitle,
+                    text = song.artist,
                     style = MaterialTheme.typography.subtitle1,
                     fontSize = 14.sp,
                     color = MaterialTheme.colors.onSurface
@@ -184,8 +172,8 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
                 .size(24.dp)
                 .clickable {
                     // TODO: click to download media
-                    episodeViewModel.downloadSong(song.mediaId)
-                    episodeViewModel.maxProgressDownload(song.mediaId)
+                    episodeViewModel.downloadSong(song.id)
+                    episodeViewModel.maxProgressDownload(song.id)
                 }
         ) { circularProgress ->
 
@@ -204,7 +192,7 @@ fun SongItem(song: MediaItemData, episodeViewModel: EpisodeViewModel) {
                 .size(24.dp)
                 .clickable {
                     // TODO: click to download media
-                    episodeViewModel.downloadSong(song.mediaId)
+                    episodeViewModel.downloadSong(song.id)
                 }
         )
     }

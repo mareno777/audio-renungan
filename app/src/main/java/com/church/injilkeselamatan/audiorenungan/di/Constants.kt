@@ -85,21 +85,4 @@ object Constants {
         Yosea Christiono
         Gembala Jemaat JKI Injil Keselamatan Semarang
     """.trimIndent()
-
-    val previewPK = """
-                            Kalau kita mencari Tuhan setiap hari, 
-                            mengisi hati dan pikiran kita dengan Kebenaran Firman Tuhan, 
-                            maka kita akan lebih mudah mengenal Kehe...
-                        """.trimIndent()
-
-    val previewBTAT = """
-        Hosea 6:3
-        Marilah kita mengenal dan berusaha sungguh-sungguh mengenal TUHAN;
-        Ia pasti muncul seperti fajar, Ia akan datang kepada kita seperti hu...
-    """.trimIndent()
-
-    val previewSTBT = """
-        Dalam hati setiap manusia, ada satu kebutuhan yang sangat mendasar,
-        kebutuhan untuk bersekutu dan berbagi hati dengan Tuhan Pencipta-nya....
-    """.trimIndent()
 }

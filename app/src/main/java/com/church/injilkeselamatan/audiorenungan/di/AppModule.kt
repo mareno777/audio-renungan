@@ -2,15 +2,17 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.ComponentName
 import android.content.Context
-import android.support.v4.media.MediaMetadataCompat
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.GetSongs
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,7 +28,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providePersistentStoreage(@ApplicationContext context: Context): PersistentStorage =
+    fun providePersistentStoreage(
+        @ApplicationContext context: Context
+    ) =
         PersistentStorage(context)
 
     @Singleton
@@ -51,10 +55,19 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSongRepository(@ApplicationContext context: Context, songsApi: SongsApi, database: MusicDatabase): SongRepository =
-        SongRepositoryImpl(songsApi, context, database)
+    fun provideSongRepository(songsApi: SongsApi, database: MusicDatabase): SongRepository =
+        SongRepositoryImpl(songsApi, database)
 
     @Singleton
     @Provides
-    fun provideCurrrentPlaylist(): MutableList<MediaMetadataCompat> = mutableListOf()
+    fun provideSongUseCases(repository: SongRepository): SongUseCases {
+        return SongUseCases(getSongs = GetSongs(repository))
+    }
+
+    @Singleton
+    @Provides
+    fun provideMusicSourceRepository(
+        musicDatabase: MusicDatabase,
+        @ApplicationContext context: Context
+    ): MusicSourceRepository = MusicSourceRepository(musicDatabase, context)
 }

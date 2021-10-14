@@ -38,10 +38,6 @@ android {
     buildFeatures {
         compose true
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
         kotlinCompilerVersion '1.5.21'
@@ -71,7 +67,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
     // Navigation
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha09"
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
 
     // Lifecycle
     implementation"androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
@@ -90,8 +86,8 @@ dependencies {
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0-alpha03'
 
     // Coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
 
     // Exoplayer
     def exoplayer_version = "2.15.1"
@@ -99,22 +95,23 @@ dependencies {
     implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
 
-    // Glide
-    implementation 'com.github.bumptech.glide:glide:4.12.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    //Coil
+    def coil_version = "1.4.0"
+    implementation "io.coil-kt:coil:$coil_version"
+    implementation "io.coil-kt:coil-compose:$coil_version"
 
     //Accompanist
     implementation "com.google.accompanist:accompanist-pager:0.18.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
-
-    // Landscapist
-    implementation "com.github.skydoves:landscapist-glide:1.3.6"
 
     // Media for fix PendingIntent
     implementation "androidx.media:media:1.4.2"
 
     //Circular Progressbar
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
+
+    // DataStore
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     def room_version = "2.4.0-alpha05"
     kapt("androidx.room:room-compiler:$room_version")

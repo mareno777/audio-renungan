@@ -1,65 +1,100 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.viewmodels
+package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
 import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MediaItemData
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicDto
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class EpisodeViewModel @Inject constructor(
-    private val repository: SongRepository,
     private val musicServiceConnection: MusicServiceConnection,
-    private val downloadManager: DownloadManager
+    private val songUseCases: SongUseCases,
+    private val downloadManager: DownloadManager,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    var songList = mutableStateOf<List<MusicDto>>(listOf())
 
     var downloadedLength = MutableLiveData(0)
     var maxProgress = MutableLiveData(0)
 
-    private val _mediaItems = MutableLiveData<List<MediaItemData>>()
-    val mediaItems: LiveData<List<MediaItemData>> = _mediaItems
+    private val _state = mutableStateOf(SongsState())
+    val state: State<SongsState> = _state
 
+    private var job: Job? = null
+
+    private var currentMediaId: String? = null
 
     val playbackStateCompat = musicServiceConnection.playbackState
     val mediaMetadataCompat = musicServiceConnection.nowPlaying
 
-    private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
-        override fun onChildrenLoaded(
-            parentId: String,
-            children: MutableList<MediaBrowserCompat.MediaItem>
-        ) {
-            val itemList = children.map { child ->
-                val subtitle = child.description.subtitle ?: ""
-                MediaItemData(
-                    child.mediaId!!,
-                    child.description.title.toString(),
-                    subtitle.toString(),
-                    child.description.iconUri!!,
-                    child.isBrowsable,
-                    0 // we fix later for indicator now playing
-                )
-            }
-            _mediaItems.postValue(itemList)
+    private val subscriptionCallback =
+        object : MediaBrowserCompat.SubscriptionCallback() {
         }
+
+    init {
+        savedStateHandle.get<String>("album")?.let { album ->
+            currentMediaId = album
+        }
+        loadEpisodes()
+
+    }
+
+    fun loadEpisodes() {
+        job?.cancel()
+        job = songUseCases.getSongs(currentMediaId).onEach { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    resource.data?.let { episodes ->
+                        _state.value = state.value.copy(
+                            songs = episodes,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                    Log.d(TAG, "Success")
+                }
+                is Resource.Loading -> {
+                    _state.value = state.value.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+                    Log.d(TAG, "Loading")
+                }
+                is Resource.Error -> {
+                    _state.value = state.value.copy(
+                        isLoading = false,
+                        errorMessage = resource.message
+                    )
+                    Log.d(TAG, "Error")
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    fun onEvent() {
+
     }
 
     fun maxProgressDownload(title: String) {
@@ -68,20 +103,13 @@ class EpisodeViewModel @Inject constructor(
                 it.request.id == title
             }
             delay(500L)
-            Log.e("EpisodeViewModel", download?.request?.id ?: "Download still empty")
+            Log.d("EpisodeViewModel", download?.request?.id ?: "Download still empty")
             while (true) {
                 maxProgress.postValue(download?.contentLength?.toInt())
                 downloadedLength.postValue(download?.contentLength?.toInt())
                 delay(200)
             }
         }
-    }
-
-
-
-
-    fun subscribe(parentId: String) {
-        musicServiceConnection.subscribe(parentId, subscriptionCallback)
     }
 
     fun playMedia(mediaItem: MediaItemData, pauseAllowed: Boolean = true) {
@@ -133,5 +161,6 @@ class EpisodeViewModel @Inject constructor(
     }
 }
 
+private const val TAG = "EpisodeViewModel"
 const val MEDIA_METADATA_COMPAT_FOR_DOWNLOAD =
     "com.church.injilkeselamatan.audiorenungan.bundles.mediametadata"
