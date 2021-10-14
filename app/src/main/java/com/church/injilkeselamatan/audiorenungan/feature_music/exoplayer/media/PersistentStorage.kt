@@ -47,9 +47,6 @@ class PersistentStorage(val context: Context) {
         private val RECENT_POSITION_KEY = longPreferencesKey("recent_position_subtitle")
     }
 
-    /**
-     * Store any data which must persist between restarts, such as the most recently played song.
-     */
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
