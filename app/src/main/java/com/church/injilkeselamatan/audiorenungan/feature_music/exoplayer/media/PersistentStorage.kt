@@ -47,10 +47,14 @@ class PersistentStorage(val context: Context) {
         private val RECENT_POSITION_KEY = longPreferencesKey("recent_position_subtitle")
     }
 
+    /**
+     * Store any data which must persist between restarts, such as the most recently played song.
+     */
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
     suspend fun saveRecentSong(description: MediaMetadataCompat, position: Long) {
+        Log.d(TAG, "save: $position")
 
         withContext(Dispatchers.IO) {
             try {
@@ -75,6 +79,7 @@ class PersistentStorage(val context: Context) {
         val media = context.dataStore.data.map { preferences ->
             val mediaId = preferences[RECENT_MEDIA_ID_KEY]
             if (mediaId != null) {
+                Log.d(TAG, "load: ${preferences[RECENT_POSITION_KEY]}")
                 val mediaMetadataCompat = MediaMetadataCompat.Builder()
                     .putLong(PREFERENCES_POSITION, preferences[RECENT_POSITION_KEY] ?: C.TIME_UNSET)
                     .apply {
@@ -83,12 +88,11 @@ class PersistentStorage(val context: Context) {
                         album = preferences[RECENT_ALBUM_KEY]
                         mediaUri = preferences[RECENT_MEDIA_URI_KEY]
                         albumArtUri = preferences[RECENT_ICON_URI_KEY]
-                        flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
-
                         displayTitle = preferences[RECENT_TITLE_KEY]
                         displaySubtitle = preferences[RECENT_SUBTITLE_KEY]
                         displayDescription = preferences[RECENT_ALBUM_KEY]
                         displayIconUri = preferences[RECENT_ICON_URI_KEY]
+                        flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                         downloadStatus = MediaDescriptionCompat.STATUS_NOT_DOWNLOADED
                     }
                     .build()

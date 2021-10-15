@@ -16,6 +16,7 @@
 
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
@@ -161,7 +162,7 @@ class MusicService : MediaBrowserServiceCompat() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
                 } else {
-                    PendingIntent.getActivity(this, 0, sessionIntent, 0)
+                    PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
                 }
             }
 
@@ -331,12 +332,14 @@ class MusicService : MediaBrowserServiceCompat() {
         if (parentMediaId == UAMP_RECENT_ROOT) {
 
             if (recentSong != null) {
-                result.sendResult(listOf(
-                    MediaBrowserCompat.MediaItem(
-                        recentSong!!.description,
-                        FLAG_PLAYABLE
+                result.sendResult(
+                    listOf(
+                        MediaBrowserCompat.MediaItem(
+                            recentSong!!.description,
+                            FLAG_PLAYABLE
+                        )
                     )
-                ))
+                )
             } else {
                 result.detach()
             }
@@ -471,6 +474,7 @@ class MusicService : MediaBrowserServiceCompat() {
                 description,
                 position
             )
+            recentSong = storage.loadRecentSong().first() // prevent bug
         }
     }
 
