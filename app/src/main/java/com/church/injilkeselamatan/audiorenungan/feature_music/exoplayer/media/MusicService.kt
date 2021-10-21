@@ -16,7 +16,6 @@
 
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
@@ -162,7 +161,12 @@ class MusicService : MediaBrowserServiceCompat() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_IMMUTABLE)
                 } else {
-                    PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        sessionIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                    )
                 }
             }
 
@@ -598,6 +602,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     val mediaId: String? = extras?.getString(
                         MEDIA_METADATA_COMPAT_FOR_DOWNLOAD
                     )
+                    Log.d(TAG, "mediaId to download: ${mediaId.toString()}")
                     mediaId?.let { id ->
                         serviceScope.launch {
                             val metadata =

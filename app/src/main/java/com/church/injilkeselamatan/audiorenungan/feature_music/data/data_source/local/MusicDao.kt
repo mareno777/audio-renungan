@@ -13,7 +13,7 @@ interface MusicDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSongs(songs: List<MusicDbEntity>)
 
-    @Update
+    @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun setFavoriteSong(song: MusicDbEntity)
 
     @Query("DELETE FROM MusicDbEntity")

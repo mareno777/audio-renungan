@@ -22,11 +22,9 @@ import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
-import com.google.android.exoplayer2.offline.StreamKey
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.util.MimeTypes
 
 /**
@@ -268,14 +266,17 @@ inline var MediaMetadataCompat.Builder.flag: Int
  *
  * For convenience, place the [MediaDescriptionCompat] into the tag so it can be retrieved later.
  */
-fun MediaMetadataCompat.toMediaSource(dataSourceFactory: DataSource.Factory, mediaMetadataCompat: MediaMetadataCompat): ProgressiveMediaSource {
+fun MediaMetadataCompat.toMediaSource(
+    dataSourceFactory: DataSource.Factory,
+    mediaMetadataCompat: MediaMetadataCompat
+): ProgressiveMediaSource {
     val mediaItem = MediaItem.Builder()
         .setCustomCacheKey(mediaMetadataCompat.title)
         .setUri(mediaMetadataCompat.mediaUri)
         .build()
     return ProgressiveMediaSource.Factory(dataSourceFactory)
         .createMediaSource(mediaItem)
-    }
+}
 
 /**
  * Extension method for building a [ConcatenatingMediaSource] given a [List]

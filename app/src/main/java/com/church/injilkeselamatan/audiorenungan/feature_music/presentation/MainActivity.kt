@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -66,9 +65,7 @@ class MainActivity : ComponentActivity() {
                             )
                         ) { entry ->
                             EpisodeScreen(
-                                navController = navController,
-                                album = entry.arguments?.getString("album"),
-                                parentId = entry.arguments?.getString("parentId")
+                                navController = navController
                             )
                         }
                         composable(route = Screen.PlayerScreen.route) {

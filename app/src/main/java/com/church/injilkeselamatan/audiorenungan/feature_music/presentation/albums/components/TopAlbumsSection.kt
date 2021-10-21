@@ -17,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
@@ -54,7 +53,7 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
                     .data("https://qph.fs.quoracdn.net/main-qimg-c7a526dfad7e78f9062521efd0a3ea70-c")
 //                    .diskCachePolicy(CachePolicy.READ_ONLY)
 //                    .networkCachePolicy(CachePolicy.WRITE_ONLY)
-                  //  .size(144)
+                    //  .size(144)
                     .transformations(CircleCropTransformation())
                     .build()
 

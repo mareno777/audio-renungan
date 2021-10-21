@@ -2,7 +2,6 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.Context
 import androidx.room.Room
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDao
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import dagger.Module
 import dagger.Provides

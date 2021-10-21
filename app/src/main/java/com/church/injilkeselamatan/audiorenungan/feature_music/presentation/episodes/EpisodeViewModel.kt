@@ -1,16 +1,14 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
 import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MediaItemData
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
@@ -36,34 +34,32 @@ class EpisodeViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    var downloadedLength = MutableLiveData(0)
-    var maxProgress = MutableLiveData(0)
+    var downloadedLength = MutableLiveData(0f)
+    var maxProgress = MutableLiveData(0f)
 
     private val _state = mutableStateOf(SongsState())
     val state: State<SongsState> = _state
 
+    private val _downloadState = mutableStateOf(SongsState())
+    val downloadState: State<SongsState> = _downloadState
+
     private var job: Job? = null
+    private var downloadedJob: Job? = null
+    private var downloadJob: Job? = null
 
-    private var currentMediaId: String? = null
-
-    val playbackStateCompat = musicServiceConnection.playbackState
-    val mediaMetadataCompat = musicServiceConnection.nowPlaying
-
-    private val subscriptionCallback =
-        object : MediaBrowserCompat.SubscriptionCallback() {
-        }
+    var currentSelectedAlbum: String? = null
 
     init {
         savedStateHandle.get<String>("album")?.let { album ->
-            currentMediaId = album
+            currentSelectedAlbum = album
         }
         loadEpisodes()
-
+        loadDownloadedEpisodes()
     }
 
-    fun loadEpisodes() {
+    private fun loadEpisodes() {
         job?.cancel()
-        job = songUseCases.getSongs(currentMediaId).onEach { resource ->
+        job = songUseCases.getSongs(currentSelectedAlbum).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.let { episodes ->
@@ -73,51 +69,90 @@ class EpisodeViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-                    Log.d(TAG, "Success")
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(
                         isLoading = true,
                         errorMessage = null
                     )
-                    Log.d(TAG, "Loading")
                 }
                 is Resource.Error -> {
                     _state.value = state.value.copy(
                         isLoading = false,
                         errorMessage = resource.message
                     )
-                    Log.d(TAG, "Error")
                 }
             }
         }.launchIn(viewModelScope)
     }
 
-    fun onEvent() {
-
+    private fun loadDownloadedEpisodes() {
+        downloadedJob?.cancel()
+        downloadedJob = songUseCases.getDownloadedSongs(currentSelectedAlbum).onEach { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    resource.data?.let { episodes ->
+                        _downloadState.value = downloadState.value.copy(
+                            songs = episodes,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+                is Resource.Loading -> {
+                    _state.value = state.value.copy(
+                        isLoading = true,
+                        errorMessage = null
+                    )
+                }
+                is Resource.Error -> {
+                    _state.value = state.value.copy(
+                        isLoading = false,
+                        errorMessage = resource.message
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
-    fun maxProgressDownload(title: String) {
-        viewModelScope.launch {
-            val download = downloadManager.currentDownloads.find {
-                it.request.id == title
+    fun onEvent(event: EpisodesEvent) {
+        when (event) {
+            is EpisodesEvent.DownloadEpisode -> {
+                downloadSong(event.song.id)
+                onDownloadEvent(event.song.title)
             }
-            delay(500L)
-            Log.d("EpisodeViewModel", download?.request?.id ?: "Download still empty")
-            while (true) {
-                maxProgress.postValue(download?.contentLength?.toInt())
-                downloadedLength.postValue(download?.contentLength?.toInt())
-                delay(200)
+            is EpisodesEvent.PlayToogle -> {
+                playMediaId(event.episode.id)
             }
         }
     }
 
-    fun playMedia(mediaItem: MediaItemData, pauseAllowed: Boolean = true) {
+    private fun onDownloadEvent(title: String) {
+        downloadJob?.cancel()
+        downloadJob = viewModelScope.launch {
+            var onDownloadEpisode = state.value.songs.find { it.title == title } ?: return@launch
+            try {
+                while (true) {
+                    delay(100L)
+                    val download = downloadManager.currentDownloads[0]
+                    maxProgress.postValue(download.contentLength.toFloat())
+                    downloadedLength.postValue(download.bytesDownloaded.toFloat())
+                }
+            } catch (e: IndexOutOfBoundsException) {
+                onDownloadEpisode = onDownloadEpisode.copy(isFavorite = true)
+                songUseCases.updateSong(onDownloadEpisode)
+                loadDownloadedEpisodes()
+                job?.cancel()
+            }
+        }
+    }
+
+    private fun playMedia(mediaItem: Song, pauseAllowed: Boolean = true) {
         val nowPlaying = musicServiceConnection.nowPlaying.value
 
         val transportControls = musicServiceConnection.transportControls
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaItem.mediaId == nowPlaying?.id) {
+        if (isPrepared && mediaItem.id == nowPlaying?.id) {
             musicServiceConnection.playbackState.value?.let { playbackState ->
                 when {
                     playbackState.isPlaying ->
@@ -129,11 +164,11 @@ class EpisodeViewModel @Inject constructor(
                 }
             }
         } else {
-            transportControls.playFromMediaId(mediaItem.mediaId, null)
+            transportControls.playFromMediaId(mediaItem.id, null)
         }
     }
 
-    fun playMediaId(mediaId: String) {
+    private fun playMediaId(mediaId: String) {
 
         val nowPlaying = musicServiceConnection.nowPlaying.value
 
@@ -154,9 +189,11 @@ class EpisodeViewModel @Inject constructor(
         }
     }
 
-    fun downloadSong(song: String) {
-        val bundle = Bundle()
-        bundle.putString(MEDIA_METADATA_COMPAT_FOR_DOWNLOAD, song)
+    private fun downloadSong(mediaId: String) {
+        val bundle = Bundle().apply {
+            putString(MEDIA_METADATA_COMPAT_FOR_DOWNLOAD, mediaId)
+        }
+
         musicServiceConnection.sendCommand("download_song", bundle)
     }
 }

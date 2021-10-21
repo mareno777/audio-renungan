@@ -1,11 +1,10 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -15,57 +14,44 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
-import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.di.Constants
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.SongItem
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
-import com.mikhaellopez.circularprogressbar.CircularProgressBar
 
 @Composable
 fun EpisodeScreen(
     navController: NavController,
-    parentId: String?,
-    album: String?,
-    episodeViewModel: EpisodeViewModel = hiltViewModel()
+    viewModel: EpisodeViewModel = hiltViewModel()
 ) {
-    val state by episodeViewModel.state
+    val state by viewModel.state
+    val downloadedState by viewModel.downloadState
     var isExpanded by remember {
         mutableStateOf(false)
     }
-    //songs.filter { it.mediaId == album }
+    val maxProgress by viewModel.maxProgress.observeAsState(100f)
+    val downloadedLength by viewModel.downloadedLength.observeAsState(0f)
 
-//    LaunchedEffect(parentId) {
-//        parentId?.let {
-//            episodeViewModel.subscribe(it)
-//        }
-    // }
-
-    val description = when (album) {
+    val description = when (viewModel.currentSelectedAlbum) {
         "Pohon Kehidupan" -> Constants.DESC_PK
         "Belajar Takut Akan Tuhan" -> Constants.DESC_BTAT
         "Saat Teduh Bersama Tuhan" -> Constants.DESC_STBT
         else -> ""
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
             item {
                 Text(
-                    text = album ?: "",
+                    text = viewModel.currentSelectedAlbum ?: "",
                     style = MaterialTheme.typography.h4,
                     fontFamily = productSansGoogle,
                     color = MaterialTheme.colors.onSurface,
@@ -116,84 +102,21 @@ fun EpisodeScreen(
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider()
             }
-            items(state.songs) { song ->
-                SongItem(song = song, episodeViewModel)
+            itemsIndexed(state.songs) { index, song ->
+                SongItem(
+                    song = song,
+                    maxProgress = maxProgress,
+                    downloadedLength = downloadedLength,
+                    downloaded = downloadedState.songs.contains(song),
+                    onPlayToggleClicked = {
+                        viewModel.onEvent(EpisodesEvent.PlayToogle(song, true))
+                    },
+                    onDownloadClicked = {
+                        viewModel.onEvent(EpisodesEvent.DownloadEpisode(song))
+                    }
+                )
                 Divider()
             }
         }
-    }
-}
-
-@Composable
-fun SongItem(song: Song, episodeViewModel: EpisodeViewModel) {
-
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(end = 8.dp)
-            .clickable { episodeViewModel.playMediaId(song.id) }
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-
-            Image(
-                painter = rememberImagePainter(
-                    data = song.imageUri
-                ), modifier = Modifier.size(60.dp),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Column {
-                Text(
-                    text = song.title,
-                    style = MaterialTheme.typography.caption,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colors.onSurface
-                )
-                Text(
-                    text = song.artist,
-                    style = MaterialTheme.typography.subtitle1,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colors.onSurface
-                )
-
-            }
-        }
-        val maxProgress by episodeViewModel.maxProgress.observeAsState(0)
-        val downloadedLength by episodeViewModel.downloadedLength.observeAsState(0)
-        AndroidView(
-            factory = {
-                CircularProgressBar(it)
-            },
-            modifier = Modifier
-                .size(24.dp)
-                .clickable {
-                    // TODO: click to download media
-                    episodeViewModel.downloadSong(song.id)
-                    episodeViewModel.maxProgressDownload(song.id)
-                }
-        ) { circularProgress ->
-
-            maxProgress?.let {
-                circularProgress.progressMax = maxProgress.toFloat()
-                circularProgress.progress = downloadedLength.toFloat()
-            }
-        }
-        Icon(
-            painterResource(
-                id = R.drawable.download
-            ),
-            contentDescription = "Download this media",
-            tint = MaterialTheme.colors.onSurface,
-            modifier = Modifier
-                .size(24.dp)
-                .clickable {
-                    // TODO: click to download media
-                    episodeViewModel.downloadSong(song.id)
-                }
-        )
     }
 }

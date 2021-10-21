@@ -6,13 +6,16 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.GetDownloadedSongs
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.GetSongs
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.UpdateSong
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
+import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +31,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun providePersistentStoreage(
+    fun providePersistentStorage(
         @ApplicationContext context: Context
     ) =
         PersistentStorage(context)
@@ -60,8 +63,15 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSongUseCases(repository: SongRepository): SongUseCases {
-        return SongUseCases(getSongs = GetSongs(repository))
+    fun provideSongUseCases(
+        repository: SongRepository,
+        downloadManager: DownloadManager
+    ): SongUseCases {
+        return SongUseCases(
+            getSongs = GetSongs(repository),
+            getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
+            updateSong = UpdateSong(repository)
+        )
     }
 
     @Singleton

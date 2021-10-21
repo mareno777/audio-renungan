@@ -25,7 +25,6 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import java.io.File
 import java.io.FileNotFoundException
-import java.util.concurrent.TimeUnit
 
 // The amount of time to wait for the album art file to download before timing out.
 const val DOWNLOAD_TIMEOUT_SECONDS = 60L

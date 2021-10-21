@@ -3,6 +3,7 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.data.repository
 import android.util.Log
 import androidx.room.withTransaction
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.toSong
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.toMusicDb
@@ -50,6 +51,11 @@ class SongRepositoryImpl @Inject constructor(
                 it.isEmpty()
             }
         )
+    }
+
+    override suspend fun updateSong(song: MusicDbEntity): Resource<String> {
+        musicDao.setFavoriteSong(song)
+        return Resource.Success("Success")
     }
 }
 

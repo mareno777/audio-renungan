@@ -1,12 +1,9 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case
 
-import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class GetSongs(
@@ -20,10 +17,10 @@ class GetSongs(
                     is Resource.Success -> {
                         val mutable = mutableListOf<Song>()
                         resource.data?.let { songs ->
-                            val filteredSongs = songs.filter { it.album == album }.sortedBy { it.id }
+                            val filteredSongs = songs.filter { it.album == album }
                             mutable.addAll(filteredSongs)
                         }
-                        Resource.Success<List<Song>>(mutable)
+                        Resource.Success<List<Song>>(mutable.sortedBy { it.id })
                     }
                     is Resource.Loading -> {
                         Resource.Loading<List<Song>>()

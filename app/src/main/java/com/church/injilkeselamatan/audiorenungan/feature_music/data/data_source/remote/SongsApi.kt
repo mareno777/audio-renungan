@@ -1,7 +1,7 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote
 
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDto
-import retrofit2.http.*
+import retrofit2.http.GET
 
 interface SongsApi {
 

@@ -26,10 +26,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.HorizontalPagerWithOffsetTransition
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displaySubtitle
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.HorizontalPagerWithOffsetTransition
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState

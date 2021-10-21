@@ -49,6 +49,10 @@ class AudioDownloadService : DownloadService
             Log.e("AudioDownloadManager", "onPause: $downloadsPaused")
             super.onDownloadsPausedChanged(downloadManager, downloadsPaused)
         }
+
+        override fun onIdle(downloadManager: DownloadManager) {
+            super.onIdle(downloadManager)
+        }
     }
 
     override fun getDownloadManager(): DownloadManager {
