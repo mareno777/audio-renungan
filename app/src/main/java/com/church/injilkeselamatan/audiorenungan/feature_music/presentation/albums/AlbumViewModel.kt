@@ -15,6 +15,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resourc
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.UAMP_ALBUMS_ROOT
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
@@ -87,7 +88,12 @@ class AlbumViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-                    subscribe()
+                    if (musicServiceConnection.playbackState.value?.isPrepared == false) {
+                        musicServiceConnection.sendCommand("connect", null)
+                    } else {
+                        Log.d(TAG, "subscribe")
+                        musicServiceConnection.subscribe(mediaId, subscriptionCallback)
+                    }
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(
@@ -104,12 +110,6 @@ class AlbumViewModel @Inject constructor(
             }
 
         }.launchIn(viewModelScope)
-    }
-
-    private suspend fun subscribe() {
-        musicServiceConnection.subscribe("ab", subscriptionCallback)
-        delay(500L)
-        musicServiceConnection.sendCommand("connect", null)
     }
 
     override fun onCleared() {
