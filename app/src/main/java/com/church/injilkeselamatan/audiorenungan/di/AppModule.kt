@@ -2,6 +2,7 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.ComponentName
 import android.content.Context
+import com.church.injilkeselamatan.audiorenungan.BuildConfig
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
@@ -50,7 +51,7 @@ object AppModule {
     @Provides
     fun provideApiService(): SongsApi {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://injilkeselamatan.com/")
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         return retrofit.create(SongsApi::class.java)

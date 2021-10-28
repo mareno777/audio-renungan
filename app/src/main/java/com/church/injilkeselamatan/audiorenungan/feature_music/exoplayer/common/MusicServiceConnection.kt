@@ -119,7 +119,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
                 registerCallback(MediaControllerCallback())
             }
 
-            Log.d(TAG, "connected")
+            Log.d(TAG, "onConnected")
 
             isConnected.postValue(true)
         }
@@ -129,6 +129,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
          */
         override fun onConnectionSuspended() {
             isConnected.postValue(false)
+            Log.d(TAG, "onConnectionSuspended")
         }
 
         /**
@@ -136,6 +137,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
          */
         override fun onConnectionFailed() {
             isConnected.postValue(false)
+            Log.d(TAG, "onConnectionFailed")
         }
     }
 

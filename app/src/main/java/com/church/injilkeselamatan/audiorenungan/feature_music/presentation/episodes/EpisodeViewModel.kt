@@ -1,21 +1,21 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download.DownloadListener
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
+import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -30,6 +30,7 @@ class EpisodeViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     private val songUseCases: SongUseCases,
     private val downloadManager: DownloadManager,
+    private val downloadListener: DownloadListener,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -43,6 +44,9 @@ class EpisodeViewModel @Inject constructor(
     private val _downloadState = mutableStateOf(SongsState())
     val downloadState: State<SongsState> = _downloadState
 
+    //private val _downloadsQueue = MutableLiveData(downloadManager.currentDownloads)
+
+
     private var job: Job? = null
     private var downloadedJob: Job? = null
     private var downloadJob: Job? = null
@@ -55,6 +59,7 @@ class EpisodeViewModel @Inject constructor(
         }
         loadEpisodes()
         loadDownloadedEpisodes()
+        onDownloadEvent()
     }
 
     private fun loadEpisodes() {
@@ -86,7 +91,11 @@ class EpisodeViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun loadDownloadedEpisodes() {
+    fun complatedDownload(): LiveData<Download> {
+        return downloadListener.downloadComplated
+    }
+
+    fun loadDownloadedEpisodes() {
         downloadedJob?.cancel()
         downloadedJob = songUseCases.getDownloadedSongs(currentSelectedAlbum).onEach { resource ->
             when (resource) {
@@ -119,7 +128,7 @@ class EpisodeViewModel @Inject constructor(
         when (event) {
             is EpisodesEvent.DownloadEpisode -> {
                 downloadSong(event.song.id)
-                onDownloadEvent(event.song.title)
+                onDownloadEvent()
             }
             is EpisodesEvent.PlayToogle -> {
                 playMediaId(event.episode.id)
@@ -127,10 +136,9 @@ class EpisodeViewModel @Inject constructor(
         }
     }
 
-    private fun onDownloadEvent(title: String) {
+    private fun onDownloadEvent() {
         downloadJob?.cancel()
         downloadJob = viewModelScope.launch {
-            var onDownloadEpisode = state.value.songs.find { it.title == title } ?: return@launch
             try {
                 while (true) {
                     delay(100L)
@@ -139,12 +147,16 @@ class EpisodeViewModel @Inject constructor(
                     downloadedLength.postValue(download.bytesDownloaded.toFloat())
                 }
             } catch (e: IndexOutOfBoundsException) {
-                onDownloadEpisode = onDownloadEpisode.copy(isFavorite = true)
-                songUseCases.updateSong(onDownloadEpisode)
-                loadDownloadedEpisodes()
                 job?.cancel()
             }
         }
+    }
+
+
+    fun onState(songId: String): Int? {
+        return downloadManager.currentDownloads.find { download ->
+            download.request.id == songId
+        }?.state
     }
 
     private fun playMedia(mediaItem: Song, pauseAllowed: Boolean = true) {
@@ -174,6 +186,7 @@ class EpisodeViewModel @Inject constructor(
 
         val transportControls = musicServiceConnection.transportControls
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
+        Log.d(TAG, "mediaId: $mediaId $isPrepared")
         if (isPrepared && mediaId == nowPlaying?.id) {
             musicServiceConnection.playbackState.value?.let { playbackState ->
                 when {

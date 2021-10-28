@@ -22,17 +22,21 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberImagePainter
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.google.android.exoplayer2.offline.Download
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
 
 @Composable
 fun SongItem(
     song: Song,
-    maxProgress: Float = 100f,
+    maxProgress: Float = 0f,
     downloadedLength: Float = 0f,
     downloaded: Boolean,
+    @Download.State
+    state: Int?,
     onPlayToggleClicked: () -> Unit,
     onDownloadClicked: () -> Unit
 ) {
+
     val color = MaterialTheme.colors.primary.toArgb()
 
     Row(
@@ -72,24 +76,27 @@ fun SongItem(
 
             }
         }
-        if (!downloaded) {
+        if (state == Download.STATE_DOWNLOADING || state == Download.STATE_QUEUED) {
             AndroidView(
                 factory = {
                     CircularProgressBar(it)
                 },
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable {
-                        // TODO: click to download media
-                    }
+                modifier = Modifier.size(24.dp)
             ) { circularProgressBar ->
 
                 circularProgressBar.progressBarColor = color
-                circularProgressBar.progressMax = maxProgress
-                circularProgressBar.progress = downloadedLength
+                circularProgressBar.indeterminateMode = state == Download.STATE_QUEUED
+
+                if (state == Download.STATE_DOWNLOADING) {
+                    circularProgressBar.indeterminateMode = false
+                    circularProgressBar.progressMax = maxProgress
+                    circularProgressBar.progress = downloadedLength
+                }
+
+
             }
         }
-        if (downloaded) {
+        if (downloaded && state != Download.STATE_DOWNLOADING && state != Download.STATE_QUEUED) {
             Icon(
                 Icons.Default.Check,
                 contentDescription = "Remove this media",

@@ -5,7 +5,7 @@ import retrofit2.http.GET
 
 interface SongsApi {
 
-    @GET("wp-content/catalog.json")
+    @GET("api/devotional")
     suspend fun getSongs(): MusicApiDto
 
 //    @FormUrlEncoded

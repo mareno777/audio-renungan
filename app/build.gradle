@@ -19,6 +19,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField("String", "BASE_URL", BASE_URL)
     }
 
     buildTypes {

@@ -211,6 +211,7 @@ class MusicService : MediaBrowserServiceCompat() {
         // and then use a suspend function to perform the download off the main thread.
         mediaSource = musicSourceRepository
         serviceScope.launch {
+            mediaSource.load()
             recentSong = storage.loadRecentSong().first()
         }
 
@@ -354,6 +355,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
             val resultsSent = mediaSource.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
+                    Log.d(TAG, "successfullyInitialized")
                     try {
                         // variable children hanya untuk ditampilkan ke pengguna
                         val children = browseTree[parentMediaId]?.map { item ->
@@ -365,6 +367,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     }
 
                 } else {
+                    Log.d(TAG, "not successfullyInitialized")
                     mediaSession.sendSessionEvent(NETWORK_FAILURE, null)
                     result.sendResult(null)
                 }
@@ -541,28 +544,29 @@ class MusicService : MediaBrowserServiceCompat() {
         ) {
             Log.d(TAG, "onPrepareFromMediaId: $mediaId, extras: ${extras.toString()}")
             mediaSource.whenReady {
-                val itemToPlay = mediaSource.find { item ->
-                    item.id == mediaId
-                }
-                if (itemToPlay == null) {
-                    Log.w(TAG, "Content not found: MediaID=$mediaId")
-                    // TODO: Notify caller of the error.
-                } else {
+                    val itemToPlay = mediaSource.find { item ->
+                        item.id == mediaId
+                    }
+                    if (itemToPlay == null) {
+                        Log.w(TAG, "Content not found: MediaID=$mediaId")
+                        // TODO: Notify caller of the error.
+                    } else {
 
-                    val playbackStartPositionMs =
-                        extras?.getLong(
-                            PREFERENCES_POSITION,
-                            C.TIME_UNSET
+                        val playbackStartPositionMs =
+                            extras?.getLong(
+                                PREFERENCES_POSITION,
+                                C.TIME_UNSET
+                            )
+                                ?: C.TIME_UNSET
+
+                        preparePlaylist(
+                            metadataList = buildPlaylist(/*itemToPlay*/),
+                            itemToPlay = itemToPlay,
+                            playWhenReady,
+                            playbackStartPositionMs
                         )
-                            ?: C.TIME_UNSET
+                    }
 
-                    preparePlaylist(
-                        metadataList = buildPlaylist(/*itemToPlay*/),
-                        itemToPlay = itemToPlay,
-                        playWhenReady,
-                        playbackStartPositionMs
-                    )
-                }
             }
         }
 
@@ -628,6 +632,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     }
                 }
                 "connect" -> {
+                    Log.d(TAG, "connecting")
                     serviceScope.launch {
                         mediaSource.load()
                         Log.d(TAG, mediaSource.toList().size.toString())

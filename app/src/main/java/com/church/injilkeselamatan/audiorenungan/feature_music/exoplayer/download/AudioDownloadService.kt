@@ -34,31 +34,10 @@ class AudioDownloadService : DownloadService
 
 
     private val downloadListener = object : DownloadManager.Listener {
-        override fun onDownloadChanged(
-            downloadManager: DownloadManager,
-            download: Download,
-            finalException: Exception?
-        ) {
-            Log.e("AudioDownloadManager", "download ID: ${download.request.id}")
-        }
 
-        override fun onDownloadsPausedChanged(
-            downloadManager: DownloadManager,
-            downloadsPaused: Boolean
-        ) {
-            Log.e("AudioDownloadManager", "onPause: $downloadsPaused")
-            super.onDownloadsPausedChanged(downloadManager, downloadsPaused)
-        }
-
-        override fun onIdle(downloadManager: DownloadManager) {
-            super.onIdle(downloadManager)
-        }
     }
 
     override fun getDownloadManager(): DownloadManager {
-        downloadMananger.addListener(downloadListener)
-        downloadMananger.maxParallelDownloads = 1
-        Log.e("AudioDownloadManager", "getDownloadManager")
         return downloadMananger
     }
 

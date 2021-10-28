@@ -12,6 +12,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 
@@ -21,6 +22,7 @@ fun AlbumsScreen(
     navController: NavController,
     viewModel: AlbumViewModel = hiltViewModel()
 ) {
+
 
     val constraints = ConstraintSet {
         val topSection = createRefFor("topSection")
@@ -52,6 +54,7 @@ fun AlbumsScreen(
         constraintSet = constraints,
         modifier = Modifier.fillMaxSize()
     ) {
+
 
         val state by viewModel.state
 
@@ -91,7 +94,12 @@ fun AlbumsScreen(
                     navController.navigate(Screen.PlayerScreen.route)
                 },
             playbackStateCompat = playbackState,
-            mediaMetadataCompat = mediaMetadata
+            mediaMetadataCompat =
+            if (mediaMetadata != null) {
+                mediaMetadata
+            } else {
+                viewModel.recentSong.observeAsState(NOTHING_PLAYING).value
+            }
         ) { needToPlay ->
             viewModel.onEvent(
                 AlbumsEvent.PlayOrPause(

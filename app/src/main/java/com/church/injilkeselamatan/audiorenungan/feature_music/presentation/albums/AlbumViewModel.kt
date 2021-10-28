@@ -1,5 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums
 
+import android.os.Bundle
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -9,11 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
@@ -21,9 +24,10 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,11 +44,34 @@ class AlbumViewModel @Inject constructor(
 
     private var getSongsJob: Job? = null
 
-    private val subscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {}
+    private val _recentSong = MutableLiveData(NOTHING_PLAYING)
+    val recentSong: LiveData<MediaMetadataCompat> = _recentSong
+
+    private val subscriptionCallback =
+        object : MediaBrowserCompat.SubscriptionCallback() {
+            override fun onChildrenLoaded(
+                parentId: String,
+                children: MutableList<MediaBrowserCompat.MediaItem>
+            ) {
+                super.onChildrenLoaded(parentId, children)
+                Log.d(TAG, "callback: $parentId")
+            }
+
+            override fun onError(parentId: String, options: Bundle) {
+                Log.d(TAG, "callback: error $parentId")
+                super.onError(parentId, options)
+            }
+    }
 
 
     init {
         loadSongs()
+    }
+
+    suspend fun loadRecentSong() {
+
+            _recentSong.postValue(savedSong.loadRecentSong().first())
+
     }
 
     fun playingMetadata(): LiveData<MediaMetadataCompat> {
@@ -56,13 +83,9 @@ class AlbumViewModel @Inject constructor(
         return musicServiceConnection.playbackState
     }
 
-    fun lastPlaySong() {
-        //savedSong.loadRecentSong().
-    }
-
     fun onEvent(event: AlbumsEvent) {
         val transportControls = musicServiceConnection.transportControls
-        Log.d(TAG, "PlaybackState: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
+        Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
         when (event) {
             is AlbumsEvent.PlayOrPause -> {
                 if (event.isPlay) {
@@ -75,7 +98,10 @@ class AlbumViewModel @Inject constructor(
     }
 
     fun loadSongs() {
+
+        Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
         getSongsJob?.cancel()
+        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared
         getSongsJob = songUseCases.getSongs().onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
@@ -88,12 +114,12 @@ class AlbumViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-                    if (musicServiceConnection.playbackState.value?.isPrepared == false) {
+                    if (isPrepared == false || isPrepared == null) {
                         musicServiceConnection.sendCommand("connect", null)
-                    } else {
-                        Log.d(TAG, "subscribe")
                         musicServiceConnection.subscribe(mediaId, subscriptionCallback)
+                        Log.d(TAG, "subscribe, $mediaId")
                     }
+                    Log.d(TAG, "isPrepared: ${musicServiceConnection.playbackState.value?.isPrepared}")
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(
@@ -107,6 +133,10 @@ class AlbumViewModel @Inject constructor(
                         errorMessage = resource.message
                     )
                 }
+
+            }
+            if (playingMetadata().value == null) {
+                savedSong.loadRecentSong().first()
             }
 
         }.launchIn(viewModelScope)

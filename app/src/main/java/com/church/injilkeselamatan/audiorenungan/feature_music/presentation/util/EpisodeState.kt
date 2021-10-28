@@ -8,5 +8,5 @@ data class EpisodeState(
     var onQueue: Boolean = false
 ) {
     var mediaId: String = ""
-    var titile: String = ""
+    var title: String = ""
 }

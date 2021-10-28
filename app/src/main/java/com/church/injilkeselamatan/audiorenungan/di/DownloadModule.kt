@@ -2,8 +2,10 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.Context
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download.DownloadListener
 import com.google.android.exoplayer2.database.ExoDatabaseProvider
 import com.google.android.exoplayer2.offline.DownloadManager
+import com.google.android.exoplayer2.scheduler.Requirements
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
@@ -65,6 +67,10 @@ object DownloadModule {
         .setCacheWriteDataSinkFactory(null) // Disable writing.
         .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
 
+    @Singleton
+    @Provides
+    fun provideDownloadListener() = DownloadListener()
+
 
     @Singleton
     @Provides
@@ -72,7 +78,12 @@ object DownloadModule {
         @ApplicationContext context: Context,
         database: ExoDatabaseProvider,
         cache: SimpleCache,
-        dataSourceFactory: DefaultHttpDataSource.Factory
+        dataSourceFactory: DefaultHttpDataSource.Factory,
+        downloadListener: DownloadListener
     ): DownloadManager =
-        DownloadManager(context, database, cache, dataSourceFactory, Runnable::run)
+        DownloadManager(context, database, cache, dataSourceFactory, Runnable::run).also {
+            it.requirements = Requirements(Requirements.NETWORK)
+            it.maxParallelDownloads = 1
+            it.addListener(downloadListener)
+    }
 }

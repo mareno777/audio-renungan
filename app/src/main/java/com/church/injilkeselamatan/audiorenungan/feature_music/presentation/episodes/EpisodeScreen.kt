@@ -1,10 +1,11 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -37,6 +38,13 @@ fun EpisodeScreen(
     }
     val maxProgress by viewModel.maxProgress.observeAsState(100f)
     val downloadedLength by viewModel.downloadedLength.observeAsState(0f)
+
+    val complatedDownload by viewModel.complatedDownload().observeAsState()
+
+    LaunchedEffect(complatedDownload) {
+        Log.d("EpisodeScreen", complatedDownload?.request?.id.toString())
+        viewModel.loadDownloadedEpisodes()
+    }
 
     val description = when (viewModel.currentSelectedAlbum) {
         "Pohon Kehidupan" -> Constants.DESC_PK
@@ -102,18 +110,22 @@ fun EpisodeScreen(
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider()
             }
-            itemsIndexed(state.songs) { index, song ->
+            items(state.songs) { song ->
+
                 SongItem(
                     song = song,
                     maxProgress = maxProgress,
                     downloadedLength = downloadedLength,
-                    downloaded = downloadedState.songs.contains(song),
+                    downloaded = downloadedState.songs.any {
+                        it.id == song.id
+                    },
                     onPlayToggleClicked = {
                         viewModel.onEvent(EpisodesEvent.PlayToogle(song, true))
                     },
                     onDownloadClicked = {
                         viewModel.onEvent(EpisodesEvent.DownloadEpisode(song))
-                    }
+                    },
+                    state = viewModel.onState(song.id)
                 )
                 Divider()
             }
