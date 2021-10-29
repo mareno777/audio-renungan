@@ -35,14 +35,6 @@ class DownloadListener : DownloadManager.Listener {
         onWaitingRequirements.postValue(waitingForRequirements)
         super.onWaitingForRequirementsChanged(downloadManager, waitingForRequirements)
     }
-
-    override fun onRequirementsStateChanged(
-        downloadManager: DownloadManager,
-        requirements: Requirements,
-        notMetRequirements: Int
-    ) {
-        super.onRequirementsStateChanged(downloadManager, requirements, notMetRequirements)
-    }
 }
 
 private const val TAG = "DownloadListener"

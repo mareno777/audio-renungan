@@ -12,7 +12,7 @@ import java.net.URL
  * If successful, that means we have internet.
  */
 object DoesNetworkHaveInternet {
-    private val TAG = "PingGoogle"
+    private const val TAG = "PingGoogle"
 
     // Make sure to execute this on a background thread.
     fun execute(): Boolean {

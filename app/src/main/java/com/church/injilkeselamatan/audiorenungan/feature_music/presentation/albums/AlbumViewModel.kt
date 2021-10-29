@@ -27,7 +27,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,7 +60,7 @@ class AlbumViewModel @Inject constructor(
                 Log.d(TAG, "callback: error $parentId")
                 super.onError(parentId, options)
             }
-    }
+        }
 
 
     init {
@@ -69,9 +68,7 @@ class AlbumViewModel @Inject constructor(
     }
 
     suspend fun loadRecentSong() {
-
-            _recentSong.postValue(savedSong.loadRecentSong().first())
-
+        _recentSong.postValue(savedSong.loadRecentSong().first())
     }
 
     fun playingMetadata(): LiveData<MediaMetadataCompat> {
@@ -119,7 +116,6 @@ class AlbumViewModel @Inject constructor(
                         musicServiceConnection.subscribe(mediaId, subscriptionCallback)
                         Log.d(TAG, "subscribe, $mediaId")
                     }
-                    Log.d(TAG, "isPrepared: ${musicServiceConnection.playbackState.value?.isPrepared}")
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(

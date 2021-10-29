@@ -85,5 +85,5 @@ object DownloadModule {
             it.requirements = Requirements(Requirements.NETWORK)
             it.maxParallelDownloads = 1
             it.addListener(downloadListener)
-    }
+        }
 }

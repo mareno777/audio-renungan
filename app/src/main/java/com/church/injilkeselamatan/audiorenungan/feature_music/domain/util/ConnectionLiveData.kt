@@ -16,8 +16,6 @@ import kotlinx.coroutines.withContext
 
 class ConnectionLiveData(context: Context) : LiveData<Resource<Boolean>>() {
 
-    private val TAG = "ConnectionLiveData"
-
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val cm = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
@@ -77,11 +75,10 @@ class ConnectionLiveData(context: Context) : LiveData<Resource<Boolean>>() {
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
          */
         override fun onLost(network: Network) {
-            Log.d(TAG, "onLost: ${network}")
+            Log.d(TAG, "onLost: $network")
             validNetworks.remove(network)
             checkValidNetworks()
         }
-
     }
-
 }
+private const val TAG = "ConnectionLiveData"

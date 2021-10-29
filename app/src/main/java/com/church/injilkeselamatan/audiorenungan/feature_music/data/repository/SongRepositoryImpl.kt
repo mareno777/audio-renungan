@@ -48,6 +48,7 @@ class SongRepositoryImpl @Inject constructor(
                 }
             },
             shouldFetch = {
+                Log.d(TAG, "shouldFetch: ${it.isEmpty()}")
                 it.isEmpty()
             }
         )

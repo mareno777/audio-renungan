@@ -7,7 +7,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.
 @Database(
     entities = [MusicDbEntity::class],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class MusicDatabase : RoomDatabase() {
 

@@ -544,28 +544,28 @@ class MusicService : MediaBrowserServiceCompat() {
         ) {
             Log.d(TAG, "onPrepareFromMediaId: $mediaId, extras: ${extras.toString()}")
             mediaSource.whenReady {
-                    val itemToPlay = mediaSource.find { item ->
-                        item.id == mediaId
-                    }
-                    if (itemToPlay == null) {
-                        Log.w(TAG, "Content not found: MediaID=$mediaId")
-                        // TODO: Notify caller of the error.
-                    } else {
+                val itemToPlay = mediaSource.find { item ->
+                    item.id == mediaId
+                }
+                if (itemToPlay == null) {
+                    Log.w(TAG, "Content not found: MediaID=$mediaId")
+                    // TODO: Notify caller of the error.
+                } else {
 
-                        val playbackStartPositionMs =
-                            extras?.getLong(
-                                PREFERENCES_POSITION,
-                                C.TIME_UNSET
-                            )
-                                ?: C.TIME_UNSET
-
-                        preparePlaylist(
-                            metadataList = buildPlaylist(/*itemToPlay*/),
-                            itemToPlay = itemToPlay,
-                            playWhenReady,
-                            playbackStartPositionMs
+                    val playbackStartPositionMs =
+                        extras?.getLong(
+                            PREFERENCES_POSITION,
+                            C.TIME_UNSET
                         )
-                    }
+                            ?: C.TIME_UNSET
+
+                    preparePlaylist(
+                        metadataList = buildPlaylist(/*itemToPlay*/),
+                        itemToPlay = itemToPlay,
+                        playWhenReady,
+                        playbackStartPositionMs
+                    )
+                }
 
             }
         }

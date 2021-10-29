@@ -2,7 +2,6 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.downlo
 
 import android.app.Notification
 import android.graphics.Color
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.church.injilkeselamatan.audiorenungan.R
 import com.google.android.exoplayer2.MediaItem
@@ -58,14 +57,11 @@ class AudioDownloadService : DownloadService
                 downloads
             )
         } else {
-//            val currentDownload = Util.fromUtf8Bytes(downloads[0].request.data)
-//            val jsonObject = JSONObject(currentDownload)
-//            val metadata = jsonObject.get() as MediaMetadataCompat
             val notification = NotificationCompat.Builder(this, DOWNLOAD_CHANNEL_ID)
                 .setOngoing(true)
                 .setShowWhen(false)
                 .setColor(Color.BLUE)
-                .setSmallIcon(R.drawable.download)
+                .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setContentTitle("Mengunduh Audio Renungan")
                 .setContentText(percentageFromFloat(currentDownloads[0].percentDownloaded))
                 .setStyle(

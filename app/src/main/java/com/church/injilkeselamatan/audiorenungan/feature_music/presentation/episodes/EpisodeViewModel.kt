@@ -34,7 +34,6 @@ class EpisodeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-
     var downloadedLength = MutableLiveData(0f)
     var maxProgress = MutableLiveData(0f)
 
@@ -44,12 +43,9 @@ class EpisodeViewModel @Inject constructor(
     private val _downloadState = mutableStateOf(SongsState())
     val downloadState: State<SongsState> = _downloadState
 
-    //private val _downloadsQueue = MutableLiveData(downloadManager.currentDownloads)
-
-
-    private var job: Job? = null
+    private var loadEpisodeJob: Job? = null
     private var downloadedJob: Job? = null
-    private var downloadJob: Job? = null
+    private var downloadingJob: Job? = null
 
     var currentSelectedAlbum: String? = null
 
@@ -63,8 +59,8 @@ class EpisodeViewModel @Inject constructor(
     }
 
     private fun loadEpisodes() {
-        job?.cancel()
-        job = songUseCases.getSongs(currentSelectedAlbum).onEach { resource ->
+        loadEpisodeJob?.cancel()
+        loadEpisodeJob = songUseCases.getSongs(currentSelectedAlbum).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.let { episodes ->
@@ -137,8 +133,8 @@ class EpisodeViewModel @Inject constructor(
     }
 
     private fun onDownloadEvent() {
-        downloadJob?.cancel()
-        downloadJob = viewModelScope.launch {
+        downloadingJob?.cancel()
+        downloadingJob = viewModelScope.launch {
             try {
                 while (true) {
                     delay(100L)
@@ -147,13 +143,16 @@ class EpisodeViewModel @Inject constructor(
                     downloadedLength.postValue(download.bytesDownloaded.toFloat())
                 }
             } catch (e: IndexOutOfBoundsException) {
-                job?.cancel()
+                downloadingJob?.cancel()
             }
         }
     }
 
+    private var countedOnState = 0
 
     fun onState(songId: String): Int? {
+        countedOnState++
+        Log.d(TAG, countedOnState.toString())
         return downloadManager.currentDownloads.find { download ->
             download.request.id == songId
         }?.state
