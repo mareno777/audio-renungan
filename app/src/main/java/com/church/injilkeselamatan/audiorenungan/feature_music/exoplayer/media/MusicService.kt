@@ -108,9 +108,8 @@ class MusicService : MediaBrowserServiceCompat() {
      * See [MusicService.onLoadChildren] to see where it's accessed (and first
      * constructed).
      */
-    private val browseTree: BrowseTree by lazy {
-        BrowseTree(applicationContext, mediaSource)
-    }
+    @Inject
+    lateinit var browseTree: BrowseTree
 
     private var recentSong: MediaMetadataCompat? = null
 

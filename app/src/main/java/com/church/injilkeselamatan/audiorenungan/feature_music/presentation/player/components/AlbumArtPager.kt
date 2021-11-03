@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
 
-import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -27,7 +27,7 @@ import kotlin.math.absoluteValue
 
 @ExperimentalPagerApi
 @Composable
-fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<MediaMetadataCompat>?) {
+fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<Song>?) {
     val context = LocalContext.current
 
 
@@ -62,7 +62,7 @@ fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<Medi
 
         ) {
             Box {
-                songs?.get(page)?.description?.iconUri?.let {
+                songs?.get(page)?.imageUri.let {
                     Image(
                         painter = rememberImagePainter(
                             request = ImageRequest.Builder(context)

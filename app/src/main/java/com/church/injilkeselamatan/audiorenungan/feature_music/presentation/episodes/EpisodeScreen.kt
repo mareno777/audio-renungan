@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -36,10 +35,10 @@ fun EpisodeScreen(
     var isExpanded by remember {
         mutableStateOf(false)
     }
-    val maxProgress by viewModel.maxProgress.observeAsState(100f)
-    val downloadedLength by viewModel.downloadedLength.observeAsState(0f)
+    val maxProgress by viewModel.maxProgress.collectAsState(1f)
+    val downloadedLength by viewModel.downloadedLength.collectAsState(0f)
 
-    val complatedDownload by viewModel.complatedDownload().observeAsState()
+    val complatedDownload by viewModel.complatedDownload().collectAsState()
 
     LaunchedEffect(complatedDownload) {
         Log.d("EpisodeScreen", complatedDownload?.request?.id.toString())

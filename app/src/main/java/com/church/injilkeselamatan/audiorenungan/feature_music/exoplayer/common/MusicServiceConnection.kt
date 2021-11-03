@@ -30,28 +30,14 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection.MediaBrowserConnectionCallback
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.NETWORK_FAILURE
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
-/**
- * Class that manages a connection to a [MediaBrowserServiceCompat] instance, typically a
- * [MusicService] or one of its subclasses.
- *
- * Typically it's best to construct/inject dependencies either using DI or, as UAMP does,
- * - [MediaBrowserCompat] is a final class, so mocking it directly is difficult.
- * - A [MediaBrowserConnectionCallback] is a parameter into the construction of
- *   a [MediaBrowserCompat], and provides callbacks to this class.
- * - [MediaBrowserCompat.ConnectionCallback.onConnected] is the best place to construct
- *   a [MediaControllerCompat] that will be used to control the [MediaSessionCompat].
- *
- *  Because of these reasons, rather than constructing additional classes, this is treated as
- *  a black box (which is why there's very little logic here).
- *
- *  This is also why the parameters to construct a [MusicServiceConnection] are simple
- *  parameters, rather than private properties. They're only required to build the
- *  [MediaBrowserConnectionCallback] and [MediaBrowserCompat] objects.
- */
+
 class MusicServiceConnection(context: Context, serviceComponent: ComponentName) {
     val isConnected = MutableLiveData<Boolean>()
         .apply { postValue(false) }
@@ -59,11 +45,10 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
         .apply { postValue(false) }
 
     val rootMediaId: String get() = mediaBrowser.root
+    private val scope = CoroutineScope(Dispatchers.IO)
 
-    val playbackState = MutableLiveData<PlaybackStateCompat>()
-        .apply { postValue(EMPTY_PLAYBACK_STATE) }
-    val nowPlaying = MutableLiveData<MediaMetadataCompat>()
-        .apply { postValue(NOTHING_PLAYING) }
+    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
+    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -144,7 +129,11 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            playbackState.postValue(state ?: EMPTY_PLAYBACK_STATE)
+
+            scope.launch {
+                playbackState.emit(state ?: EMPTY_PLAYBACK_STATE)
+            }
+
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
@@ -152,13 +141,16 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
             // metadata object which has been instantiated with default values. The default value
             // for media ID is null so we assume that if this value is null we are not playing
             // anything.
-            nowPlaying.postValue(
-                if (metadata?.id == null) {
-                    NOTHING_PLAYING
-                } else {
-                    metadata
-                }
-            )
+            scope.launch {
+                nowPlaying.emit(
+                    if (metadata?.id == null) {
+                        NOTHING_PLAYING
+                    } else {
+                        metadata
+                    }
+                )
+            }
+
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) {

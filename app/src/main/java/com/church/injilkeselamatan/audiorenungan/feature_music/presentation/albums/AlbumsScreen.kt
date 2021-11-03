@@ -3,8 +3,8 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.alb
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -12,7 +12,6 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 
@@ -58,8 +57,8 @@ fun AlbumsScreen(
 
         val state by viewModel.state
 
-        val playbackState by viewModel.playbackState().observeAsState()
-        val mediaMetadata by viewModel.playingMetadata().observeAsState()
+        val playbackState by viewModel.playbackState().collectAsState()
+        val mediaMetadata by viewModel.playingMetadata().collectAsState()
 
         TopAlbumsSection(modifier = Modifier.layoutId("topSection")) {
             // TODO: Open account settings
@@ -94,12 +93,7 @@ fun AlbumsScreen(
                     navController.navigate(Screen.PlayerScreen.route)
                 },
             playbackStateCompat = playbackState,
-            mediaMetadataCompat =
-            if (mediaMetadata != null) {
-                mediaMetadata
-            } else {
-                viewModel.recentSong.observeAsState(NOTHING_PLAYING).value
-            }
+            mediaMetadataCompat = mediaMetadata
         ) { needToPlay ->
             viewModel.onEvent(
                 AlbumsEvent.PlayOrPause(

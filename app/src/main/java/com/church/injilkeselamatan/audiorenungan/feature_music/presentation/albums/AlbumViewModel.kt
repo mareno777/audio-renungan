@@ -24,6 +24,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -71,12 +72,11 @@ class AlbumViewModel @Inject constructor(
         _recentSong.postValue(savedSong.loadRecentSong().first())
     }
 
-    fun playingMetadata(): LiveData<MediaMetadataCompat> {
+    fun playingMetadata(): StateFlow<MediaMetadataCompat> {
         return musicServiceConnection.nowPlaying
     }
 
-    fun playbackState(): LiveData<PlaybackStateCompat> {
-
+    fun playbackState(): StateFlow<PlaybackStateCompat> {
         return musicServiceConnection.playbackState
     }
 
@@ -131,7 +131,7 @@ class AlbumViewModel @Inject constructor(
                 }
 
             }
-            if (playingMetadata().value == null) {
+            if (playingMetadata().value == NOTHING_PLAYING) {
                 savedSong.loadRecentSong().first()
             }
 

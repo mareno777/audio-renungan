@@ -1,44 +1,76 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
-import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PlayerViewModel @Inject constructor
-    (
-    private val musicServiceConnection: MusicServiceConnection
-) :
-    ViewModel() {
+class PlayerViewModel @Inject constructor(
+    private val musicServiceConnection: MusicServiceConnection,
+    private val getSongUseCases: SongUseCases
+) : ViewModel() {
 
-    val playbackStateCompat = musicServiceConnection.playbackState
-    val mediaMetadataCompat = musicServiceConnection.nowPlaying
 
-    private val _curSongDuration = MutableLiveData<Long>()
-    val curSongDuration: LiveData<Long> = _curSongDuration
+    val playbackStateCompat = musicServiceConnection.playbackState.asStateFlow()
+    val mediaMetadataCompat = musicServiceConnection.nowPlaying.asStateFlow()
 
-    private val _curPlayerPosition = MutableLiveData<Long>()
-    val curPlayerPosition: LiveData<Long> = _curPlayerPosition
+    private val _curSongDuration = MutableStateFlow(0L)
+    val curSongDuration = _curSongDuration.asStateFlow()
 
-    private val _songs: MutableLiveData<List<MediaMetadataCompat>> = MutableLiveData()
-    val songs: LiveData<List<MediaMetadataCompat>> = _songs
+    private val _songs = mutableStateOf(SongsState())
+    val songs: State<SongsState> = _songs
 
-    private val _curSongIndex: MutableLiveData<Int> = MutableLiveData()
-    val curSongIndex: LiveData<Int> = _curSongIndex
+    private val _curSongIndex = MutableStateFlow(-1)
+    val curSongIndex = _curSongIndex.asStateFlow()
+
+    private var loadingJob: Job? = null
 
 
     init {
         updateCurrentPlayerPosition()
+        loadSongs()
+    }
+
+    private fun loadSongs() {
+        loadingJob?.cancel()
+        loadingJob = getSongUseCases.getSongs().onEach { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    resource.data?.let {
+                        _songs.value = songs.value.copy(
+                            songs = it,
+                            isLoading = false,
+                        )
+                    }
+
+                }
+                is Resource.Loading -> {
+                    _songs.value = songs.value.copy(
+                        isLoading = true,
+                    )
+                }
+                is Resource.Error -> {
+                    _songs.value = songs.value.copy(
+                        isLoading = false,
+                        errorMessage = resource.message
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun playMediaId(mediaId: String) {
@@ -53,7 +85,7 @@ class PlayerViewModel @Inject constructor
                     playbackState.isPlaying -> transportControls.pause()
                     playbackState.isPlayEnabled -> transportControls.play()
                     else -> {
-                        // Something wrong
+
                     }
                 }
             }
@@ -65,14 +97,9 @@ class PlayerViewModel @Inject constructor
     private fun updateCurrentPlayerPosition() {
         viewModelScope.launch {
             while (true) {
-                val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
-
-                if (curPlayerPosition.value != pos) {
-                    _curPlayerPosition.postValue(pos)
-                    _curSongDuration.postValue(MusicService.curSongDuration)
-                    _curSongIndex.postValue(MusicService.curSongIndex)
-                    Log.e("PlayerViewModel", "currentPosition: ${_curSongIndex.value}")
-                }
+                _curSongDuration.emit(MusicService.curSongDuration)
+                _curSongIndex.emit(MusicService.curSongIndex)
+                Log.e("PlayerViewModel", "currentPosition: ${_curSongIndex.value}")
                 delay(100L)
             }
         }
@@ -83,4 +110,22 @@ class PlayerViewModel @Inject constructor
     fun skipToPrevious() = musicServiceConnection.transportControls.skipToPrevious()
     fun skipToNext() = musicServiceConnection.transportControls.skipToNext()
     fun seekTo(pos: Long) = musicServiceConnection.transportControls.seekTo(pos)
+
+    fun currentPlayingPosition(): Flow<Long> = flow {
+        while (true) {
+            val pos = playbackStateCompat.value.currentPlayBackPosition
+            emit(pos)
+            delay(100L)
+        }
+    }
+
+    private val _curSongDurationState = mutableStateOf(0L)
+    val curSongDurationState: State<Long> = _curSongDurationState
+
+    fun updatePosition() {
+        val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
+        _curSongDurationState.value = pos
+    }
 }
+
+private const val TAG = "PlayerViewModel"

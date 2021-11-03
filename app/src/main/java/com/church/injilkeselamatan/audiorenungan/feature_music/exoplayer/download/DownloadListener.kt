@@ -1,20 +1,19 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download
 
-import androidx.lifecycle.MutableLiveData
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
-import com.google.android.exoplayer2.scheduler.Requirements
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class DownloadListener : DownloadManager.Listener {
 
-    val downloadComplated = MutableLiveData<Download>()
-        .apply {
-            postValue(null)
-        }
-    val onWaitingRequirements = MutableLiveData<Boolean>()
-        .apply {
-            postValue(false)
-        }
+    private val download: Any? = null
+
+    val downloadComplated = MutableStateFlow(download as? Download)
+
+    private val onWaitingRequirements = MutableStateFlow(false)
+
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     override fun onDownloadChanged(
         downloadManager: DownloadManager,
@@ -23,7 +22,9 @@ class DownloadListener : DownloadManager.Listener {
     ) {
         if (download.bytesDownloaded == download.contentLength) {
             // Download complated
-            downloadComplated.postValue(download)
+            scope.launch {
+                downloadComplated.emit(download)
+            }
         }
         super.onDownloadChanged(downloadManager, download, finalException)
     }
@@ -32,7 +33,9 @@ class DownloadListener : DownloadManager.Listener {
         downloadManager: DownloadManager,
         waitingForRequirements: Boolean
     ) {
-        onWaitingRequirements.postValue(waitingForRequirements)
+        scope.launch {
+            onWaitingRequirements.emit(waitingForRequirements)
+        }
         super.onWaitingForRequirementsChanged(downloadManager, waitingForRequirements)
     }
 }
