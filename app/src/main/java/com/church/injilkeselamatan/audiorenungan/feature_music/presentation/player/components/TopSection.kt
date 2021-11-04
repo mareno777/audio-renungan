@@ -19,8 +19,35 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 @Composable
 fun TopSection(modifier: Modifier = Modifier, onBackClicked: () -> Unit) {
     Row(
-
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
     ) {
+        Icon(
+            Icons.Rounded.KeyboardArrowLeft,
+            contentDescription = null,
+            modifier = Modifier
+                .size(30.dp)
+                .clickable {
+                    onBackClicked()
+                },
+            tint = MaterialTheme.colors.onSurface
+        )
 
+        Text(
+            text = "Now Playing",
+            fontFamily = sourceSansPro,
+            fontSize = 20.sp,
+            color = MaterialTheme.colors.onSurface,
+            fontWeight = FontWeight.SemiBold
+        )
+        Icon(
+            Icons.Rounded.Info,
+            contentDescription = null,
+            tint = MaterialTheme.colors.onSurface,
+            modifier = Modifier.size(26.dp)
+        )
     }
 }
