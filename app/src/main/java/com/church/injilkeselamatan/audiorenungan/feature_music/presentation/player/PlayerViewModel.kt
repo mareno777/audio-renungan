@@ -90,6 +90,7 @@ class PlayerViewModel @Inject constructor(
                 }
             }
         } else {
+            Log.d(TAG, "playFromMediaId: $mediaId")
             transportControls.playFromMediaId(mediaId, null)
         }
     }
@@ -99,7 +100,6 @@ class PlayerViewModel @Inject constructor(
             while (true) {
                 _curSongDuration.emit(MusicService.curSongDuration)
                 _curSongIndex.emit(MusicService.curSongIndex)
-                Log.e("PlayerViewModel", "currentPosition: ${_curSongIndex.value}")
                 delay(100L)
             }
         }
@@ -113,18 +113,10 @@ class PlayerViewModel @Inject constructor(
 
     fun currentPlayingPosition(): Flow<Long> = flow {
         while (true) {
-            val pos = playbackStateCompat.value.currentPlayBackPosition
+            val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
             emit(pos)
             delay(100L)
         }
-    }
-
-    private val _curSongDurationState = mutableStateOf(0L)
-    val curSongDurationState: State<Long> = _curSongDurationState
-
-    fun updatePosition() {
-        val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
-        _curSongDurationState.value = pos
     }
 }
 

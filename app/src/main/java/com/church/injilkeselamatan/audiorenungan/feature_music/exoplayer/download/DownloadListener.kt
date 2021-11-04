@@ -2,8 +2,10 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.downlo
 
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class DownloadListener : DownloadManager.Listener {
 
@@ -26,16 +28,12 @@ class DownloadListener : DownloadManager.Listener {
                 downloadComplated.emit(download)
             }
         }
-        super.onDownloadChanged(downloadManager, download, finalException)
     }
 
     override fun onWaitingForRequirementsChanged(
         downloadManager: DownloadManager,
         waitingForRequirements: Boolean
     ) {
-        scope.launch {
-            onWaitingRequirements.emit(waitingForRequirements)
-        }
         super.onWaitingForRequirementsChanged(downloadManager, waitingForRequirements)
     }
 }

@@ -38,6 +38,7 @@ fun SongItem(
 ) {
 
     val color = MaterialTheme.colors.primary.toArgb()
+    val painter = rememberImagePainter(data = song.imageUri)
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -52,9 +53,8 @@ fun SongItem(
         Row(verticalAlignment = Alignment.CenterVertically) {
 
             Image(
-                painter = rememberImagePainter(
-                    data = song.imageUri
-                ), modifier = Modifier.size(60.dp),
+                painter = painter,
+                modifier = Modifier.size(60.dp),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )
@@ -85,6 +85,8 @@ fun SongItem(
             ) { circularProgressBar ->
 
                 circularProgressBar.progressBarColor = color
+                circularProgressBar.progressBarWidth = 4.dp.value
+                circularProgressBar.progressMax = 1f
                 circularProgressBar.indeterminateMode = state == Download.STATE_QUEUED
 
                 if (state == Download.STATE_DOWNLOADING) {
@@ -95,8 +97,7 @@ fun SongItem(
 
 
             }
-        }
-        if (downloaded && state != Download.STATE_DOWNLOADING && state != Download.STATE_QUEUED) {
+        } else if (downloaded && state != Download.STATE_DOWNLOADING && state != Download.STATE_QUEUED) {
             Icon(
                 Icons.Default.Check,
                 contentDescription = "Remove this media",

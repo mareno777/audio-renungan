@@ -35,18 +35,14 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download.AudioDownloadService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.*
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.MEDIA_METADATA_COMPAT_FOR_DOWNLOAD
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.cast.CastPlayer
 import com.google.android.exoplayer2.ext.cast.SessionAvailabilityListener
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
-import com.google.android.exoplayer2.offline.DownloadRequest
-import com.google.android.exoplayer2.offline.DownloadService
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
@@ -357,9 +353,10 @@ class MusicService : MediaBrowserServiceCompat() {
                     Log.d(TAG, "successfullyInitialized")
                     try {
                         // variable children hanya untuk ditampilkan ke pengguna
-                        val children = browseTree[parentMediaId]?.map { item ->
-                            MediaBrowserCompat.MediaItem(item.description, item.flag)
+                        val children = currentPlaylistItems.map {
+                            MediaBrowserCompat.MediaItem(it.description, it.flag)
                         }
+
                         result.sendResult(children)
                     } catch (e: IllegalStateException) {
                         notifyChildrenChanged(parentMediaId)
@@ -601,35 +598,6 @@ class MusicService : MediaBrowserServiceCompat() {
             cb: ResultReceiver?
         ): Boolean {
             when (command) {
-                "download_song" -> {
-                    val mediaId: String? = extras?.getString(
-                        MEDIA_METADATA_COMPAT_FOR_DOWNLOAD
-                    )
-                    Log.d(TAG, "mediaId to download: ${mediaId.toString()}")
-                    mediaId?.let { id ->
-                        serviceScope.launch {
-                            val metadata =
-                                currentPlaylistItems.find { it.description.mediaId == id }
-                                    ?: return@launch
-
-
-                            val downloadRequest =
-                                DownloadRequest.Builder(
-                                    id,
-                                    metadata.mediaUri
-                                )
-                                    .setCustomCacheKey(metadata.title)
-                                    .build()
-
-                            DownloadService.sendAddDownload(
-                                this@MusicService,
-                                AudioDownloadService::class.java,
-                                downloadRequest,
-                                true
-                            )
-                        }
-                    }
-                }
                 "connect" -> {
                     Log.d(TAG, "connecting")
                     serviceScope.launch {
@@ -641,14 +609,6 @@ class MusicService : MediaBrowserServiceCompat() {
             return true
         }
 
-        /**
-         * Builds a playlist based on a [MediaMetadataCompat].
-         *
-         * TODO: Support building a playlist by artist, genre, etc...
-         *
-         * @param /*item*/ Item to base the playlist on.
-         * @return a [List] of [MediaMetadataCompat] objects representing a playlist.
-         */
         private fun buildPlaylist(/* item: MediaMetadataCompat */): List<MediaMetadataCompat> =
             mediaSource.toList()
     }

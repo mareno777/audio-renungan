@@ -40,7 +40,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="example.android.com"
+                    android:host="church.injilkeselamatan.com"
                     android:pathPattern="/audiorenungan"
                     android:scheme="http" />
             </intent-filter>
@@ -53,7 +53,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="example.android.com"
+                    android:host="church.injilkeselamatan.com"
                     android:pathPattern="/audiorenungan"
                     android:scheme="https" />
             </intent-filter>

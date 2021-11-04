@@ -30,7 +30,6 @@ import kotlin.math.absoluteValue
 fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<Song>?) {
     val context = LocalContext.current
 
-
     HorizontalPager(
         state = pagerState,
         modifier = Modifier.fillMaxWidth()
@@ -39,8 +38,6 @@ fun HorizontalPagerWithOffsetTransition(pagerState: PagerState, songs: List<Song
             Modifier
                 .graphicsLayer {
                     val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
-
-
                     lerp(
                         0.85f,
                         1f,

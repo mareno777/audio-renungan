@@ -7,10 +7,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.GetDownloadedSongs
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.GetSongs
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.UpdateSong
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
@@ -65,13 +62,15 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSongUseCases(
+        @ApplicationContext context: Context,
         repository: SongRepository,
         downloadManager: DownloadManager
     ): SongUseCases {
         return SongUseCases(
             getSongs = GetSongs(repository),
             getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
-            updateSong = UpdateSong(repository)
+            updateSong = UpdateSong(repository),
+            downloadSong = DownloadSong(context)
         )
     }
 

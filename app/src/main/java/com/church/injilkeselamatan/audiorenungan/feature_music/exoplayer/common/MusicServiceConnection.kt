@@ -39,6 +39,8 @@ import kotlinx.coroutines.launch
 
 
 class MusicServiceConnection(context: Context, serviceComponent: ComponentName) {
+
+    private val nullable: Any? = null
     val isConnected = MutableLiveData<Boolean>()
         .apply { postValue(false) }
     val networkFailure = MutableLiveData<Boolean>()
@@ -47,8 +49,8 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     val rootMediaId: String get() = mediaBrowser.root
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
-    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
+    val playbackState = MutableStateFlow(nullable as? PlaybackStateCompat)
+    val nowPlaying = MutableStateFlow(nullable as? MediaMetadataCompat)
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls

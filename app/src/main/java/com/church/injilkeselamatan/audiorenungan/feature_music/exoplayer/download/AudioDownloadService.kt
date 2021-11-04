@@ -31,10 +31,8 @@ class AudioDownloadService : DownloadService
     @Inject
     lateinit var downloadMananger: DownloadManager
 
-
-    private val downloadListener = object : DownloadManager.Listener {
-
-    }
+    @Inject
+    lateinit var downloadListener: DownloadListener
 
     override fun getDownloadManager(): DownloadManager {
         return downloadMananger

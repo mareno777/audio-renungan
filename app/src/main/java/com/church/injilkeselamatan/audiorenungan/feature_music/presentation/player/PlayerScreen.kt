@@ -1,5 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,12 +42,15 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        LaunchedEffect(currentSongIndex) {
+        LaunchedEffect(key1 = currentSongIndex, key2 = pagerState.pageCount) {
+            Log.d(
+                "PlayerScreen",
+                "songIndex: $currentSongIndex, pageCount: ${pagerState.pageCount}"
+            )
             if (currentSongIndex > -1) {
                 if (pagerState.pageCount > 0) {
                     scrollBySystem = true
                     pagerState.animateScrollToPage(currentSongIndex)
-                    scrollBySystem = false
                 }
             }
         }
@@ -81,17 +85,19 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
             )
         }
         //on pager state navigate to
-        LaunchedEffect(key1 = pagerState) {
-            if (pagerState.targetPage > 0) {
+        LaunchedEffect(key1 = pagerState.currentPage) {
+            if (pagerState.pageCount > 0) {
                 snapshotFlow { pagerState.currentPage }.collect { page ->
                     songsState.songs.let { listOfSongs ->
-                        if (!scrollBySystem)
+                        if (!scrollBySystem) {
                             viewModel.playMediaId(listOfSongs[page].id)
-                        viewModel.play()
+                            viewModel.play()
+                        }
                     }
+                    scrollBySystem = false
                 }
             }
         }
-    }
 
+    }
 }

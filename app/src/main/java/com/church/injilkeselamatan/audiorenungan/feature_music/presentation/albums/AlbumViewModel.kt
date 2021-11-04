@@ -72,11 +72,11 @@ class AlbumViewModel @Inject constructor(
         _recentSong.postValue(savedSong.loadRecentSong().first())
     }
 
-    fun playingMetadata(): StateFlow<MediaMetadataCompat> {
+    fun playingMetadata(): StateFlow<MediaMetadataCompat?> {
         return musicServiceConnection.nowPlaying
     }
 
-    fun playbackState(): StateFlow<PlaybackStateCompat> {
+    fun playbackState(): StateFlow<PlaybackStateCompat?> {
         return musicServiceConnection.playbackState
     }
 

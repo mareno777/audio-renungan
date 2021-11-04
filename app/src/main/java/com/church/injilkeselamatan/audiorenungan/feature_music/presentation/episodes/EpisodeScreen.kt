@@ -38,18 +38,17 @@ fun EpisodeScreen(
     val maxProgress by viewModel.maxProgress.collectAsState(1f)
     val downloadedLength by viewModel.downloadedLength.collectAsState(0f)
 
-    val complatedDownload by viewModel.complatedDownload().collectAsState()
-
-    LaunchedEffect(complatedDownload) {
-        Log.d("EpisodeScreen", complatedDownload?.request?.id.toString())
-        viewModel.loadDownloadedEpisodes()
-    }
-
     val description = when (viewModel.currentSelectedAlbum) {
         "Pohon Kehidupan" -> Constants.DESC_PK
         "Belajar Takut Akan Tuhan" -> Constants.DESC_BTAT
         "Saat Teduh Bersama Tuhan" -> Constants.DESC_STBT
         else -> ""
+    }
+    val onDownloadComplated by viewModel.onDownloadComplated().collectAsState()
+
+    LaunchedEffect(onDownloadComplated) {
+        viewModel.loadDownloadedEpisodes()
+        Log.d("EpisodeScreen", "download complated: ${onDownloadComplated?.request?.customCacheKey}")
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

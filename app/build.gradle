@@ -102,8 +102,10 @@ dependencies {
     implementation "io.coil-kt:coil-compose:$coil_version"
 
     //Accompanist
+    def accompanist_version = "0.21.0-beta"
     implementation "com.google.accompanist:accompanist-pager:0.18.0"
     implementation "com.google.accompanist:accompanist-pager-indicators:0.18.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
 
     // Media for fix PendingIntent
     implementation "androidx.media:media:1.4.3"
