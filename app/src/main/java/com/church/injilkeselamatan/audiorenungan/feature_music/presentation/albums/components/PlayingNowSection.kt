@@ -23,6 +23,9 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.artist
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Dimensions
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.lessThan
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.mediaQuery
 
 @Composable
 fun PlayingNowSection(
@@ -43,6 +46,10 @@ fun PlayingNowSection(
         elevation = 8.dp,
         modifier = modifier
             .fillMaxWidth()
+            .mediaQuery(
+                comparator = Dimensions.Height lessThan 600.dp,
+                modifier = modifier.fillMaxHeight(0.1f)
+            )
             .fillMaxHeight(0.08f)
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {

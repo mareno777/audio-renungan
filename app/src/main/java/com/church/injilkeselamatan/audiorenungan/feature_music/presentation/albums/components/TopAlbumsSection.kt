@@ -19,6 +19,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Dimensions
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.greaterThan
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.lessThan
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.mediaQuery
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 
 @Composable
@@ -30,7 +34,8 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .mediaQuery(Dimensions.Height greaterThan  600.dp, modifier.padding(8.dp))
+            .padding(8.dp)
     ) {
         Column {
             Text(
@@ -51,9 +56,6 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
             painter = rememberImagePainter(
                 request = ImageRequest.Builder(context)
                     .data("https://qph.fs.quoracdn.net/main-qimg-c7a526dfad7e78f9062521efd0a3ea70-c")
-//                    .diskCachePolicy(CachePolicy.READ_ONLY)
-//                    .networkCachePolicy(CachePolicy.WRITE_ONLY)
-                    //  .size(144)
                     .transformations(CircleCropTransformation())
                     .build()
 

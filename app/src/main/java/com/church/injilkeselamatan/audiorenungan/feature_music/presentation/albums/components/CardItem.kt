@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 
 @Composable
@@ -38,44 +39,89 @@ fun CardItem(
             else -> R.drawable.btat
         }
 
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .clickable {
-                onCardClicked(song)
-            },
-        shape = RoundedCornerShape(CornerSize(12.dp)),
-        elevation = 8.dp
-    ) {
-        Image(
-            painter = painterResource(id = painter),
-            contentScale = ContentScale.Crop,
-            contentDescription = null
-        )
-        Box(
-            contentAlignment = Alignment.BottomStart,
-            modifier = Modifier
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            Color.Transparent,
-                            Color.Black
-                        ),
-                        startY = 0.0f,
-                        endY = 1010f
-                    )
-                )
+    MediaQuery(comparator = Dimensions.Height greaterThan 600.dp) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clickable {
+                    onCardClicked(song)
+                },
+            shape = RoundedCornerShape(CornerSize(12.dp)),
+            elevation = 8.dp
         ) {
-            Text(
-                text = song.album,
-                fontSize = 24.sp,
-                maxLines = 1,
-                fontFamily = sourceSansPro,
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(8.dp)
+            Image(
+                painter = painterResource(id = painter),
+                contentScale = ContentScale.Crop,
+                contentDescription = null
             )
+            Box(
+                contentAlignment = Alignment.BottomStart,
+                modifier = Modifier
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                Color.Black
+                            ),
+                            startY = 0.0f,
+                            endY = 1010f
+                        )
+                    )
+            ) {
+                Text(
+                    text = song.album,
+                    fontSize = 24.sp,
+                    maxLines = 1,
+                    fontFamily = sourceSansPro,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        }
+    }
+
+    MediaQuery(comparator = Dimensions.Height lessThan 600.dp) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .clickable {
+                    onCardClicked(song)
+                },
+            shape = RoundedCornerShape(CornerSize(12.dp)),
+            elevation = 8.dp
+        ) {
+            Image(
+                painter = painterResource(id = painter),
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
+            Box(
+                contentAlignment = Alignment.BottomStart,
+                modifier = Modifier
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(
+                                Color.Transparent,
+                                Color.Black
+                            ),
+                            startY = 0.0f,
+                            endY = 1010f
+                        )
+                    )
+            ) {
+                Text(
+                    text = song.album,
+                    fontSize = 24.sp,
+                    maxLines = 1,
+                    fontFamily = sourceSansPro,
+                    color = Color.White,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
         }
     }
 }
