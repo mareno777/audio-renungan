@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -77,6 +78,7 @@ fun SeekbarSection(
             text = currentPositionText,
             color = MaterialTheme.colors.onSurface
         )
+
         AndroidView(
             modifier = Modifier.weight(2f),
             factory = {
@@ -90,6 +92,7 @@ fun SeekbarSection(
                 seekBarView.progress = curPlayingPosition?.toInt() ?: 0
             }
         }
+
         Text(
             text = dateFormat.format(curSongDuration ?: 0L),
             color = MaterialTheme.colors.onSurface

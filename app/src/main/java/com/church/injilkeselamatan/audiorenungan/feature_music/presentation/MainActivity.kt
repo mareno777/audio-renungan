@@ -38,8 +38,6 @@ class MainActivity : ComponentActivity() {
     lateinit var connectionLiveData: ConnectionLiveData
 
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                     nullable = true
                                 }
                             )
-                        ) { entry ->
+                        ) {
                             EpisodeScreen(
                                 navController = navController
                             )

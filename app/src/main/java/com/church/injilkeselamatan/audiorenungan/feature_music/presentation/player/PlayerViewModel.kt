@@ -15,7 +15,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,9 +38,7 @@ class PlayerViewModel @Inject constructor(
 
     private var loadingJob: Job? = null
 
-
     init {
-        updateCurrentPlayerPosition()
         loadSongs()
     }
 
@@ -73,7 +70,7 @@ class PlayerViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    fun playMediaId(mediaId: String) {
+    private fun playMediaId(mediaId: String) {
 
         val nowPlaying = musicServiceConnection.nowPlaying.value
 
@@ -95,25 +92,33 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    private fun updateCurrentPlayerPosition() {
-        viewModelScope.launch {
-            while (true) {
-                _curSongDuration.emit(MusicService.curSongDuration)
-                _curSongIndex.emit(MusicService.curSongIndex)
-                delay(100L)
+    fun onEvent(event: PlayerEvents) {
+        when (event) {
+            is PlayerEvents.PlayFromMediaId -> playMediaId(event.mediaId)
+            is PlayerEvents.PlayOrPause -> {
+                if (event.isPlay) {
+                    musicServiceConnection.transportControls.play()
+                } else {
+                    musicServiceConnection.transportControls.pause()
+                }
+            }
+            is PlayerEvents.SkipToNext -> {
+                musicServiceConnection.transportControls.skipToNext()
+            }
+            is PlayerEvents.SkipToPrevious -> {
+                musicServiceConnection.transportControls.skipToPrevious()
+            }
+            is PlayerEvents.SeekTo -> {
+                musicServiceConnection.transportControls.seekTo(event.position)
             }
         }
     }
 
-    fun play() = musicServiceConnection.transportControls.play()
-    fun pause() = musicServiceConnection.transportControls.pause()
-    fun skipToPrevious() = musicServiceConnection.transportControls.skipToPrevious()
-    fun skipToNext() = musicServiceConnection.transportControls.skipToNext()
-    fun seekTo(pos: Long) = musicServiceConnection.transportControls.seekTo(pos)
-
     fun currentPlayingPosition(): Flow<Long> = flow {
         while (true) {
             val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
+            _curSongDuration.emit(MusicService.curSongDuration)
+            _curSongIndex.emit(MusicService.curSongIndex)
             emit(pos)
             delay(100L)
         }

@@ -85,14 +85,14 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                 SeekbarSection(
                     curPlayingPosition = curPlayingPosition,
                     curSongDuration = curSongDuration,
-                    seekToPosition = { viewModel.seekTo(it) }
+                    seekToPosition = { viewModel.onEvent(PlayerEvents.SeekTo(it)) }
                 )
                 MediaControllerSection(
                     playbackStateCompat = playbackStateCompat,
-                    onPlayClicked = { viewModel.play() },
-                    onPauseClicked = { viewModel.pause() },
-                    onSkipToPrevious = { viewModel.skipToPrevious() },
-                    onSkipToNext = { viewModel.skipToNext() },
+                    onPlayClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(true)) },
+                    onPauseClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(false)) },
+                    onSkipToPrevious = { viewModel.onEvent(PlayerEvents.SkipToPrevious) },
+                    onSkipToNext = { viewModel.onEvent(PlayerEvents.SkipToNext) },
                 )
             }
             //on pager state navigate to
@@ -100,9 +100,10 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                 if (pagerState.pageCount > 0) {
                     snapshotFlow { pagerState.currentPage }.collect { page ->
                         songsState.songs.let { listOfSongs ->
-                            if (!scrollBySystem) {
-                                viewModel.playMediaId(listOfSongs[page].id)
-                                viewModel.play()
+                           if (!scrollBySystem) {
+                                Log.d("PlayerScreen", "onExecuted")
+                                viewModel.onEvent(PlayerEvents.PlayFromMediaId(listOfSongs[page].id))
+                                viewModel.onEvent(PlayerEvents.PlayOrPause(true))
                             }
                         }
                         scrollBySystem = false

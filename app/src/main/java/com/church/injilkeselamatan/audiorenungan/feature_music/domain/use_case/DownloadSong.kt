@@ -27,6 +27,10 @@ class DownloadSong(private val context: Context) {
         )
 
     }
+
+    fun initiateService() {
+        DownloadService.startForeground(context, AudioDownloadService::class.java)
+    }
 }
 
 private const val TAG = "DownloadSong"
