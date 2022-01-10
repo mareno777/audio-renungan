@@ -65,7 +65,7 @@ class AlbumViewModel @Inject constructor(
 
 
     init {
-        loadSongs()
+        loadSongs(forceRefresh = true)
     }
 
     suspend fun loadRecentSong() {
@@ -94,12 +94,12 @@ class AlbumViewModel @Inject constructor(
         }
     }
 
-    fun loadSongs() {
+    fun loadSongs(forceRefresh: Boolean = false) {
 
         Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
         getSongsJob?.cancel()
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared
-        getSongsJob = songUseCases.getSongs().onEach { resource ->
+        getSongsJob = songUseCases.getSongs.invoke(forceRefresh = forceRefresh).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.sortedBy { it.id }?.distinctBy { data ->

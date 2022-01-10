@@ -26,7 +26,7 @@ import java.io.FileDescriptor
 import java.io.IOException
 import javax.inject.Inject
 
-class MusicSourceRepository @Inject constructor(
+class MusicSourceRepository(
     musicDatabase: MusicDatabase,
     val context: Context
 ) : AbstractMusicSource() {

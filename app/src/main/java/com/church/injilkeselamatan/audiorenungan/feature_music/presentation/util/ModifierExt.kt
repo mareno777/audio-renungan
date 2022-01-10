@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 fun Modifier.mediaQuery(
     comparator: Dimensions.DimensionComparator,
     modifier: Modifier
-) : Modifier = composed {
+): Modifier = composed {
     val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.dp /
             LocalDensity.current.density
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp /

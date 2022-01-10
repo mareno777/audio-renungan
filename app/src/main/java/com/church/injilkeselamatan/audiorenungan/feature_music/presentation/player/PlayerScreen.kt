@@ -12,7 +12,6 @@ import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.collect
 
 @ExperimentalPagerApi
 @Composable
@@ -21,7 +20,7 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
     val mediaMetadataCompat by viewModel.mediaMetadataCompat.collectAsState()
     val playbackStateCompat by viewModel.playbackStateCompat.collectAsState()
     val curSongDuration by viewModel.curSongDuration.collectAsState()
-    val curPlayingPosition by viewModel.currentPlayingPosition().collectAsState(0L)
+    val curPlayingPosition by viewModel.updateCurrentPlayingPosition().collectAsState(0L)
     val currentSongIndex by viewModel.curSongIndex.collectAsState()
     val songsState by viewModel.songs
 
@@ -100,7 +99,7 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                 if (pagerState.pageCount > 0) {
                     snapshotFlow { pagerState.currentPage }.collect { page ->
                         songsState.songs.let { listOfSongs ->
-                           if (!scrollBySystem) {
+                            if (!scrollBySystem) {
                                 Log.d("PlayerScreen", "onExecuted")
                                 viewModel.onEvent(PlayerEvents.PlayFromMediaId(listOfSongs[page].id))
                                 viewModel.onEvent(PlayerEvents.PlayOrPause(true))

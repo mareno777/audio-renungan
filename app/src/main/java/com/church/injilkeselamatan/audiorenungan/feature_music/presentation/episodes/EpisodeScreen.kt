@@ -48,7 +48,10 @@ fun EpisodeScreen(
 
     LaunchedEffect(onDownloadComplated) {
         viewModel.loadDownloadedEpisodes()
-        Log.d("EpisodeScreen", "download complated: ${onDownloadComplated?.request?.customCacheKey}")
+        Log.d(
+            "EpisodeScreen",
+            "download complated: ${onDownloadComplated?.request?.customCacheKey}"
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

@@ -15,7 +15,9 @@ data class MusicDbEntity(
     val imageUri: String,
     val mediaUri: String,
     val position: Long = C.TIME_UNSET,
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+    val description: String?,
+    val synopsis: String?
 )
 
 fun MusicDbEntity.toSong(): Song {
@@ -26,6 +28,8 @@ fun MusicDbEntity.toSong(): Song {
         album = album,
         imageUri = imageUri,
         mediaUri = mediaUri,
-        isFavorite = isFavorite
+        isFavorite = isFavorite,
+        description = description,
+        synopsis = synopsis
     )
 }

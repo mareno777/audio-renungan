@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Audio Renungan</string>
+    <string name="app_name">Oasis Jiwa</string>
     <string name="allowed_caller_log">
         Caller has a valid certificate, but its package doesn\'t match any expected package for the
         given certificate. To allow this caller, add the following to the allowed callers list:\n

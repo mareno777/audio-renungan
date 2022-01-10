@@ -5,7 +5,7 @@ import retrofit2.http.GET
 
 interface SongsApi {
 
-    @GET("api/devotional")
+    @GET("/audio")
     suspend fun getSongs(): MusicApiDto
 
 //    @FormUrlEncoded

@@ -1,10 +1,14 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
-import android.util.Log
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.palette.graphics.Palette
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
@@ -44,7 +48,7 @@ class PlayerViewModel @Inject constructor(
 
     private fun loadSongs() {
         loadingJob?.cancel()
-        loadingJob = getSongUseCases.getSongs().onEach { resource ->
+        loadingJob = getSongUseCases.getSongs(forceRefresh = false).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.let {
@@ -87,7 +91,6 @@ class PlayerViewModel @Inject constructor(
                 }
             }
         } else {
-            Log.d(TAG, "playFromMediaId: $mediaId")
             transportControls.playFromMediaId(mediaId, null)
         }
     }
@@ -111,16 +114,34 @@ class PlayerViewModel @Inject constructor(
             is PlayerEvents.SeekTo -> {
                 musicServiceConnection.transportControls.seekTo(event.position)
             }
+            is PlayerEvents.FastForward -> {
+
+            }
+            is PlayerEvents.FastRewind -> {
+
+            }
+            is PlayerEvents.SetSleepTimer -> {
+
+            }
         }
     }
 
-    fun currentPlayingPosition(): Flow<Long> = flow {
+    fun updateCurrentPlayingPosition(): Flow<Long> = flow {
         while (true) {
-            val pos = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
+            val currentPlaybackPosition = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
             _curSongDuration.emit(MusicService.curSongDuration)
             _curSongIndex.emit(MusicService.curSongIndex)
-            emit(pos)
+            emit(currentPlaybackPosition)
             delay(100L)
+        }
+    }
+}
+
+fun calculateColorPalette(drawable: Drawable, onFinised: (Color) -> Unit) {
+    val bitmap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
+    Palette.from(bitmap).generate { palette ->
+        palette?.darkVibrantSwatch?.rgb?.let { colorValue ->
+            onFinised(Color(colorValue))
         }
     }
 }

@@ -23,7 +23,7 @@ class SongRepositoryImpl @Inject constructor(
 
     private val musicDao = musicDatabase.musicDao()
 
-    override fun getSongs(): Flow<Resource<List<Song>>> {
+    override fun getSongs(forceRefresh: Boolean): Flow<Resource<List<Song>>> {
         return networkBoundResource(
             query = {
                 musicDao.getAllSongs().map { musicDb ->
@@ -48,8 +48,7 @@ class SongRepositoryImpl @Inject constructor(
                 }
             },
             shouldFetch = {
-                Log.d(TAG, "shouldFetch: ${it.isEmpty()}")
-                it.isEmpty()
+                it.isEmpty() || forceRefresh
             }
         )
     }

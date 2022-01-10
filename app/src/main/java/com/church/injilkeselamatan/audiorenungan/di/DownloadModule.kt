@@ -3,7 +3,7 @@ package com.church.injilkeselamatan.audiorenungan.di
 import android.content.Context
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download.DownloadListener
-import com.google.android.exoplayer2.database.ExoDatabaseProvider
+import com.google.android.exoplayer2.database.StandaloneDatabaseProvider
 import com.google.android.exoplayer2.offline.DownloadManager
 import com.google.android.exoplayer2.scheduler.Requirements
 import com.google.android.exoplayer2.upstream.DataSource
@@ -25,8 +25,8 @@ import javax.inject.Singleton
 object DownloadModule {
     @Singleton
     @Provides
-    fun provideExoplayerDatabase(@ApplicationContext context: Context): ExoDatabaseProvider =
-        ExoDatabaseProvider(context)
+    fun provideExoplayerDatabase(@ApplicationContext context: Context): StandaloneDatabaseProvider =
+        StandaloneDatabaseProvider(context)
 
     @Singleton
     @Provides
@@ -51,7 +51,7 @@ object DownloadModule {
     @Singleton
     @Provides
     fun provideDownloadCache(
-        database: ExoDatabaseProvider,
+        database: StandaloneDatabaseProvider,
         downloadContentDirectory: File
     ): SimpleCache =
         SimpleCache(downloadContentDirectory, NoOpCacheEvictor(), database)
@@ -76,7 +76,7 @@ object DownloadModule {
     @Provides
     fun provideDownloadManager(
         @ApplicationContext context: Context,
-        database: ExoDatabaseProvider,
+        database: StandaloneDatabaseProvider,
         cache: SimpleCache,
         dataSourceFactory: DefaultHttpDataSource.Factory,
         downloadListener: DownloadListener

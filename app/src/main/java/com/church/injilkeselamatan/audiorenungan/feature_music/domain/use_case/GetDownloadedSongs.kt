@@ -14,25 +14,18 @@ class GetDownloadedSongs(
     operator fun invoke(album: String? = null): Flow<Resource<List<Song>>> {
         val downloadedIndex = downloadManager.downloadIndex
         return if (album != null) {
-            repository.getSongs().map { resource ->
+            repository.getSongs(false).map { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val mutable = mutableListOf<Song>()
-                        resource.data?.let { songs ->
+                        resource.data?.asSequence()?.let { songs ->
                             val filteredSongs =
-                                songs.filter { it.album == album }
-
-                            filteredSongs.forEach { song ->
-                                val downloadedId = downloadedIndex.getDownload(song.id)
-                                if (downloadedId != null) {
-                                    filteredSongs.find { downloadedId.request.id == it.id }
-                                        ?.let { downloadedSong ->
-                                            mutable.add(
-                                                downloadedSong
-                                            )
-                                        }
+                                songs.filter {
+                                    it.album == album &&
+                                            downloadedIndex.getDownload(it.id) != null
                                 }
-                            }
+
+                            mutable.addAll(filteredSongs)
                         }
                         Resource.Success<List<Song>>(mutable.sortedBy { it.id })
                     }
@@ -45,23 +38,15 @@ class GetDownloadedSongs(
                 }
             }
         } else {
-            repository.getSongs().map { resource ->
+            repository.getSongs(false).map { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val mutable = mutableListOf<Song>()
-                        resource.data?.let { songs ->
+                        resource.data?.asSequence()?.let { songs ->
 
-                            songs.forEach { song ->
-                                val downloadedId = downloadedIndex.getDownload(song.id)
-                                if (downloadedId != null) {
-                                    songs.find { downloadedId.request.id == it.id }
-                                        ?.let { downloadedSong ->
-                                            mutable.add(
-                                                downloadedSong
-                                            )
-                                        }
-                                }
-                            }
+                            mutable.addAll(songs.filter { song ->
+                                downloadManager.downloadIndex.getDownload(song.id) != null
+                            })
                         }
                         Resource.Success<List<Song>>(mutable.sortedBy { it.id })
                     }

@@ -308,11 +308,10 @@ fun MediaMetadataCompat.toMediaQueueItem(metadataCompat: MediaMetadataCompat): M
 }
 
 private fun MediaMetadataCompat.toCastMediaMetadata(): MediaMetadata {
-    val mediaMetadata = MediaMetadata.Builder()
-        .setMediaUri(this.mediaUri)
-        .setArtist(this.artist)
+    return MediaMetadata.Builder()
+        .setMediaUri(mediaUri)
+        .setArtist(artist)
         .build()
-    return mediaMetadata
 }
 
 

@@ -22,7 +22,7 @@ sealed class Dimensions {
         val value: Dp
     ) {
         fun compare(screenWidth: Dp, screenHeight: Dp): Boolean {
-            return if(dimensions is Width) {
+            return if (dimensions is Width) {
                 when (operator) {
                     is DimensionOperator.LessThan -> screenWidth < value
                     is DimensionOperator.GreaterThan -> screenWidth > value
@@ -50,14 +50,15 @@ fun MediaQuery(comparator: Dimensions.DimensionComparator, content: @Composable 
     }
 }
 
-infix fun Dimensions.greaterThan(value: Dp) : Dimensions.DimensionComparator {
+infix fun Dimensions.greaterThan(value: Dp): Dimensions.DimensionComparator {
     return Dimensions.DimensionComparator(
         operator = Dimensions.DimensionOperator.GreaterThan,
         dimensions = this,
         value = value
     )
 }
-infix fun Dimensions.lessThan(value: Dp) : Dimensions.DimensionComparator {
+
+infix fun Dimensions.lessThan(value: Dp): Dimensions.DimensionComparator {
     return Dimensions.DimensionComparator(
         operator = Dimensions.DimensionOperator.LessThan,
         dimensions = this,

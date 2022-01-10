@@ -3,8 +3,9 @@ package com.church.injilkeselamatan.audiorenungan.di
 import android.content.Context
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.BrowseTree
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.upstream.DataSource
@@ -32,8 +33,8 @@ object ServiceModule {
         @ApplicationContext context: Context,
         audioAttributes: AudioAttributes,
         cacheDataSourceFactory: DataSource.Factory
-    ): SimpleExoPlayer {
-        return SimpleExoPlayer.Builder(context)
+    ): ExoPlayer {
+        return ExoPlayer.Builder(context)
             .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
             .build().apply {
                 setAudioAttributes(audioAttributes, true)
@@ -45,7 +46,7 @@ object ServiceModule {
     @Provides
     fun provideBrowseTree(
         @ApplicationContext context: Context,
-        musicSource: MusicSourceRepository
+        musicSource: MusicSource
     ) = BrowseTree(context, musicSource)
 }
 

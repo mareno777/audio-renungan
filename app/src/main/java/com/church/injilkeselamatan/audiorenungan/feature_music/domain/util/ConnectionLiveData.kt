@@ -81,4 +81,5 @@ class ConnectionLiveData(context: Context) : LiveData<Resource<Boolean>>() {
         }
     }
 }
+
 private const val TAG = "ConnectionLiveData"

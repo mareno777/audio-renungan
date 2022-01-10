@@ -61,18 +61,17 @@ fun AlbumArtPager(
             .clip(RoundedCornerShape(8.dp))
         ) {
             Box {
-                songs?.get(page)?.imageUri?.let {
-                    Image(
-                        painter = rememberImagePainter(
-                            request = ImageRequest.Builder(context)
-                                .data(it)
-                                .build()
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.size(300.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-                }
+                Image(
+                    painter = rememberImagePainter(
+                        request = ImageRequest.Builder(context)
+                            .data(songs[page].imageUri)
+                            .build()
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(300.dp),
+                    contentScale = ContentScale.FillBounds
+                )
+
             }
         }
     }

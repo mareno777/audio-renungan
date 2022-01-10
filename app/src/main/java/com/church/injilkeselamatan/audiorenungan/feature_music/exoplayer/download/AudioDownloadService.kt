@@ -42,7 +42,7 @@ class AudioDownloadService : DownloadService
         return PlatformScheduler(this, 1)
     }
 
-    override fun getForegroundNotification(downloads: MutableList<Download>): Notification {
+    override fun getForegroundNotification(downloads: MutableList<Download>, notMetRequirements: Int): Notification {
 
         val currentDownloads = downloadMananger.currentDownloads
 

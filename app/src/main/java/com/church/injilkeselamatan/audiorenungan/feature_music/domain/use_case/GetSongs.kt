@@ -10,9 +10,9 @@ class GetSongs(
     private val repository: SongRepository
 ) {
 
-    operator fun invoke(album: String? = null): Flow<Resource<List<Song>>> {
+    operator fun invoke(album: String? = null, forceRefresh: Boolean): Flow<Resource<List<Song>>> {
         return if (album != null) {
-            repository.getSongs().map { resource ->
+            repository.getSongs(forceRefresh).map { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val mutable = mutableListOf<Song>()
@@ -31,7 +31,7 @@ class GetSongs(
                 }
             }
         } else {
-            repository.getSongs()
+            repository.getSongs(forceRefresh)
         }
     }
 }

@@ -18,7 +18,6 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -36,8 +35,6 @@ class EpisodeViewModel @Inject constructor(
 
     val downloadedLength = MutableStateFlow(0f)
     val maxProgress = MutableStateFlow(1f)
-
-    val onState = MutableStateFlow(Download.FAILURE_REASON_UNKNOWN)
 
     private val _state = mutableStateOf(SongsState())
     val state: State<SongsState> = _state
@@ -60,33 +57,34 @@ class EpisodeViewModel @Inject constructor(
         initDownloadEvent(true)
     }
 
-    private fun loadEpisodes() {
+    private fun loadEpisodes(forceRefresh: Boolean = false) {
         loadEpisodeJob?.cancel()
-        loadEpisodeJob = songUseCases.getSongs(currentSelectedAlbum).onEach { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    resource.data?.let { episodes ->
+        loadEpisodeJob =
+            songUseCases.getSongs(currentSelectedAlbum, forceRefresh).onEach { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        resource.data?.let { episodes ->
+                            _state.value = state.value.copy(
+                                songs = episodes,
+                                isLoading = false,
+                                errorMessage = null
+                            )
+                        }
+                    }
+                    is Resource.Loading -> {
                         _state.value = state.value.copy(
-                            songs = episodes,
-                            isLoading = false,
+                            isLoading = true,
                             errorMessage = null
                         )
                     }
+                    is Resource.Error -> {
+                        _state.value = state.value.copy(
+                            isLoading = false,
+                            errorMessage = resource.message
+                        )
+                    }
                 }
-                is Resource.Loading -> {
-                    _state.value = state.value.copy(
-                        isLoading = true,
-                        errorMessage = null
-                    )
-                }
-                is Resource.Error -> {
-                    _state.value = state.value.copy(
-                        isLoading = false,
-                        errorMessage = resource.message
-                    )
-                }
-            }
-        }.launchIn(viewModelScope)
+            }.launchIn(viewModelScope)
     }
 
     fun loadDownloadedEpisodes() {
@@ -115,7 +113,8 @@ class EpisodeViewModel @Inject constructor(
                     )
                 }
             }
-        }.launchIn(viewModelScope)
+        }
+            .launchIn(viewModelScope)
     }
 
     fun onEvent(event: EpisodesEvent) {

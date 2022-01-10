@@ -35,7 +35,6 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.*
 import com.google.android.exoplayer2.*
@@ -73,7 +72,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
 
     private lateinit var notificationManager: NotificationManager
-    private lateinit var mediaSource: MusicSource
     private lateinit var packageValidator: PackageValidator
 
     // The current player will either be an ExoPlayer (for local playback) or a CastPlayer (for
@@ -97,7 +95,7 @@ class MusicService : MediaBrowserServiceCompat() {
     lateinit var cachedDataSourceFactory: DataSource.Factory
 
     @Inject
-    lateinit var musicSourceRepository: MusicSourceRepository
+    lateinit var mediaSource: MusicSource
 
     /**
      * This must be `by lazy` because the source won't initially be ready.
@@ -121,7 +119,7 @@ class MusicService : MediaBrowserServiceCompat() {
     private val playerListener = PlayerEventListener()
 
     @Inject
-    lateinit var exoPlayer: SimpleExoPlayer
+    lateinit var exoPlayer: ExoPlayer
 
     /**
      * If Cast is available, create a CastPlayer to handle communication with a Cast session.
@@ -196,7 +194,7 @@ class MusicService : MediaBrowserServiceCompat() {
         ) {
             //on playback change
             curSongDuration = currentPlayer.duration
-            curSongIndex = currentPlayer.currentWindowIndex
+            curSongIndex = currentPlayer.currentMediaItemIndex
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }
@@ -204,7 +202,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
-        mediaSource = musicSourceRepository
         serviceScope.launch {
             mediaSource.load()
             recentSong = storage.loadRecentSong().first()
@@ -454,7 +451,7 @@ class MusicService : MediaBrowserServiceCompat() {
             } else if (playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED) {
                 preparePlaylist(
                     metadataList = currentPlaylistItems,
-                    itemToPlay = currentPlaylistItems[previousPlayer.currentWindowIndex],
+                    itemToPlay = currentPlaylistItems[previousPlayer.currentMediaItemIndex],
                     playWhenReady = previousPlayer.playWhenReady,
                     playbackStartPositionMs = previousPlayer.currentPosition
                 )
@@ -469,7 +466,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
         // Obtain the current song details *before* saving them on a separate thread, otherwise
         // the current player may have been unloaded by the time the save routine runs.
-        val description = currentPlaylistItems[currentPlayer.currentWindowIndex]
+        val description = currentPlaylistItems[currentPlayer.currentMediaItemIndex]
         val position = currentPlayer.currentPosition
 
         serviceScope.launch {
@@ -592,7 +589,6 @@ class MusicService : MediaBrowserServiceCompat() {
 
         override fun onCommand(
             player: Player,
-            controlDispatcher: ControlDispatcher,
             command: String,
             extras: Bundle?,
             cb: ResultReceiver?

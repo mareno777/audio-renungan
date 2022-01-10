@@ -2,7 +2,7 @@ package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.ComponentName
 import android.content.Context
-import com.church.injilkeselamatan.audiorenungan.BuildConfig
+import android.provider.Settings
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
@@ -13,14 +13,13 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data.MusicSourceRepository
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -44,15 +43,6 @@ object AppModule {
     fun provideConnectionLiveData(@ApplicationContext context: Context) =
         ConnectionLiveData(context)
 
-    @Singleton
-    @Provides
-    fun provideApiService(): SongsApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        return retrofit.create(SongsApi::class.java)
-    }
 
     @Singleton
     @Provides
@@ -79,5 +69,10 @@ object AppModule {
     fun provideMusicSourceRepository(
         musicDatabase: MusicDatabase,
         @ApplicationContext context: Context
-    ): MusicSourceRepository = MusicSourceRepository(musicDatabase, context)
+    ): MusicSource = MusicSourceRepository(musicDatabase, context)
+
+    @Provides
+    @Singleton
+    fun provideHardwareId(@ApplicationContext context: Context): String =
+        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 }
