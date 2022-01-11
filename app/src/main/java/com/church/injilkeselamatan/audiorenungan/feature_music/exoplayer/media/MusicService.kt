@@ -144,7 +144,6 @@ class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
-
     override fun onCreate() {
         super.onCreate()
 
@@ -164,7 +163,7 @@ class MusicService : MediaBrowserServiceCompat() {
             }
 
         // Create a new MediaSession.
-        mediaSession = MediaSessionCompat(this, "MusicService")
+        mediaSession = MediaSessionCompat(this, TAG)
             .apply {
                 setSessionActivity(sessionActivityPendingIntent)
                 isActive = true
@@ -203,7 +202,7 @@ class MusicService : MediaBrowserServiceCompat() {
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
         serviceScope.launch {
-            mediaSource.load()
+            //mediaSource.load()
             recentSong = storage.loadRecentSong().first()
         }
 
@@ -518,7 +517,6 @@ class MusicService : MediaBrowserServiceCompat() {
         override fun onPrepare(playWhenReady: Boolean) {
             //execute from notification
 
-
             Log.d(TAG, "onPrepare: ${recentSong?.title.toString()}")
             if (recentSong != null) {
                 onPrepareFromMediaId(
@@ -536,6 +534,13 @@ class MusicService : MediaBrowserServiceCompat() {
             extras: Bundle?
         ) {
             Log.d(TAG, "onPrepareFromMediaId: $mediaId, extras: ${extras.toString()}")
+            val playbackStartPositionMs =
+                extras?.getLong(
+                    PREFERENCES_POSITION,
+                    C.TIME_UNSET
+                )
+                    ?: C.TIME_UNSET
+
             mediaSource.whenReady {
                 val itemToPlay = mediaSource.find { item ->
                     item.id == mediaId
@@ -543,17 +548,20 @@ class MusicService : MediaBrowserServiceCompat() {
                 if (itemToPlay == null) {
                     Log.w(TAG, "Content not found: MediaID=$mediaId")
                     // TODO: Notify caller of the error.
+                    serviceScope.launch {
+                        mediaSource.load()
+                        val newItemToPlay = mediaSource.find { it.id == mediaId }
+                        preparePlaylist(
+                            metadataList = buildPlaylist(),
+                            itemToPlay = newItemToPlay,
+                            playWhenReady = playWhenReady,
+                            playbackStartPositionMs = playbackStartPositionMs
+                        )
+                    }
                 } else {
 
-                    val playbackStartPositionMs =
-                        extras?.getLong(
-                            PREFERENCES_POSITION,
-                            C.TIME_UNSET
-                        )
-                            ?: C.TIME_UNSET
-
                     preparePlaylist(
-                        metadataList = buildPlaylist(/*itemToPlay*/),
+                        metadataList = buildPlaylist(),
                         itemToPlay = itemToPlay,
                         playWhenReady,
                         playbackStartPositionMs
@@ -593,16 +601,17 @@ class MusicService : MediaBrowserServiceCompat() {
             extras: Bundle?,
             cb: ResultReceiver?
         ): Boolean {
-            when (command) {
+            return when (command) {
                 "connect" -> {
                     Log.d(TAG, "connecting")
                     serviceScope.launch {
                         mediaSource.load()
                         Log.d(TAG, mediaSource.toList().size.toString())
                     }
+                    true
                 }
+                else -> false
             }
-            return true
         }
 
         private fun buildPlaylist(/* item: MediaMetadataCompat */): List<MediaMetadataCompat> =
@@ -624,7 +633,6 @@ class MusicService : MediaBrowserServiceCompat() {
                     applicationContext,
                     Intent(applicationContext, this@MusicService.javaClass)
                 )
-
                 startForeground(notificationId, notification)
                 isForegroundService = true
             }
@@ -655,6 +663,7 @@ class MusicService : MediaBrowserServiceCompat() {
                             saveRecentSongToStorage()
                         } catch (e: Exception) {
                             // unknown crash
+                            Log.d(TAG, "unknown: $e")
                         }
 
                         if (!playWhenReady) {

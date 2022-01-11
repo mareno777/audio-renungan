@@ -43,8 +43,8 @@ fun MediaQuery(comparator: Dimensions.DimensionComparator, content: @Composable 
             LocalDensity.current.density
     val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.dp /
             LocalDensity.current.density
-    Log.d("ScreenSize", "Width: $screenWidth")
-    Log.d("ScreenSize", "Height: $screenHeight")
+//    Log.d("ScreenSize", "Width: $screenWidth")
+//    Log.d("ScreenSize", "Height: $screenHeight")
     if (comparator.compare(screenWidth, screenHeight)) {
         content()
     }

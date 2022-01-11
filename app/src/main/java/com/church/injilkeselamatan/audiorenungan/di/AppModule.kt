@@ -46,7 +46,10 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSongRepository(songsApi: SongsApi, database: MusicDatabase): SongRepository =
+    fun provideSongRepository(
+        songsApi: SongsApi,
+        database: MusicDatabase
+    ): SongRepository =
         SongRepositoryImpl(songsApi, database)
 
     @Singleton
@@ -60,15 +63,15 @@ object AppModule {
             getSongs = GetSongs(repository),
             getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
             updateSong = UpdateSong(repository),
-            downloadSong = DownloadSong(context)
+            downloadSong = DownloadSong(context, downloadManager)
         )
     }
 
     @Singleton
     @Provides
     fun provideMusicSourceRepository(
-        musicDatabase: MusicDatabase,
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        musicDatabase: MusicDatabase
     ): MusicSource = MusicSourceRepository(musicDatabase, context)
 
     @Provides

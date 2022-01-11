@@ -14,17 +14,18 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.size.PixelSize
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.toSong
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.*
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.AbstractMusicSource
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.STATE_ERROR
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.STATE_INITIALIZED
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.STATE_INITIALIZING
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.FileDescriptor
 import java.io.IOException
-import javax.inject.Inject
 
 class MusicSourceRepository(
     musicDatabase: MusicDatabase,
@@ -37,19 +38,19 @@ class MusicSourceRepository(
 
     override suspend fun load() {
         Log.d(TAG, "STATE_INITIALIZING")
-        state = STATE_INITIALIZING
-        updateCatalog()?.let { updatedCatalog ->
-            catalog = updatedCatalog
-            state = STATE_INITIALIZED
-        } ?: run {
-            catalog = emptyList()
-            state = STATE_ERROR
-        }
+            state = STATE_INITIALIZING
+            updateCatalog()?.let { updatedCatalog ->
+                catalog = updatedCatalog
+                state = STATE_INITIALIZED
+            } ?: run {
+                catalog = emptyList()
+                state = STATE_ERROR
+            }
     }
 
     override fun iterator() = catalog.iterator()
 
-    private suspend fun updateCatalog(musicList: List<MusicDbEntity> = emptyList()): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             val response = try {
                 val result: MutableList<Song> = mutableListOf()

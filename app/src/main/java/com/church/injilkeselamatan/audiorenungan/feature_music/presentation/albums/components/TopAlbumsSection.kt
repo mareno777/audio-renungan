@@ -47,7 +47,7 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
                 fontSize = 24.sp
             )
             Text(
-                text = "\u00A9 JKI Injil Keselamatan",
+                text = "\u00A9 Yosea Christiono",
                 fontFamily = sourceSansPro,
                 color = Color.Gray,
                 fontSize = 16.sp

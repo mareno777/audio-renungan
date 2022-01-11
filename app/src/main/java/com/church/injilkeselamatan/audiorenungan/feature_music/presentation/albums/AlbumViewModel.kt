@@ -20,6 +20,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.UAMP_ALBUMS_ROOT
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,8 +70,10 @@ class AlbumViewModel @Inject constructor(
         loadSongs(forceRefresh = true)
     }
 
-    suspend fun loadRecentSong() {
-        _recentSong.postValue(savedSong.loadRecentSong().first())
+    private fun loadRecentSong() {
+        viewModelScope.launch {
+            _recentSong.postValue(savedSong.loadRecentSong().first())
+        }
     }
 
     fun playingMetadata(): StateFlow<MediaMetadataCompat?> {
@@ -99,7 +103,7 @@ class AlbumViewModel @Inject constructor(
         Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
         getSongsJob?.cancel()
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared
-        getSongsJob = songUseCases.getSongs.invoke(forceRefresh = forceRefresh).onEach { resource ->
+        getSongsJob = songUseCases.getSongs(forceRefresh = forceRefresh).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.sortedBy { it.id }?.distinctBy { data ->

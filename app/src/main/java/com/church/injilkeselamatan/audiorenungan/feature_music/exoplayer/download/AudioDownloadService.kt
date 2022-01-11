@@ -42,17 +42,21 @@ class AudioDownloadService : DownloadService
         return PlatformScheduler(this, 1)
     }
 
-    override fun getForegroundNotification(downloads: MutableList<Download>, notMetRequirements: Int): Notification {
+    override fun getForegroundNotification(
+        downloads: MutableList<Download>,
+        notMetRequirements: Int
+    ): Notification {
 
-        val currentDownloads = downloadMananger.currentDownloads
+        val activeDownloads = downloads.size > 0
 
-        if (currentDownloads.size <= 0) {
+        return if (!activeDownloads) {
             return DownloadNotificationHelper(this, DOWNLOAD_CHANNEL_ID).buildProgressNotification(
                 this,
-                R.drawable.download,
+                android.R.drawable.stat_sys_download,
                 null,
                 null,
-                downloads
+                downloads,
+                notMetRequirements
             )
         } else {
             val notification = NotificationCompat.Builder(this, DOWNLOAD_CHANNEL_ID)
@@ -61,25 +65,25 @@ class AudioDownloadService : DownloadService
                 .setColor(Color.BLUE)
                 .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setContentTitle("Mengunduh Audio Renungan")
-                .setContentText(percentageFromFloat(currentDownloads[0].percentDownloaded))
+                .setContentText(percentageFromFloat(downloads[0].percentDownloaded))
                 .setStyle(
                     NotificationCompat.BigTextStyle()
                         .setBigContentTitle("Mengunduh Audio Renungan")
                         .bigText(
-                            "${currentDownloads[0].request.customCacheKey}\n${
+                            "${downloads[0].request.customCacheKey}\n${
                                 percentageFromFloat(
-                                    currentDownloads[0].percentDownloaded
+                                    downloads[0].percentDownloaded
                                 )
                             }"
                         )
                 )
                 .setProgress(
-                    currentDownloads[0].contentLength.toInt(),
-                    currentDownloads[0].bytesDownloaded.toInt(),
+                    downloads[0].contentLength.toInt(),
+                    downloads[0].bytesDownloaded.toInt(),
                     false
                 ) // FIXME: 9/22/2021 : baru coba false
 
-            return notification.build()
+            notification.build()
         }
     }
 

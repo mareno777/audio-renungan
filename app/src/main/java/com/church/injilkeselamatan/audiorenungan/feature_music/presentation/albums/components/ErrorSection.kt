@@ -26,6 +26,7 @@ fun ErrorSection(
         Text(
             text = errorMessage,
             style = MaterialTheme.typography.body1,
+            color = MaterialTheme.colors.onBackground,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(8.dp)
         )
