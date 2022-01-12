@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util
 
-import android.util.Log
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalContext

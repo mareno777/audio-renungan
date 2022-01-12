@@ -17,8 +17,8 @@ import com.google.accompanist.pager.rememberPagerState
 @Composable
 fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hiltViewModel()) {
 
-    val mediaMetadataCompat by viewModel.mediaMetadataCompat.collectAsState()
-    val playbackStateCompat by viewModel.playbackStateCompat.collectAsState()
+    val mediaMetadataCompat by viewModel.nowPlaying.collectAsState()
+    val playbackStateCompat by viewModel.playbackState.collectAsState()
     val curSongDuration by viewModel.curSongDuration.collectAsState()
     val curPlayingPosition by viewModel.updateCurrentPlayingPosition().collectAsState(0L)
     val currentSongIndex by viewModel.curSongIndex.collectAsState()

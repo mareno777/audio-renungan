@@ -30,12 +30,12 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util
 @Composable
 fun PlayingNowSection(
     modifier: Modifier = Modifier,
-    playbackStateCompat: PlaybackStateCompat?,
-    mediaMetadataCompat: MediaMetadataCompat?,
+    playbackStateCompat: PlaybackStateCompat,
+    mediaMetadataCompat: MediaMetadataCompat,
     needToPlay: (Boolean) -> Unit
 ) {
 
-    val painter = when (mediaMetadataCompat?.album) {
+    val painter = when (mediaMetadataCompat.album) {
         "Pohon Kehidupan" -> rememberImagePainter(R.drawable.pohon_kehidupan)
         "Belajar Takut Akan Tuhan" -> rememberImagePainter(R.drawable.btat)
         "Saat Teduh Bersama Tuhan" -> rememberImagePainter(R.drawable.stbt)
@@ -69,13 +69,13 @@ fun PlayingNowSection(
                 Spacer(modifier = Modifier.width(4.dp))
                 Column {
                     Text(
-                        text = mediaMetadataCompat?.title ?: "",
+                        text = mediaMetadataCompat.title ?: "",
                         style = MaterialTheme.typography.caption,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp
                     )
                     Text(
-                        text = mediaMetadataCompat?.artist ?: "",
+                        text = mediaMetadataCompat.artist ?: "",
                         style = MaterialTheme.typography.caption,
                         fontSize = 14.sp
                     )
@@ -84,7 +84,7 @@ fun PlayingNowSection(
             }
             Icon(
                 painterResource(
-                    id = if (playbackStateCompat?.isPlaying == true) {
+                    id = if (playbackStateCompat.isPlaying) {
                         R.drawable.ic_pause
                     } else {
                         R.drawable.ic_play_arrow
@@ -97,7 +97,7 @@ fun PlayingNowSection(
                     .fillMaxHeight()
                     .padding(end = 4.dp)
                     .clickable {
-                        needToPlay(playbackStateCompat?.isPlaying != true)
+                        needToPlay(!playbackStateCompat.isPlaying)
                     }
             )
         }

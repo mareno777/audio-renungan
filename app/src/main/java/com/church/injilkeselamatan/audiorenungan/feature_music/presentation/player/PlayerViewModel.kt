@@ -28,8 +28,8 @@ class PlayerViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val playbackStateCompat = musicServiceConnection.playbackState.asStateFlow()
-    val mediaMetadataCompat = musicServiceConnection.nowPlaying.asStateFlow()
+    val playbackState = musicServiceConnection.playbackState.asStateFlow()
+    val nowPlaying = musicServiceConnection.nowPlaying.asStateFlow()
 
     private val _curSongDuration = MutableStateFlow(0L)
     val curSongDuration = _curSongDuration.asStateFlow()
@@ -76,20 +76,17 @@ class PlayerViewModel @Inject constructor(
 
     private fun playMediaId(mediaId: String) {
 
-        val nowPlaying = musicServiceConnection.nowPlaying.value
-
         val transportControls = musicServiceConnection.transportControls
-        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaId == nowPlaying?.id) {
-            musicServiceConnection.playbackState.value?.let { playbackState ->
-                when {
-                    playbackState.isPlaying -> transportControls.pause()
-                    playbackState.isPlayEnabled -> transportControls.play()
-                    else -> {
+        val isPrepared = playbackState.value.isPrepared
+        if (isPrepared && mediaId == nowPlaying.value.id) {
+            when {
+                playbackState.value.isPlaying -> transportControls.pause()
+                playbackState.value.isPlayEnabled -> transportControls.play()
+                else -> {
 
-                    }
                 }
             }
+
         } else {
             transportControls.playFromMediaId(mediaId, null)
         }
@@ -128,7 +125,7 @@ class PlayerViewModel @Inject constructor(
 
     fun updateCurrentPlayingPosition(): Flow<Long> = flow {
         while (true) {
-            val currentPlaybackPosition = playbackStateCompat.value?.currentPlayBackPosition ?: 0L
+            val currentPlaybackPosition = playbackState.value.currentPlayBackPosition
             _curSongDuration.emit(MusicService.curSongDuration)
             _curSongIndex.emit(MusicService.curSongIndex)
             emit(currentPlaybackPosition)

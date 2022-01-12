@@ -12,6 +12,7 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 
@@ -59,6 +60,7 @@ fun AlbumsScreen(
 
         val playbackState by viewModel.playbackState().collectAsState()
         val mediaMetadata by viewModel.playingMetadata().collectAsState()
+        val recentSong by viewModel.recentSong
 
         TopAlbumsSection(modifier = Modifier.layoutId("topSection")) {
             // TODO: Open account settings
@@ -93,7 +95,7 @@ fun AlbumsScreen(
                     navController.navigate(Screen.PlayerScreen.route)
                 },
             playbackStateCompat = playbackState,
-            mediaMetadataCompat = mediaMetadata
+            mediaMetadataCompat = if (mediaMetadata == NOTHING_PLAYING) recentSong else mediaMetadata
         ) { needToPlay ->
             viewModel.onEvent(
                 AlbumsEvent.PlayOrPause(

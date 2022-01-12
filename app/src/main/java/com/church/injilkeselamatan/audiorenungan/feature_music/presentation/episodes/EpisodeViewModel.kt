@@ -14,13 +14,14 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -165,21 +166,18 @@ class EpisodeViewModel @Inject constructor(
 
     private fun playMediaId(mediaId: String) {
 
-        val nowPlaying = musicServiceConnection.nowPlaying.value
-
         val transportControls = musicServiceConnection.transportControls
-        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
+        val isPrepared = musicServiceConnection.playbackState.value.isPrepared
         Log.d(TAG, "mediaId: $mediaId $isPrepared")
-        if (isPrepared && mediaId == nowPlaying?.id) {
-            musicServiceConnection.playbackState.value?.let { playbackState ->
-                when {
-                    playbackState.isPlaying -> transportControls.pause()
-                    playbackState.isPlayEnabled -> transportControls.play()
-                    else -> {
-                        throw IllegalAccessException("playbackState on unknown state")
-                    }
+        if (isPrepared && mediaId == musicServiceConnection.nowPlaying.value.id) {
+            when {
+                musicServiceConnection.playbackState.value.isPlaying -> transportControls.pause()
+                musicServiceConnection.playbackState.value.isPlayEnabled -> transportControls.play()
+                else -> {
+                    throw IllegalAccessException("playbackState on unknown state")
                 }
             }
+
         } else {
             transportControls.playFromMediaId(mediaId, null)
         }

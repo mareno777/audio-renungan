@@ -1,11 +1,7 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.data
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
-import android.os.ParcelFileDescriptor
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -24,28 +20,25 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
-import java.io.FileDescriptor
-import java.io.IOException
 
 class MusicSourceRepository(
     musicDatabase: MusicDatabase,
     val context: Context
 ) : AbstractMusicSource() {
 
-
     private var catalog = emptyList<MediaMetadataCompat>()
     private val musicDao = musicDatabase.musicDao()
 
     override suspend fun load() {
         Log.d(TAG, "STATE_INITIALIZING")
-            state = STATE_INITIALIZING
-            updateCatalog()?.let { updatedCatalog ->
-                catalog = updatedCatalog
-                state = STATE_INITIALIZED
-            } ?: run {
-                catalog = emptyList()
-                state = STATE_ERROR
-            }
+        state = STATE_INITIALIZING
+        updateCatalog()?.let { updatedCatalog ->
+            catalog = updatedCatalog
+            state = STATE_INITIALIZED
+        } ?: run {
+            catalog = emptyList()
+            state = STATE_ERROR
+        }
     }
 
     override fun iterator() = catalog.iterator()
@@ -66,18 +59,24 @@ class MusicSourceRepository(
                 return@withContext null
             }
 
+            val albumsUrl = response.distinctBy { it.imageUri }
+                .map { song ->
+                    val coilRequest = ImageRequest.Builder(context)
+                        .data(song.imageUri)
+                        .allowHardware(false)
+                        .size(PixelSize(512, 512))
+                        .allowConversionToBitmap(true)
+                        .build()
+                    val drawable = ImageLoader(context).execute(coilRequest).drawable
+                    val bitmap = (drawable as? BitmapDrawable)?.bitmap
+                    Pair(song.imageUri, bitmap)
+
+                }
+
 
             val mediaMetadataCompats = response.map { song ->
 
-                //val imageUri = AlbumArtContentProvider.mapUri(Uri.parse(song.imageUri))
-                val coilRequest = ImageRequest.Builder(context)
-                    .data(song.imageUri)
-                    .allowHardware(false)
-                    .size(PixelSize(512, 512))
-                    .allowConversionToBitmap(true)
-                    .build()
-                val drawable = ImageLoader(context).execute(coilRequest).drawable
-                val bitmap = (drawable as? BitmapDrawable)?.bitmap
+                val bitmap = albumsUrl.find { it.first == song.imageUri }?.second
 
                 MediaMetadataCompat.Builder()
                     .from(song)
@@ -122,16 +121,6 @@ class MusicSourceRepository(
 
         // Allow it to be used in the typical builder style.
         return this
-    }
-
-    @Throws(IOException::class)
-    private fun getBitmapFromUri(uri: Uri, context: Context): Bitmap {
-        val parcelFileDescriptor: ParcelFileDescriptor? =
-            context.contentResolver.openFileDescriptor(uri, "r")
-        val fileDescriptor: FileDescriptor = parcelFileDescriptor!!.fileDescriptor
-        val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-        parcelFileDescriptor.close()
-        return image
     }
 }
 

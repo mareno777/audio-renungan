@@ -9,8 +9,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
@@ -20,7 +18,6 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.UAMP_ALBUMS_ROOT
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,8 +43,8 @@ class AlbumViewModel @Inject constructor(
 
     private var getSongsJob: Job? = null
 
-    private val _recentSong = MutableLiveData(NOTHING_PLAYING)
-    val recentSong: LiveData<MediaMetadataCompat> = _recentSong
+    private val _recentSong = mutableStateOf(NOTHING_PLAYING)
+    val recentSong: State<MediaMetadataCompat> = _recentSong
 
     private val subscriptionCallback =
         object : MediaBrowserCompat.SubscriptionCallback() {
@@ -72,21 +69,21 @@ class AlbumViewModel @Inject constructor(
 
     private fun loadRecentSong() {
         viewModelScope.launch {
-            _recentSong.postValue(savedSong.loadRecentSong().first())
+            _recentSong.value = savedSong.loadRecentSong().first() ?: NOTHING_PLAYING
         }
     }
 
-    fun playingMetadata(): StateFlow<MediaMetadataCompat?> {
+    fun playingMetadata(): StateFlow<MediaMetadataCompat> {
         return musicServiceConnection.nowPlaying
     }
 
-    fun playbackState(): StateFlow<PlaybackStateCompat?> {
+    fun playbackState(): StateFlow<PlaybackStateCompat> {
         return musicServiceConnection.playbackState
     }
 
     fun onEvent(event: AlbumsEvent) {
         val transportControls = musicServiceConnection.transportControls
-        Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
+        Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value.title}")
         when (event) {
             is AlbumsEvent.PlayOrPause -> {
                 if (event.isPlay) {
@@ -99,10 +96,8 @@ class AlbumViewModel @Inject constructor(
     }
 
     fun loadSongs(forceRefresh: Boolean = false) {
-
-        Log.d(TAG, "NowPlaying: ${musicServiceConnection.nowPlaying.value?.title.toString()}")
         getSongsJob?.cancel()
-        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared
+        val isPrepared = musicServiceConnection.playbackState.value.isPrepared
         getSongsJob = songUseCases.getSongs(forceRefresh = forceRefresh).onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
@@ -115,7 +110,8 @@ class AlbumViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-                    if (isPrepared == false || isPrepared == null) {
+                    if (!isPrepared) {
+                        loadRecentSong()
                         musicServiceConnection.sendCommand("connect", null)
                         musicServiceConnection.subscribe(mediaId, subscriptionCallback)
                         Log.d(TAG, "subscribe, $mediaId")
@@ -135,7 +131,7 @@ class AlbumViewModel @Inject constructor(
                 }
 
             }
-            if (playingMetadata().value == NOTHING_PLAYING) {
+            if (musicServiceConnection.nowPlaying.value == NOTHING_PLAYING) {
                 savedSong.loadRecentSong().first()
             }
 
