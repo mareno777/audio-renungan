@@ -28,7 +28,7 @@ fun DonationScreen(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.wrapContentHeight()
+        modifier = modifier
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.SpaceBetween,

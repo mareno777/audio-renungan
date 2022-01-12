@@ -1,5 +1,7 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +16,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlayEnabled
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import com.google.android.exoplayer2.offline.Download
 import com.google.android.exoplayer2.offline.DownloadManager
@@ -46,7 +49,7 @@ class EpisodeViewModel @Inject constructor(
     private var downloadedJob: Job? = null
     private var downloadingJob: Job? = null
 
-    var currentSelectedAlbum: String? = null
+    lateinit var currentSelectedAlbum: String
 
     init {
         savedStateHandle.get<String>("album")?.let { album ->
@@ -85,6 +88,14 @@ class EpisodeViewModel @Inject constructor(
                     }
                 }
             }.launchIn(viewModelScope)
+    }
+
+    fun playingMetadata(): StateFlow<MediaMetadataCompat> {
+        return musicServiceConnection.nowPlaying.asStateFlow()
+    }
+
+    fun currentPlaybackstate(): StateFlow<PlaybackStateCompat> {
+        return musicServiceConnection.playbackState.asStateFlow()
     }
 
     fun loadDownloadedEpisodes() {

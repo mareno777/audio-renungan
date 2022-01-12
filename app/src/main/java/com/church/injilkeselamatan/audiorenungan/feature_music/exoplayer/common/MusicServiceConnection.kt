@@ -133,8 +133,6 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
             scope.launch {
                 playbackState.emit(state ?: EMPTY_PLAYBACK_STATE)
             }
-
-
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {

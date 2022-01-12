@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,6 +47,11 @@ fun EpisodeScreen(
     }
     val onDownloadComplated by viewModel.onDownloadComplated().collectAsState()
 
+    val context = LocalContext.current
+
+    val mediaMetadata by viewModel.playingMetadata().collectAsState()
+    val playbackState by viewModel.currentPlaybackstate().collectAsState()
+
     LaunchedEffect(onDownloadComplated) {
         viewModel.loadDownloadedEpisodes()
         Log.d(
@@ -60,7 +66,7 @@ fun EpisodeScreen(
         ) {
             item {
                 Text(
-                    text = viewModel.currentSelectedAlbum ?: "",
+                    text = viewModel.currentSelectedAlbum,
                     style = MaterialTheme.typography.h4,
                     fontFamily = productSansGoogle,
                     color = MaterialTheme.colors.onSurface,
@@ -126,7 +132,10 @@ fun EpisodeScreen(
                     onDownloadClicked = {
                         viewModel.onEvent(EpisodesEvent.DownloadEpisode(song))
                     },
-                    state = viewModel.onState(song.id)
+                    state = viewModel.onState(song.id),
+                    mediaMetadata = mediaMetadata,
+                    playbackState = playbackState,
+                    context = context
                 )
                 Divider()
             }

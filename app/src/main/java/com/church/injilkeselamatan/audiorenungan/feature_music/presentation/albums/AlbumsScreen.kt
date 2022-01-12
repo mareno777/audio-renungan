@@ -3,6 +3,7 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.alb
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,19 +69,24 @@ fun AlbumsScreen(
     ModalBottomSheetLayout(
         sheetState = sheetState,
         sheetContent = {
-            // sheet content
             DonationScreen {
                 val clip = ClipData.newPlainText("No Rekening", "2520827172")
                 clipboard.setPrimaryClip(clip)
                 scope.launch {
                     sheetState.hide()
                     scaffoldState.snackbarHostState
-                        .showSnackbar("Nomor rekening berhasil disalin") }
+                        .showSnackbar("Nomor rekening berhasil disalin")
+                }
 
             }
         },
         sheetShape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
     ) {
+        BackHandler(sheetState.isVisible) {
+            scope.launch {
+                sheetState.animateTo(ModalBottomSheetValue.Hidden)
+            }
+        }
         Scaffold(
             scaffoldState = scaffoldState,
         ) {
