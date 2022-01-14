@@ -10,11 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.artist
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
-import com.google.accompanist.pager.ExperimentalPagerApi
 
-@ExperimentalPagerApi
 @Composable
-fun ImageTitleArtist(
+fun TitleArtist(
     mediaMetadataCompat: MediaMetadataCompat?,
     playbackStateCompat: PlaybackStateCompat?
 ) {
@@ -23,11 +21,11 @@ fun ImageTitleArtist(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = mediaMetadataCompat?.title ?: "Unknown",
+            text = mediaMetadataCompat?.title ?: "",
             color = MaterialTheme.colors.onSurface
         )
         Text(
-            text = mediaMetadataCompat?.artist ?: "Unknown",
+            text = mediaMetadataCompat?.artist ?: "",
             color = MaterialTheme.colors.onSurface
         )
     }

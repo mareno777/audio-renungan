@@ -18,12 +18,12 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.STATE_INITIALIZED
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.STATE_INITIALIZING
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 
 class MusicSourceRepository(
     musicDatabase: MusicDatabase,
-    val context: Context
+    private val context: Context,
+    private val imageLoader: ImageLoader
 ) : AbstractMusicSource() {
 
     private var catalog = emptyList<MediaMetadataCompat>()
@@ -47,7 +47,7 @@ class MusicSourceRepository(
         return withContext(Dispatchers.IO) {
             val response = try {
                 val result: MutableList<Song> = mutableListOf()
-                val musicFromDb = musicDao.getAllSongs().first()
+                val musicFromDb = musicDao.getAllSongs()
 
                 result.addAll(
                     musicFromDb.map {
@@ -67,7 +67,9 @@ class MusicSourceRepository(
                         .size(PixelSize(512, 512))
                         .allowConversionToBitmap(true)
                         .build()
-                    val drawable = ImageLoader(context).execute(coilRequest).drawable
+
+
+                    val drawable = imageLoader.execute(coilRequest).drawable
                     val bitmap = (drawable as? BitmapDrawable)?.bitmap
                     Pair(song.imageUri, bitmap)
 
@@ -90,7 +92,9 @@ class MusicSourceRepository(
                     .build()
             }.toList()
 
-            mediaMetadataCompats.forEach { it.description.extras?.putAll(it.bundle) }
+            mediaMetadataCompats.forEach {
+                it.description.extras?.putAll(it.bundle)
+            }
             mediaMetadataCompats
         }
     }
@@ -98,7 +102,6 @@ class MusicSourceRepository(
     fun MediaMetadataCompat.Builder.from(jsonMusic: Song): MediaMetadataCompat.Builder {
         // The duration from the JSON is given in seconds, but the rest of the code works in
         // milliseconds. Here's where we convert to the proper units.
-
 
         id = jsonMusic.id
         title = jsonMusic.title
@@ -113,6 +116,7 @@ class MusicSourceRepository(
         displaySubtitle = jsonMusic.artist
         displayDescription = jsonMusic.album
         displayIconUri = jsonMusic.imageUri
+        duration = jsonMusic.duration
 
         // Add downloadStatus to force the creation of an "extras" bundle in the resulting
         // MediaMetadataCompat object. This is needed to send accurate metadata to the

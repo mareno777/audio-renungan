@@ -21,6 +21,7 @@ import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -40,6 +41,15 @@ fun AlbumsScreen(
         mutableStateOf(context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
     }
 
+    LaunchedEffect(true) {
+        viewModel.eventFlow.collectLatest { uiEvent ->
+            when (uiEvent) {
+                is AlbumViewModel.UIEvent.ShowSnackbar -> {
+                    scaffoldState.snackbarHostState.showSnackbar(uiEvent.message)
+                }
+            }
+        }
+    }
     val constraints = ConstraintSet {
         val topSection = createRefFor("topSection")
         val categoriesSection = createRefFor("categoriesSection")
@@ -107,7 +117,7 @@ fun AlbumsScreen(
                     }
                 }
                 when {
-                    state.isLoading -> {
+                    state.isLoading && state.songs.isEmpty() -> {
                         LoadingSection(modifier = Modifier.layoutId("categoriesSection"))
                     }
                     state.songs.isNotEmpty() -> {
@@ -118,13 +128,12 @@ fun AlbumsScreen(
                             navController.navigate(Screen.EpisodeScreen.route + "/${category.album}")
                         }
                     }
-                    state.errorMessage?.isNotEmpty() == true -> {
+                    !state.isLoading && state.songs.isEmpty() -> {
                         ErrorSection(
                             modifier = Modifier.layoutId("categoriesSection"),
-                            errorMessage = state.errorMessage!!
-                        ) {
-                            viewModel.loadSongs()
-                        }
+                            errorMessage = state.errorMessage ?: "Unknown error occurred",
+                            onRetryClick = { viewModel.loadSongs() }
+                        )
                     }
                 }
 

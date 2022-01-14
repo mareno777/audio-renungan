@@ -49,7 +49,7 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
         Icon(
             imageVector = Icons.Filled.Favorite,
             contentDescription = "Harta Sorgawi",
-            tint = MaterialTheme.colors.primary,
+            tint = if (isSystemInDarkTheme()) MaterialTheme.colors.onSurface else Color.Red,
             modifier = Modifier
                 .size(40.dp)
                 .clickable {

@@ -23,8 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.di.Constants
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.SongItem
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.EpisodeItem
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun EpisodeScreen(
@@ -119,7 +121,7 @@ fun EpisodeScreen(
             }
             items(state.songs) { song ->
 
-                SongItem(
+                EpisodeItem(
                     song = song,
                     maxProgress = maxProgress,
                     downloadedLength = downloadedLength,
@@ -132,7 +134,7 @@ fun EpisodeScreen(
                     onDownloadClicked = {
                         viewModel.onEvent(EpisodesEvent.DownloadEpisode(song))
                     },
-                    state = viewModel.onState(song.id),
+                    state = viewModel.onState(song.id!!),
                     mediaMetadata = mediaMetadata,
                     playbackState = playbackState,
                     context = context

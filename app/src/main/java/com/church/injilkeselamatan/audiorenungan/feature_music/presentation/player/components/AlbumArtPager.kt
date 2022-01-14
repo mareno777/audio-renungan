@@ -1,5 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
 
+import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,9 +13,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import coil.ImageLoader
 import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayIcon
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -25,8 +28,9 @@ import kotlin.math.absoluteValue
 @ExperimentalPagerApi
 @Composable
 fun AlbumArtPager(
-    songs: List<Song>,
-    pagerState: PagerState
+    songs: List<MediaMetadataCompat>,
+    pagerState: PagerState,
+    imageLoader: ImageLoader
 ) {
     val context = LocalContext.current
 
@@ -63,9 +67,8 @@ fun AlbumArtPager(
             Box {
                 Image(
                     painter = rememberImagePainter(
-                        request = ImageRequest.Builder(context)
-                            .data(songs[page].imageUri)
-                            .build()
+                       data =  songs[page].displayIcon,
+                        imageLoader = imageLoader
                     ),
                     contentDescription = null,
                     modifier = Modifier.size(300.dp),

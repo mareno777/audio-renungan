@@ -1,12 +1,24 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote
 
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDto
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.UpdateSongDto
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.UpdateSong
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface SongsApi {
 
     @GET("/audio")
     suspend fun getSongs(): MusicApiDto
+
+    @PUT("/audio/{mediaId}")
+    suspend fun updateSong(
+        @Path("mediaId") mediaId: String,
+        @Body updateSong: UpdateSongDto
+
+    ): MusicApiDto
 
 //    @FormUrlEncoded
 //    @Headers("Content-Type:application/x-www-form-urlencoded")

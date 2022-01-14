@@ -2,13 +2,12 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source
 
 import androidx.room.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MusicDao {
 
     @Query("SELECT * FROM MusicDbEntity")
-    fun getAllSongs(): Flow<List<MusicDbEntity>>
+    suspend fun getAllSongs(): List<MusicDbEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSongs(songs: List<MusicDbEntity>)
@@ -17,7 +16,7 @@ interface MusicDao {
     suspend fun setFavoriteSong(song: MusicDbEntity)
 
     @Query("DELETE FROM MusicDbEntity")
-    suspend fun clearAll()
+    suspend fun deleteAllSongs()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveRecentSong(song: MusicDbEntity)

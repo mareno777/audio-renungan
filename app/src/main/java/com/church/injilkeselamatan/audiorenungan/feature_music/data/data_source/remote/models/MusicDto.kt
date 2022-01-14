@@ -2,6 +2,7 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source
 
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
 data class MusicDto(
     val album: String,
@@ -14,7 +15,9 @@ data class MusicDto(
     val source: String,
     val title: String,
     val description: String?,
-    val synopsis: String?
+    val synopsis: String?,
+    val duration: Long,
+    val uploadedAt: Long
 )
 
 fun MusicDto.toMusicDb(): MusicDbEntity {
@@ -26,6 +29,8 @@ fun MusicDto.toMusicDb(): MusicDbEntity {
         imageUri = image,
         mediaUri = source,
         description = description,
-        synopsis = synopsis
+        synopsis = synopsis,
+        duration = duration,
+        uploadedAt = uploadedAt
     )
 }

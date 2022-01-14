@@ -3,13 +3,16 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.pla
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.palette.graphics.Palette
+import coil.ImageLoader
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
@@ -24,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
-    private val getSongUseCases: SongUseCases
+    private val getSongUseCases: SongUseCases,
+    private val imageLoader: ImageLoader
 ) : ViewModel() {
 
 
@@ -34,8 +38,8 @@ class PlayerViewModel @Inject constructor(
     private val _curSongDuration = MutableStateFlow(0L)
     val curSongDuration = _curSongDuration.asStateFlow()
 
-    private val _songs = mutableStateOf(SongsState())
-    val songs: State<SongsState> = _songs
+    private val _songs = mutableStateOf(SongsState<MediaMetadataCompat>())
+    val songs: State<SongsState<MediaMetadataCompat>> = _songs
 
     private val _curSongIndex = MutableStateFlow(-1)
     val curSongIndex = _curSongIndex.asStateFlow()
@@ -48,7 +52,7 @@ class PlayerViewModel @Inject constructor(
 
     private fun loadSongs() {
         loadingJob?.cancel()
-        loadingJob = getSongUseCases.getSongs(forceRefresh = false).onEach { resource ->
+        loadingJob = getSongUseCases.getSongs.getMediaMetadataCompats().onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.let {
@@ -73,6 +77,8 @@ class PlayerViewModel @Inject constructor(
             }
         }.launchIn(viewModelScope)
     }
+
+    fun getImageLoader(): ImageLoader = imageLoader
 
     private fun playMediaId(mediaId: String) {
 

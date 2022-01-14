@@ -3,6 +3,8 @@ package com.church.injilkeselamatan.audiorenungan.di
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
+import coil.ImageLoader
+import coil.util.CoilUtils
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
@@ -20,6 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.ktor.client.*
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
@@ -48,19 +52,21 @@ object AppModule {
     @Provides
     fun provideSongRepository(
         songsApi: SongsApi,
-        database: MusicDatabase
+        database: MusicDatabase,
+        client: HttpClient
     ): SongRepository =
-        SongRepositoryImpl(songsApi, database)
+        SongRepositoryImpl(songsApi, database, client)
 
     @Singleton
     @Provides
     fun provideSongUseCases(
         @ApplicationContext context: Context,
         repository: SongRepository,
-        downloadManager: DownloadManager
+        downloadManager: DownloadManager,
+        musicSource: MusicSource
     ): SongUseCases {
         return SongUseCases(
-            getSongs = GetSongs(repository),
+            getSongs = GetSongs(repository, musicSource),
             getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
             updateSong = UpdateSong(repository),
             downloadSong = DownloadSong(context, downloadManager)
@@ -69,10 +75,23 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideImageLoader(
+        @ApplicationContext context: Context
+    ): ImageLoader = ImageLoader.Builder(context)
+        .okHttpClient {
+            OkHttpClient.Builder()
+                .cache(CoilUtils.createDefaultCache(context))
+                .build()
+        }
+        .build()
+
+    @Singleton
+    @Provides
     fun provideMusicSourceRepository(
         @ApplicationContext context: Context,
-        musicDatabase: MusicDatabase
-    ): MusicSource = MusicSourceRepository(musicDatabase, context)
+        musicDatabase: MusicDatabase,
+        imageLoader: ImageLoader
+    ): MusicSource = MusicSourceRepository(musicDatabase, context, imageLoader)
 
     @Provides
     @Singleton

@@ -12,6 +12,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
@@ -22,10 +23,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.l
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,8 +36,15 @@ class AlbumViewModel @Inject constructor(
 
     var mediaId by mutableStateOf(UAMP_ALBUMS_ROOT)
 
-    private val _state = mutableStateOf(SongsState())
-    val state: State<SongsState> = _state
+    private val _state = mutableStateOf(SongsState<Song>())
+    val state: State<SongsState<Song>> = _state
+
+    private val _eventFlow = MutableSharedFlow<UIEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
+
+    sealed class UIEvent {
+        data class ShowSnackbar(val message: String): UIEvent()
+    }
 
     private var getSongsJob: Job? = null
 
@@ -119,15 +124,17 @@ class AlbumViewModel @Inject constructor(
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(
-                        isLoading = true,
-                        errorMessage = null
+                        songs = resource.data ?: emptyList(),
+                        isLoading = true
                     )
                 }
                 is Resource.Error -> {
                     _state.value = state.value.copy(
+                        songs = resource.data ?: emptyList(),
                         isLoading = false,
                         errorMessage = resource.message
                     )
+                    _eventFlow.emit(UIEvent.ShowSnackbar(resource.message))
                 }
 
             }

@@ -27,17 +27,18 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import coil.Coil
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.google.android.exoplayer2.C
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 
 class PersistentStorage(val context: Context) {
 
     companion object {
+        private const val PREFERENCES_NAME = "audio_renungan"
         private val RECENT_MEDIA_ID_KEY = stringPreferencesKey("recent_media_id")
         private val RECENT_TITLE_KEY = stringPreferencesKey("recent_title")
         private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
@@ -54,29 +55,25 @@ class PersistentStorage(val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
     suspend fun saveRecentSong(description: MediaMetadataCompat, position: Long) {
-        Log.d(TAG, "save: $position")
-
-        withContext(Dispatchers.IO) {
-            try {
-                context.dataStore.edit { preferences ->
-                    preferences[RECENT_MEDIA_ID_KEY] = description.id.toString()
-                    preferences[RECENT_TITLE_KEY] = description.title.toString()
-                    preferences[RECENT_SUBTITLE_KEY] = description.artist.toString()
-                    preferences[RECENT_ALBUM_KEY] = description.album.toString()
-                    preferences[RECENT_MEDIA_URI_KEY] = description.mediaUri.toString()
-                    preferences[RECENT_ICON_URI_KEY] = description.displayIconUri.toString()
-                    preferences[RECENT_POSITION_KEY] = position
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.toString())
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[RECENT_MEDIA_ID_KEY] = description.id.toString()
+                preferences[RECENT_TITLE_KEY] = description.title.toString()
+                preferences[RECENT_SUBTITLE_KEY] = description.artist.toString()
+                preferences[RECENT_ALBUM_KEY] = description.album.toString()
+                preferences[RECENT_MEDIA_URI_KEY] = description.mediaUri.toString()
+                preferences[RECENT_ICON_URI_KEY] = description.displayIconUri.toString()
+                preferences[RECENT_POSITION_KEY] = position
             }
-
+        } catch (e: Exception) {
+            Log.e(TAG, e.toString())
         }
+
 
     }
 
-    fun loadRecentSong(): Flow<MediaMetadataCompat?> {
-        val media = context.dataStore.data.map { preferences ->
+    fun loadRecentSong(): Flow<MediaMetadataCompat> {
+        return context.dataStore.data.map { preferences ->
             val mediaId = preferences[RECENT_MEDIA_ID_KEY]
             if (mediaId != null) {
                 Log.d(TAG, "load: ${preferences[RECENT_POSITION_KEY]}")
@@ -86,6 +83,7 @@ class PersistentStorage(val context: Context) {
                         id = mediaId
                         title = preferences[RECENT_TITLE_KEY]
                         album = preferences[RECENT_ALBUM_KEY]
+                        artist = preferences[RECENT_SUBTITLE_KEY]
                         mediaUri = preferences[RECENT_MEDIA_URI_KEY]
                         albumArtUri = preferences[RECENT_ICON_URI_KEY]
                         displayTitle = preferences[RECENT_TITLE_KEY]
@@ -98,13 +96,11 @@ class PersistentStorage(val context: Context) {
                     .build()
                 mediaMetadataCompat
             } else {
-                null
+                NOTHING_PLAYING
             }
         }
-        return media
     }
 }
 
-private const val PREFERENCES_NAME = "audio_renungan"
 private const val TAG = "PersistentStorage"
 const val PREFERENCES_POSITION = "preferences_position"

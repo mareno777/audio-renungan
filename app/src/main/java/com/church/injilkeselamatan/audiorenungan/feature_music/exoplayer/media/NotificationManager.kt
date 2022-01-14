@@ -20,6 +20,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
 import com.church.injilkeselamatan.audiorenungan.R
@@ -37,7 +38,7 @@ class NotificationManager(
     context: Context,
     sessionToken: MediaSessionCompat.Token,
     notificationListener: PlayerNotificationManager.NotificationListener,
-    private val newSongCallback: () -> Unit
+    private val newSongCallback: (MediaMetadataCompat) -> Unit
 ) {
 
     private val notificationManager: PlayerNotificationManager
@@ -86,7 +87,7 @@ class NotificationManager(
             controller.metadata.description.subtitle.toString()
 
         override fun getCurrentContentTitle(player: Player): CharSequence {
-            newSongCallback()
+            newSongCallback(controller.metadata)
             return controller.metadata.description.title.toString()
         }
 

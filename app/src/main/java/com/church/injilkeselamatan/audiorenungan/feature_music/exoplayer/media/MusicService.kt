@@ -16,6 +16,7 @@
 
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Intent
@@ -35,6 +36,8 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.*
 import com.google.android.exoplayer2.*
@@ -97,6 +100,9 @@ class MusicService : MediaBrowserServiceCompat() {
     @Inject
     lateinit var mediaSource: MusicSource
 
+    @Inject
+    lateinit var songUseCases: SongUseCases
+
     /**
      * This must be `by lazy` because the source won't initially be ready.
      * See [MusicService.onLoadChildren] to see where it's accessed (and first
@@ -144,6 +150,7 @@ class MusicService : MediaBrowserServiceCompat() {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onCreate() {
         super.onCreate()
 
@@ -197,12 +204,12 @@ class MusicService : MediaBrowserServiceCompat() {
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }
+
         }
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
         serviceScope.launch {
-            //mediaSource.load()
             recentSong = storage.loadRecentSong().first()
         }
 
@@ -327,7 +334,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
         if (parentMediaId == UAMP_RECENT_ROOT) {
 
-            if (recentSong != null) {
+            if (recentSong != null && recentSong != NOTHING_PLAYING) {
                 result.sendResult(
                     listOf(
                         MediaBrowserCompat.MediaItem(

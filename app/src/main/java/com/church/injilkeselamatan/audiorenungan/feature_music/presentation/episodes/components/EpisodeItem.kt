@@ -24,15 +24,14 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.google.android.exoplayer2.offline.Download
 import com.mikhaellopez.circularprogressbar.CircularProgressBar
+import java.util.concurrent.TimeUnit
 
 @Composable
-fun SongItem(
-    song: Song,
+fun EpisodeItem(
+    song: MediaMetadataCompat,
     maxProgress: Float = 0f,
     downloadedLength: Float = 0f,
     downloaded: Boolean,
@@ -48,8 +47,8 @@ fun SongItem(
     val color = MaterialTheme.colors.primary.toArgb()
     val painter = rememberImagePainter(
         ImageRequest.Builder(context)
-            .data(song.imageUri)
-            .transformations(RoundedCornersTransformation(12f))
+            .data(song.albumArt)
+            .transformations(RoundedCornersTransformation(55f))
             .build()
     )
 
@@ -62,12 +61,12 @@ fun SongItem(
             Image(
                 painter = painter,
                 contentDescription = null,
-                modifier = Modifier.size(50.dp)
+                modifier = Modifier.size(55.dp)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = song.title,
+            text = "${song.title}",
             color = MaterialTheme.colors.onBackground,
             style = MaterialTheme.typography.body1,
             fontWeight = FontWeight.SemiBold,
@@ -75,14 +74,14 @@ fun SongItem(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "${song.album} \u2022 Duration song",
+            text = "${song.album} • ${millisToDuration(song.duration)}",
             color = Color.Gray,
             style = MaterialTheme.typography.body2,
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "${song.artist} \u2022 12 November 2021",
+            text = "${song.artist} \u2022 12 November 2021", // FIXME: 13/01/22 add custom bundle for uploadedAt
             color = Color.Gray,
             style = MaterialTheme.typography.body2,
             maxLines = 1
@@ -155,4 +154,11 @@ fun SongItem(
 
         }
     }
+}
+fun millisToDuration(millis: Long): String {
+    var minutes = TimeUnit.MILLISECONDS.toMinutes(millis)
+    val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) -
+            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
+    if(seconds.toInt() >= 50) minutes = TimeUnit.MILLISECONDS.toMinutes(millis + 60000L)
+    return String.format("%02d Menit", minutes)
 }

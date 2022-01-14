@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
@@ -22,7 +23,7 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
     val curSongDuration by viewModel.curSongDuration.collectAsState()
     val curPlayingPosition by viewModel.updateCurrentPlayingPosition().collectAsState(0L)
     val currentSongIndex by viewModel.curSongIndex.collectAsState()
-    val songsState by viewModel.songs
+    val songsState  by viewModel.songs
 
     var scrollBySystem by remember {
         mutableStateOf(false)
@@ -74,10 +75,11 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
             ) {
                 AlbumArtPager(
                     songs = songsState.songs,
-                    pagerState = pagerState
+                    pagerState = pagerState,
+                    imageLoader = viewModel.getImageLoader()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                ImageTitleArtist(
+                TitleArtist(
                     mediaMetadataCompat = mediaMetadataCompat,
                     playbackStateCompat = playbackStateCompat
                 )
@@ -100,8 +102,7 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                     snapshotFlow { pagerState.currentPage }.collect { page ->
                         songsState.songs.let { listOfSongs ->
                             if (!scrollBySystem) {
-                                Log.d("PlayerScreen", "onExecuted")
-                                viewModel.onEvent(PlayerEvents.PlayFromMediaId(listOfSongs[page].id))
+                                viewModel.onEvent(PlayerEvents.PlayFromMediaId(listOfSongs[page].id!!))
                                 viewModel.onEvent(PlayerEvents.PlayOrPause(true))
                             }
                         }
