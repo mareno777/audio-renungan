@@ -51,6 +51,7 @@ import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.gms.cast.framework.CastContext
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -114,10 +115,8 @@ class MusicService : MediaBrowserServiceCompat() {
     private var recentSong: MediaMetadataCompat? = null
 
     companion object {
-        var curSongDuration = 0L
-            private set
-        var curSongIndex = 0
-            private set
+        val curSongDuration = MutableStateFlow(0L)
+        val curSongIndex= MutableStateFlow(0)
     }
 
     private var isForegroundService = false
@@ -199,8 +198,10 @@ class MusicService : MediaBrowserServiceCompat() {
             PlayerNotificationListener()
         ) {
             //on playback change
-            curSongDuration = currentPlayer.duration
-            curSongIndex = currentPlayer.currentMediaItemIndex
+            serviceScope.launch {
+                curSongDuration.emit(currentPlayer.duration)
+                curSongIndex.emit(currentPlayer.currentMediaItemIndex)
+            }
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }

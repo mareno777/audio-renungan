@@ -44,8 +44,8 @@ class PersistentStorage(val context: Context) {
         private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
         private val RECENT_ALBUM_KEY = stringPreferencesKey("recent_album")
         private val RECENT_MEDIA_URI_KEY = stringPreferencesKey("recent_media_uri")
-        private val RECENT_ICON_URI_KEY = stringPreferencesKey("recent_icon_uri_subtitle")
-        private val RECENT_POSITION_KEY = longPreferencesKey("recent_position_subtitle")
+        private val RECENT_ICON_URI_KEY = stringPreferencesKey("recent_icon_uri")
+        private val RECENT_POSITION_KEY = longPreferencesKey("recent_position")
     }
 
     /**
@@ -54,7 +54,10 @@ class PersistentStorage(val context: Context) {
 
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
 
-    suspend fun saveRecentSong(description: MediaMetadataCompat, position: Long) {
+    suspend fun saveRecentSong(
+        description: MediaMetadataCompat,
+        position: Long
+    ) {
         try {
             context.dataStore.edit { preferences ->
                 preferences[RECENT_MEDIA_ID_KEY] = description.id.toString()
@@ -104,3 +107,4 @@ class PersistentStorage(val context: Context) {
 
 private const val TAG = "PersistentStorage"
 const val PREFERENCES_POSITION = "preferences_position"
+const val PREFERENCES_DURATION = "preferences_duration"

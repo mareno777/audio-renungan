@@ -74,7 +74,7 @@ class AlbumViewModel @Inject constructor(
 
     private fun loadRecentSong() {
         viewModelScope.launch {
-            _recentSong.value = savedSong.loadRecentSong().first() ?: NOTHING_PLAYING
+            _recentSong.value = savedSong.loadRecentSong().first()
         }
     }
 

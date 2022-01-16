@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
@@ -9,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.*
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -18,12 +18,14 @@ import com.google.accompanist.pager.rememberPagerState
 @Composable
 fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hiltViewModel()) {
 
-    val mediaMetadataCompat by viewModel.nowPlaying.collectAsState()
-    val playbackStateCompat by viewModel.playbackState.collectAsState()
+
     val curSongDuration by viewModel.curSongDuration.collectAsState()
-    val curPlayingPosition by viewModel.updateCurrentPlayingPosition().collectAsState(0L)
+    val curPlaybackState by viewModel.playbackState().collectAsState()
+    val songsState by viewModel.songs
     val currentSongIndex by viewModel.curSongIndex.collectAsState()
-    val songsState  by viewModel.songs
+    val currentMediaMetadata by viewModel.playingMediaMetadata().collectAsState()
+    val recentSong by viewModel.recentSong.collectAsState()
+    val curPlaybackPosition by viewModel.currentPlaybackPosition.collectAsState()
 
     var scrollBySystem by remember {
         mutableStateOf(false)
@@ -31,37 +33,21 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
 
     val pagerState = rememberPagerState()
 
+    LaunchedEffect(key1 = pagerState.pageCount, key2 = currentSongIndex) {
+        if (currentSongIndex > -1) {
+            if (pagerState.pageCount > 0) {
+                scrollBySystem = true
+                pagerState.scrollToPage(currentSongIndex)
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            LaunchedEffect(key1 = true, key2 = pagerState.pageCount) {
-                Log.d(
-                    "PlayerScreen",
-                    "songIndex: $currentSongIndex, pageCount: ${pagerState.pageCount}"
-                )
-                if (currentSongIndex > -1) {
-                    if (pagerState.pageCount > 0) {
-                        scrollBySystem = true
-                        pagerState.scrollToPage(currentSongIndex)
-                    }
-                }
-            }
-
-            LaunchedEffect(key1 = currentSongIndex) {
-                Log.d(
-                    "PlayerScreen",
-                    "songIndex: $currentSongIndex, pageCount: ${pagerState.pageCount}"
-                )
-                if (currentSongIndex > -1) {
-                    if (pagerState.pageCount > 0) {
-                        scrollBySystem = true
-                        pagerState.animateScrollToPage(currentSongIndex)
-                    }
-                }
-            }
 
             TopSection(
                 modifier = Modifier.align(Alignment.TopCenter)
@@ -71,25 +57,30 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(16.dp)
             ) {
                 AlbumArtPager(
                     songs = songsState.songs,
                     pagerState = pagerState,
+                    mediaMetadataCompat = if (currentMediaMetadata == NOTHING_PLAYING) recentSong
+                    else currentMediaMetadata,
                     imageLoader = viewModel.getImageLoader()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 TitleArtist(
-                    mediaMetadataCompat = mediaMetadataCompat,
-                    playbackStateCompat = playbackStateCompat
+                    mediaMetadataCompat = if (currentMediaMetadata == NOTHING_PLAYING) recentSong
+                    else currentMediaMetadata,
+                    playbackStateCompat = curPlaybackState
                 )
                 SeekbarSection(
-                    curPlayingPosition = curPlayingPosition,
+                    curPlaybackPosition = curPlaybackPosition,
                     curSongDuration = curSongDuration,
                     seekToPosition = { viewModel.onEvent(PlayerEvents.SeekTo(it)) }
                 )
                 MediaControllerSection(
-                    playbackStateCompat = playbackStateCompat,
+                    playbackStateCompat = curPlaybackState,
                     onPlayClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(true)) },
                     onPauseClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(false)) },
                     onSkipToPrevious = { viewModel.onEvent(PlayerEvents.SkipToPrevious) },

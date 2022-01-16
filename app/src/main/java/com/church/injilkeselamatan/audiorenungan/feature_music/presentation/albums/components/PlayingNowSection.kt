@@ -4,26 +4,29 @@ import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
+import coil.transform.RoundedCornersTransformation
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.album
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.artist
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Dimensions
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MarqueeText
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.lessThan
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.mediaQuery
 
@@ -34,13 +37,14 @@ fun PlayingNowSection(
     mediaMetadataCompat: MediaMetadataCompat,
     needToPlay: (Boolean) -> Unit
 ) {
+    val context = LocalContext.current
 
-    val painter = when (mediaMetadataCompat.album) {
-        "Pohon Kehidupan" -> rememberImagePainter(R.drawable.pohon_kehidupan)
-        "Belajar Takut Akan Tuhan" -> rememberImagePainter(R.drawable.btat)
-        "Saat Teduh Bersama Tuhan" -> rememberImagePainter(R.drawable.stbt)
-        else -> null
-    }
+    val painter = rememberImagePainter(
+        ImageRequest.Builder(context)
+            .data(mediaMetadataCompat.displayIconUri)
+            .transformations(RoundedCornersTransformation(15f))
+            .build()
+    )
 
     Surface(
         elevation = 8.dp,
@@ -50,36 +54,38 @@ fun PlayingNowSection(
                 comparator = Dimensions.Height lessThan 600.dp,
                 modifier = modifier.fillMaxHeight(0.1f)
             )
-            .fillMaxHeight(0.08f)
+            .fillMaxHeight(0.08f),
     ) {
-        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (painter != null) {
-
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        contentScale = ContentScale.FillBounds,
-                        modifier = Modifier
-                            .size(70.dp)
-                            .fillMaxWidth()
-                    )
-
-                }
-                Spacer(modifier = Modifier.width(4.dp))
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .size(45.dp)
+                        .fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Column {
-                    Text(
+                    MarqueeText(
                         text = mediaMetadataCompat.title ?: "",
-                        style = MaterialTheme.typography.caption,
+                        style = MaterialTheme.typography.subtitle1,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 18.sp
+                        modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = mediaMetadataCompat.artist ?: "",
-                        style = MaterialTheme.typography.caption,
-                        fontSize = 14.sp
+                        text = mediaMetadataCompat.album ?: "",
+                        style = MaterialTheme.typography.subtitle2,
+                        fontWeight = FontWeight.Normal,
+                        color = Color.Gray
                     )
-
                 }
             }
             Icon(
@@ -95,8 +101,13 @@ fun PlayingNowSection(
                 modifier = Modifier
                     .width(50.dp)
                     .fillMaxHeight()
-                    .padding(end = 4.dp)
-                    .clickable {
+                    .offset(x = 10.dp)
+                    .clickable(
+                        interactionSource = remember {
+                            MutableInteractionSource()
+                        },
+                        indication = null
+                    ) {
                         needToPlay(!playbackStateCompat.isPlaying)
                     }
             )

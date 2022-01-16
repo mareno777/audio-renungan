@@ -31,6 +31,7 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -134,6 +135,24 @@ dependencies {
     implementation "io.ktor:ktor-client-serialization:$ktor_version"
     implementation "io.ktor:ktor-client-logging:$ktor_version"
     implementation "ch.qos.logback:logback-classic:1.2.6"
+
+    implementation 'com.amplifyframework:core:1.31.1'
+
+    // Support for Java 8 features
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+    //For AWSMobileClient only:
+    implementation 'com.amazonaws:aws-android-sdk-mobile-client:2.37.1'
+
+    //For the drop-in UI also:
+    implementation 'com.amazonaws:aws-android-sdk-auth-userpools:2.37.1'
+    implementation 'com.amazonaws:aws-android-sdk-auth-ui:2.37.1'
+
+    //For hosted UI also:
+    implementation 'com.amazonaws:aws-android-sdk-cognitoauth:2.37.1'
+
+    implementation 'com.amplifyframework:aws-auth-cognito:1.31.1'
+    implementation 'com.amplifyframework:core-kotlin:0.15.1'
 
     // Palette API - Selecting colors
     implementation 'androidx.palette:palette-ktx:1.0.0'

@@ -2,31 +2,51 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.pla
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.artist
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MarqueeText
 
 @Composable
 fun TitleArtist(
-    mediaMetadataCompat: MediaMetadataCompat?,
-    playbackStateCompat: PlaybackStateCompat?
+    mediaMetadataCompat: MediaMetadataCompat,
+    playbackStateCompat: PlaybackStateCompat
 ) {
-    Column(
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = mediaMetadataCompat?.title ?: "",
-            color = MaterialTheme.colors.onSurface
-        )
-        Text(
-            text = mediaMetadataCompat?.artist ?: "",
-            color = MaterialTheme.colors.onSurface
-        )
+    Box(contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            if ((mediaMetadataCompat.title ?: "").length > 25) {
+                MarqueeText(
+                    modifier = Modifier
+                        .wrapContentHeight(),
+                    text = mediaMetadataCompat.title ?: "",
+                    color = MaterialTheme.colors.onSurface,
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    text = mediaMetadataCompat.title ?: "",
+                    color = MaterialTheme.colors.onSurface,
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = mediaMetadataCompat.artist ?: "",
+                color = MaterialTheme.colors.onSurface,
+                style = MaterialTheme.typography.body1,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }

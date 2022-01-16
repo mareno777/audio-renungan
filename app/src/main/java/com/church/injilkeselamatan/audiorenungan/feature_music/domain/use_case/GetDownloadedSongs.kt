@@ -3,6 +3,7 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
+import com.google.android.exoplayer2.offline.Download.STATE_COMPLETED
 import com.google.android.exoplayer2.offline.DownloadManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,8 +22,9 @@ class GetDownloadedSongs(
                         resource.data?.asSequence()?.let { songs ->
                             val filteredSongs =
                                 songs.filter {
-                                    it.album == album &&
-                                            downloadedIndex.getDownload(it.id) != null
+                                    it.album == album
+                                }.filter {
+                                    downloadedIndex.getDownload(it.id)?.state == STATE_COMPLETED
                                 }
 
                             mutable.addAll(filteredSongs)
@@ -45,7 +47,7 @@ class GetDownloadedSongs(
                         resource.data?.asSequence()?.let { songs ->
 
                             mutable.addAll(songs.filter { song ->
-                                downloadManager.downloadIndex.getDownload(song.id) != null
+                                downloadManager.downloadIndex.getDownload(song.id)?.state == STATE_COMPLETED
                             })
                         }
                         Resource.Success<List<Song>>(mutable.sortedBy { it.id })
