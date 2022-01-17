@@ -1,10 +1,11 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.data.repository
 
+import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.BuildConfig
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.toSong
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDto
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDtoSingle
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.UpdateSongDto
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.toMusicDb
@@ -16,15 +17,17 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
 import java.io.IOException
+import java.nio.channels.UnresolvedAddressException
 
 
 class SongRepositoryImpl(
-    private val songsApi: SongsApi,
     musicDatabase: MusicDatabase,
     private val client: HttpClient
 ) : SongRepository {
+
+    private val endpointUrl = "${BuildConfig.BASE_URL}/audio"
+
 
     private val musicDao = musicDatabase.musicDao()
 
@@ -35,17 +38,11 @@ class SongRepositoryImpl(
         emit(Resource.Loading(data = songs))
 
         try {
-            val remoteSongs = songsApi.getSongs().music
+            val remoteSongs = client.get<MusicApiDto>(endpointUrl).music
             musicDao.deleteAllSongs()
             musicDao.insertSongs(remoteSongs.map { it.toMusicDb() })
-        } catch (e: HttpException) {
-            emit(
-                Resource.Error(
-                    message = e.message(),
-                    data = songs
-                )
-            )
-        } catch (e: IOException) {
+        } catch (e: UnresolvedAddressException) {
+            Log.e(TAG, e.toString())
             emit(
                 Resource.Error(
                     message = "Couldn't reach server, check your internet connection",
@@ -71,7 +68,7 @@ class SongRepositoryImpl(
             emit(Resource.Loading())
             try {
                 val response = client.put<MusicApiDtoSingle>(
-                    "${BuildConfig.BASE_URL}/audio/$mediaId"
+                    "$endpointUrl/mediaId"
                 ) {
                     contentType(ContentType.Application.Json)
                     body = updateSongDto

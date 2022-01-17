@@ -6,7 +6,6 @@ import android.provider.Settings
 import coil.ImageLoader
 import coil.util.CoilUtils
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.SongsApi
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.*
@@ -51,11 +50,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideSongRepository(
-        songsApi: SongsApi,
         database: MusicDatabase,
         client: HttpClient
     ): SongRepository =
-        SongRepositoryImpl(songsApi, database, client)
+        SongRepositoryImpl(database, client)
 
     @Singleton
     @Provides

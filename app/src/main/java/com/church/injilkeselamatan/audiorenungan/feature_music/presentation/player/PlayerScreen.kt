@@ -64,8 +64,6 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                 AlbumArtPager(
                     songs = songsState.songs,
                     pagerState = pagerState,
-                    mediaMetadataCompat = if (currentMediaMetadata == NOTHING_PLAYING) recentSong
-                    else currentMediaMetadata,
                     imageLoader = viewModel.getImageLoader()
                 )
                 Spacer(modifier = Modifier.height(8.dp))

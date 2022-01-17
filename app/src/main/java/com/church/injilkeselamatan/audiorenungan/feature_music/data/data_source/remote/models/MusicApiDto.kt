@@ -1,9 +1,10 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-
+@Serializable
 data class MusicApiDto(
-    @SerializedName("data")
+    @SerialName("data")
     val music: List<MusicDto>
 )

@@ -1,17 +1,18 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models
 
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class MusicDto(
     val album: String,
     val artist: String,
-    @SerializedName("mediaId")
+    @SerialName("mediaId")
     val id: String,
-    @SerializedName("imageUrl")
+    @SerialName("imageUrl")
     val image: String,
-    @SerializedName("songUrl")
+    @SerialName("songUrl")
     val source: String,
     val title: String,
     val description: String?,

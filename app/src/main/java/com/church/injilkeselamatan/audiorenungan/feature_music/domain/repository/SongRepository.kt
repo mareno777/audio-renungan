@@ -1,7 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository
 
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDto
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.MusicApiDtoSingle
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.remote.models.UpdateSongDto
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
@@ -13,5 +12,8 @@ interface SongRepository {
     fun getSongs(forceRefresh: Boolean): Flow<Resource<List<Song>>>
 
     suspend fun updateSong(song: MusicDbEntity): Resource<String>
-    suspend fun updateDuration(mediaId: String, updateSongDto: UpdateSongDto): Flow<Resource<MusicApiDtoSingle>>
+    suspend fun updateDuration(
+        mediaId: String,
+        updateSongDto: UpdateSongDto
+    ): Flow<Resource<MusicApiDtoSingle>>
 }

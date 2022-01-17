@@ -1,19 +1,19 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-audiorenunganmaster-dev-14423-authRole",
-      "UnauthRoleArn": "arn:aws:iam::324251956044:role/amplify-audiorenunganmaster-dev-14423-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::324251956044:role/amplify-audiorenunganmaster-dev-14423-authRole",
+      "AuthRoleName": "amplify-oasisjiwa-dev-145232-authRole",
+      "UnauthRoleArn": "arn:aws:iam::324251956044:role/amplify-oasisjiwa-dev-145232-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::324251956044:role/amplify-oasisjiwa-dev-145232-authRole",
       "Region": "ap-southeast-1",
-      "DeploymentBucketName": "amplify-audiorenunganmaster-dev-14423-deployment",
-      "UnauthRoleName": "amplify-audiorenunganmaster-dev-14423-unauthRole",
-      "StackName": "amplify-audiorenunganmaster-dev-14423",
-      "StackId": "arn:aws:cloudformation:ap-southeast-1:324251956044:stack/amplify-audiorenunganmaster-dev-14423/040d33c0-756a-11ec-8b32-0aae08aeb948",
-      "AmplifyAppId": "dkdp3weg0hlth"
+      "DeploymentBucketName": "amplify-oasisjiwa-dev-145232-deployment",
+      "UnauthRoleName": "amplify-oasisjiwa-dev-145232-unauthRole",
+      "StackName": "amplify-oasisjiwa-dev-145232",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:324251956044:stack/amplify-oasisjiwa-dev-145232/700c0f40-776a-11ec-971d-065fa9e11a4e",
+      "AmplifyAppId": "d1s73dzbdw5yh5"
     },
     "categories": {
       "auth": {
-        "audiorenunganmaster07a0215f": {}
+        "oasisjiwa63de8513": {}
       }
     }
   }
