@@ -99,11 +99,6 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
-
-        <provider
-            android:name=".feature_music.exoplayer.media.library.AlbumArtContentProvider"
-            android:authorities="com.church.injilkeselamatan.audiorenungan"
-            android:exported="true" />
     </application>
 
 </manifest>

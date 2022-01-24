@@ -116,7 +116,9 @@ class MusicSourceRepository(
         displaySubtitle = jsonMusic.artist
         displayDescription = jsonMusic.album
         displayIconUri = jsonMusic.imageUri
-        duration = jsonMusic.duration
+        if (jsonMusic.duration >= 1000) {
+            duration = jsonMusic.duration
+        }
 
         // Add downloadStatus to force the creation of an "extras" bundle in the resulting
         // MediaMetadataCompat object. This is needed to send accurate metadata to the

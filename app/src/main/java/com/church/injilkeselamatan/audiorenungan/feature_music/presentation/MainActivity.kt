@@ -16,9 +16,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,7 +33,6 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ExperimentalPagerApi
@@ -52,18 +48,13 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-//        lifecycleScope.launch {
-//            lifecycle.repeatOnLifecycle(Lifecycle.State.CREATED) {
-//                mainViewModel.fetchSession()
-//            }
-//        }
+
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 mainViewModel.isLoading.value
             }
         }
         super.onCreate(savedInstanceState)
-
 
         volumeControlStream = AudioManager.STREAM_MUSIC
 
@@ -88,11 +79,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-
             val navController = rememberNavController()
 
             AudioRenunganTheme {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
                         startDestination = Screen.AlbumsScreen.route,
@@ -122,11 +112,12 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     private suspend fun signIn() {
         try {
             val result = Amplify.Auth.signInWithSocialWebUI(AuthProvider.google(), this)
             if (result.isSignInComplete) {
-                mainViewModel.isLoading.emit(false)
+                mainViewModel.fetchSession()
             }
         } catch (error: AuthException) {
             Log.e("AuthQuickStart", "Signin failed", error)

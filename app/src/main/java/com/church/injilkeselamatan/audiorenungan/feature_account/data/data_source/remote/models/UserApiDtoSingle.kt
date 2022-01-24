@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserApiDto(
+data class UserApiDtoSingle(
     val code: Int,
     @SerialName("data")
-    val users: List<UserDto>,
+    val users: UserDto?,
     val message: String
 )

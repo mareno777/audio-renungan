@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
@@ -116,7 +117,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
     companion object {
         val curSongDuration = MutableStateFlow(0L)
-        val curSongIndex= MutableStateFlow(0)
+        val curSongIndex = MutableStateFlow(0)
     }
 
     private var isForegroundService = false
@@ -205,7 +206,9 @@ class MusicService : MediaBrowserServiceCompat() {
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }
-
+//            if (currentPlayer.duration > 1000) {
+//                Toast.makeText(this, "${currentPlayer.duration}", Toast.LENGTH_SHORT).show()
+//            }
         }
 
         // The media library is built from a remote JSON file. We'll create the source here,

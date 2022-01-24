@@ -57,7 +57,7 @@ class EpisodeViewModel @Inject constructor(
         initDownloadEvent(true)
     }
 
-    private fun loadEpisodes(forceRefresh: Boolean = false) {
+    private fun loadEpisodes() {
         loadEpisodeJob?.cancel()
         loadEpisodeJob =
             songUseCases.getSongs.getMediaMetadataCompats(currentSelectedAlbum).onEach { resource ->

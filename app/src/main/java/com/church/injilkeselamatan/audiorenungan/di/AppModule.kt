@@ -1,10 +1,13 @@
 package com.church.injilkeselamatan.audiorenungan.di
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
 import coil.ImageLoader
 import coil.util.CoilUtils
+import com.church.injilkeselamatan.audiorenungan.feature_account.data.repository.UserRepositoryImpl
+import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
@@ -91,6 +94,12 @@ object AppModule {
         imageLoader: ImageLoader
     ): MusicSource = MusicSourceRepository(musicDatabase, context, imageLoader)
 
+    @Singleton
+    @Provides
+    fun provideUserRepository(client: HttpClient): UserRepository =
+        UserRepositoryImpl(client)
+
+    @SuppressLint("HardwareIds")
     @Provides
     @Singleton
     fun provideHardwareId(@ApplicationContext context: Context): String =

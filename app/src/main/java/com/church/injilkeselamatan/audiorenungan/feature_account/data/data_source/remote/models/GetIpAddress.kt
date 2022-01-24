@@ -4,9 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserApiDto(
-    val code: Int,
-    @SerialName("data")
-    val users: List<UserDto>,
-    val message: String
+data class GetIpAddress(
+    @SerialName("ip")
+    val ipAddress: String
 )
