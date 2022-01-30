@@ -1,6 +1,7 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case
 
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
@@ -15,11 +16,11 @@ class GetSongs(
     private val musicSource: MusicSource
 ) {
 
-    operator fun invoke(album: String? = null, forceRefresh: Boolean): Flow<Resource<List<Song>>> {
+    operator fun invoke(album: String? = null): Flow<Resource<List<Song>>> {
         return if (album != null) {
             var mutable = listOf<Song>()
 
-            repository.getSongs(forceRefresh).map { resource ->
+            repository.getSongs(false).map { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         resource.data?.let { songs ->
@@ -45,7 +46,7 @@ class GetSongs(
                 }
             }
         } else {
-            repository.getSongs(forceRefresh)
+            repository.getSongs(false)
         }
     }
 
@@ -57,6 +58,8 @@ class GetSongs(
             } else {
                 emit(Resource.Success(musicSource.toList()))
             }
+            Log.i(TAG, "get media metadata: ${musicSource.toList()}")
         }
     }
 }
+private const val TAG = "GetSongs"

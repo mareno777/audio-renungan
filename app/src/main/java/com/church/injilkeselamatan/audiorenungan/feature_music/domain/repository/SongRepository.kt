@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface SongRepository {
 
-    fun getSongs(forceRefresh: Boolean): Flow<Resource<List<Song>>>
+    fun getSongs(fromDbOnly: Boolean): Flow<Resource<List<Song>>>
+
+    fun getFeaturedSong(): Flow<Resource<Song>>
 
     suspend fun updateSong(song: MusicDbEntity): Resource<String>
     suspend fun updateDuration(

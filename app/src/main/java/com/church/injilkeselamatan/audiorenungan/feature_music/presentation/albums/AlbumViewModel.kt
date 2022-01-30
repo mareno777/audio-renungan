@@ -17,9 +17,10 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.S
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPrepared
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.UAMP_ALBUMS_ROOT
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.FeaturedSongState
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -39,14 +40,18 @@ class AlbumViewModel @Inject constructor(
     private val _state = mutableStateOf(SongsState<Song>())
     val state: State<SongsState<Song>> = _state
 
+    private val _featuredState = mutableStateOf<FeaturedSongState<Song>>(FeaturedSongState())
+    val featuredState: State<FeaturedSongState<Song>> = _featuredState
+
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     sealed class UIEvent {
-        data class ShowSnackbar(val message: String): UIEvent()
+        data class ShowSnackbar(val message: String) : UIEvent()
     }
 
     private var getSongsJob: Job? = null
+    private var getFeaturedSongJob: Job? = null
 
     private val _recentSong = mutableStateOf(NOTHING_PLAYING)
     val recentSong: State<MediaMetadataCompat> = _recentSong
@@ -67,9 +72,9 @@ class AlbumViewModel @Inject constructor(
             }
         }
 
-
     init {
-        loadSongs(forceRefresh = true)
+        loadSongs()
+        loadFeaturedSong()
     }
 
     private fun loadRecentSong() {
@@ -97,13 +102,35 @@ class AlbumViewModel @Inject constructor(
                     transportControls.pause()
                 }
             }
+            is AlbumsEvent.PlayFeatured -> {
+                playMediaId(featuredState.value.song?.id!!)
+            }
         }
     }
 
-    fun loadSongs(forceRefresh: Boolean = false) {
+    private fun playMediaId(mediaId: String) {
+
+        val transportControls = musicServiceConnection.transportControls
+        val isPrepared = musicServiceConnection.playbackState.value.isPrepared
+        Log.d(TAG, "mediaId: $mediaId $isPrepared")
+        if (isPrepared && mediaId == musicServiceConnection.nowPlaying.value.id) {
+            when {
+                musicServiceConnection.playbackState.value.isPlaying -> transportControls.pause()
+                musicServiceConnection.playbackState.value.isPlayEnabled -> transportControls.play()
+                else -> {
+                    throw IllegalAccessException("playbackState on unknown state")
+                }
+            }
+
+        } else {
+            transportControls.playFromMediaId(mediaId, null)
+        }
+    }
+
+    fun loadSongs() {
         getSongsJob?.cancel()
         val isPrepared = musicServiceConnection.playbackState.value.isPrepared
-        getSongsJob = songUseCases.getSongs(forceRefresh = forceRefresh).onEach { resource ->
+        getSongsJob = songUseCases.getSongs().onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.sortedBy { it.id }?.distinctBy { data ->
@@ -115,18 +142,21 @@ class AlbumViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
+                    Log.d(TAG, "isPrepared: $isPrepared")
                     if (!isPrepared) {
                         loadRecentSong()
                         musicServiceConnection.sendCommand("connect", null)
                         musicServiceConnection.subscribe(mediaId, subscriptionCallback)
                         Log.d(TAG, "subscribe, $mediaId")
                     }
+                    Log.d(TAG, "loadSongs success")
                 }
                 is Resource.Loading -> {
                     _state.value = state.value.copy(
                         songs = resource.data ?: emptyList(),
                         isLoading = true
                     )
+                    Log.d(TAG, "loadSongs loading")
                 }
                 is Resource.Error -> {
                     _state.value = state.value.copy(
@@ -135,6 +165,7 @@ class AlbumViewModel @Inject constructor(
                         errorMessage = resource.message
                     )
                     _eventFlow.emit(UIEvent.ShowSnackbar(resource.message))
+                    Log.d(TAG, "loadSongs error")
                 }
 
             }
@@ -143,6 +174,38 @@ class AlbumViewModel @Inject constructor(
             }
 
         }.launchIn(viewModelScope)
+    }
+
+
+    fun loadFeaturedSong() {
+        getFeaturedSongJob?.cancel()
+        getFeaturedSongJob = viewModelScope.launch {
+            songUseCases.getFeaturedSong().collect { resource ->
+                when (resource) {
+                    is Resource.Loading -> {
+                        _featuredState.value = featuredState.value.copy(
+                            song = null,
+                            isLoading = true
+                        )
+                    }
+                    is Resource.Success -> {
+                        _featuredState.value = featuredState.value.copy(
+                            song = resource.data,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                        Log.d(TAG, "${resource.data}")
+                    }
+                    is Resource.Error -> {
+                        _featuredState.value = featuredState.value.copy(
+                            song = null,
+                            isLoading = false,
+                            errorMessage = resource.message
+                        )
+                    }
+                }
+            }
+        }
     }
 
     override fun onCleared() {

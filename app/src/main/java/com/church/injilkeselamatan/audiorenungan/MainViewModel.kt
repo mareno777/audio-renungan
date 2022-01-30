@@ -1,9 +1,10 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation
+package com.church.injilkeselamatan.audiorenungan
 
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
@@ -15,7 +16,11 @@ import com.church.injilkeselamatan.audiorenungan.feature_account.domain.reposito
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
@@ -31,11 +36,15 @@ class MainViewModel @Inject constructor(
     private val _needSignIn = MutableSharedFlow<Boolean>()
     val needSignIn = _needSignIn.asSharedFlow()
 
-    private var job: Job? = null
+    private var registerJob: Job? = null
     private var updateUserJob: Job? = null
 
     init {
-        fetchSession()
+        viewModelScope.launch {
+            delay(2000)
+            _isLoading.emit(false)
+            fetchSession()
+        }
     }
 
     fun fetchSession() {
@@ -55,6 +64,8 @@ class MainViewModel @Inject constructor(
                 Log.e("AuthQuickstart", "Failed to fetch auth session", error)
             } catch (error: UserNotFoundException) {
                 Log.e("AuthQuickstart", "User not Found", error)
+            } finally {
+                _isLoading.emit(false)
             }
         }
     }
@@ -68,61 +79,60 @@ class MainViewModel @Inject constructor(
                 val profilePicture = attributtes[0].value
                 val name = attributtes[1].value
                 val ipResult = userRepository.getIp().data?.ipAddress
-                if (ipResult != null) {
-                    val createUserRequest = CreateUserRequest(
-                        email = email,
-                        name = name,
-                        phoneNumber = Random.nextInt().toString(),
-                        model = getDeviceName(),
-                        ipAddress = ipResult,
-                        profile = profilePicture,
-                    )
-                    registerUser(createUserRequest)
-                }
+                    ?: "IpAddress not found ${generateRandomString()}"
+                val createUserRequest = CreateUserRequest(
+                    email = email,
+                    name = name,
+                    phoneNumber = Random.nextInt().toString(),
+                    model = getDeviceName(),
+                    ipAddress = ipResult,
+                    profile = profilePicture,
+                )
+                registerUser(createUserRequest)
             } catch (error: AuthException) {
-                Amplify.Auth.signOut()
-                Log.e("AuthQuickstart", "Failed to fetch auth user", error)
+                //Amplify.Auth.signOut()
+                Log.e("AuthQuickstart", error.toString())
                 _needSignIn.emit(true)
             }
         }
     }
 
     private suspend fun registerUser(createUserRequest: CreateUserRequest) {
-        job?.cancel()
-        job = userRepository.registerUser(createUserRequest).onEach { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val dataUser = resource.data
-                    Log.i(TAG, dataUser?.users.toString())
+        registerJob?.cancel()
+        registerJob = viewModelScope.launch {
+            userRepository.registerUser(createUserRequest).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val dataUser = resource.data
+                        Log.i(TAG, "users on success register ${dataUser?.message}")
                         updateUserCredentials(createUserRequest.toUpdateUserRequest())
-                }
-                is Resource.Error -> {
-                    Log.e(TAG, resource.message)
-                }
-                is Resource.Loading -> {
-                    _isLoading.emit(true)
+                    }
+                    is Resource.Error -> {
+                        Log.e(TAG, "users on error register ${resource.message}")
+                    }
+                    is Resource.Loading -> Unit
                 }
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
     private suspend fun updateUserCredentials(userUpdate: UpdateUserRequest) {
         updateUserJob?.cancel()
-        updateUserJob = userRepository.updateCredentials(userUpdate).onEach { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val dataUser = resource.data
-                    Log.d(TAG, dataUser?.users.toString())
-                    _isLoading.emit(false)
-                }
-                is Resource.Error -> {
-                    Log.i(TAG, "update User error: ${resource.message}")
-                }
-                is Resource.Loading -> {
-                    _isLoading.emit(true)
+        updateUserJob = viewModelScope.launch {
+            userRepository.updateCredentials(userUpdate).collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val dataUser = resource.data
+                        Log.d(TAG, dataUser?.users.toString())
+                        _isLoading.emit(false)
+                    }
+                    is Resource.Error -> {
+                        Log.e(TAG, "update User error: ${resource.message}")
+                    }
+                    is Resource.Loading -> Unit
                 }
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun getDeviceName(): String {
@@ -151,6 +161,17 @@ class MainViewModel @Inject constructor(
             phrase.append(c)
         }
         return phrase.toString()
+    }
+
+    private fun generateRandomString(): String {
+        val saltChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        val salt = StringBuilder()
+        val rnd = Random
+        while (salt.length < 5) { // length of the random string.
+            val index = (rnd.nextFloat() * saltChars.length).toInt()
+            salt.append(saltChars[index])
+        }
+        return salt.toString()
     }
 }
 

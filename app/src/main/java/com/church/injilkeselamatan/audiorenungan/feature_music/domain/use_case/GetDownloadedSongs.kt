@@ -15,7 +15,7 @@ class GetDownloadedSongs(
     operator fun invoke(album: String? = null): Flow<Resource<List<Song>>> {
         val downloadedIndex = downloadManager.downloadIndex
         return if (album != null) {
-            repository.getSongs(false).map { resource ->
+            repository.getSongs(true).map { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val mutable = mutableListOf<Song>()
@@ -26,7 +26,6 @@ class GetDownloadedSongs(
                                 }.filter {
                                     downloadedIndex.getDownload(it.id)?.state == STATE_COMPLETED
                                 }
-
                             mutable.addAll(filteredSongs)
                         }
                         Resource.Success<List<Song>>(mutable.sortedBy { it.id })

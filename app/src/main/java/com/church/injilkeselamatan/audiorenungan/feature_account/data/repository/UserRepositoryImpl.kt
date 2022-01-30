@@ -43,7 +43,7 @@ class UserRepositoryImpl(private val client: HttpClient) : UserRepository {
             } catch (e: ClientRequestException) {
                 val userApiDtoSingle = UserApiDtoSingle(405, null, "User already exists!")
                 emit(Resource.Success(userApiDtoSingle))
-                Log.e("UserRepository", e.cause.toString())
+                Log.e("UserRepository", e.toString())
             } catch (e: Exception) {
                 emit(Resource.Error(e.toString()))
             }
@@ -75,7 +75,7 @@ class UserRepositoryImpl(private val client: HttpClient) : UserRepository {
             Log.d("UserRepository", result.ipAddress)
             Resource.Success(result)
         } catch (e: Exception) {
-            Log.e("UserRepository", e.toString())
+            Log.e("UserRepository", "error ip address$e")
             Resource.Error(
                 message = e.message ?: "Unknown error occurred",
                 data = GetIpAddress("Couldn't fetch IpAddress")

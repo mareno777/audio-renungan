@@ -52,6 +52,7 @@ fun AlbumsScreen(
     }
     val constraints = ConstraintSet {
         val topSection = createRefFor("topSection")
+        val featuredSection = createRefFor("featuredSection")
         val categoriesSection = createRefFor("categoriesSection")
         val playingNowSection = createRefFor("playingNowSection")
 
@@ -61,8 +62,14 @@ fun AlbumsScreen(
             end.linkTo(parent.end)
             width = Dimension.fillToConstraints
         }
-        constrain(categoriesSection) {
+        constrain(featuredSection) {
             top.linkTo(topSection.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+            bottom.linkTo(categoriesSection.top)
+        }
+        constrain(categoriesSection) {
+            top.linkTo(featuredSection.bottom)
             bottom.linkTo(playingNowSection.top)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
@@ -80,7 +87,7 @@ fun AlbumsScreen(
         sheetState = sheetState,
         sheetContent = {
             DonationScreen {
-                val clip = ClipData.newPlainText("No Rekening", "2520827172")
+                val clip = ClipData.newPlainText("No Rekening", "2520929994")
                 clipboard.setPrimaryClip(clip)
                 scope.launch {
                     sheetState.hide()
@@ -110,12 +117,21 @@ fun AlbumsScreen(
                 val playbackState by viewModel.playbackState().collectAsState()
                 val mediaMetadata by viewModel.playingMetadata().collectAsState()
                 val recentSong by viewModel.recentSong
+                val featuredSongState by viewModel.featuredState
 
                 TopAlbumsSection(modifier = Modifier.layoutId("topSection")) {
                     scope.launch {
                         sheetState.animateTo(ModalBottomSheetValue.Expanded)
                     }
                 }
+                FeaturedSongSection(
+                    modifier = Modifier.layoutId("featuredSection"),
+                    mediaMetadataCompat = mediaMetadata,
+                    playbackState = playbackState,
+                    featuredSongState = featuredSongState,
+                    onRetryClicked = { viewModel.loadFeaturedSong() },
+                    onPlayPauseClicked = { viewModel.onEvent(AlbumsEvent.PlayFeatured) }
+                )
                 when {
                     state.isLoading && state.songs.isEmpty() -> {
                         LoadingSection(modifier = Modifier.layoutId("categoriesSection"))

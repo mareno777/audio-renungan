@@ -4,5 +4,6 @@ data class SongUseCases(
     val getSongs: GetSongs,
     val getDownloadedSongs: GetDownloadedSongs,
     val updateSong: UpdateSong,
-    val downloadSong: DownloadSong
+    val downloadSong: DownloadSong,
+    val getFeaturedSong: GetFeaturedSong
 )

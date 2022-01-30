@@ -71,7 +71,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
     implementation "androidx.compose.compiler:compiler:1.1.0-rc02"
+
+    implementation 'com.google.android.play:core:1.10.3'
 
     // Splash screen
     implementation 'androidx.core:core-splashscreen:1.0.0-beta01'
@@ -102,12 +105,17 @@ dependencies {
     implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-cast:$exoplayer_version"
 
-    //Coil
+    // WorkManager
+    def work_version = "2.7.1"
+    implementation("androidx.work:work-runtime-ktx:$work_version")
+    androidTestImplementation("androidx.work:work-testing:$work_version")
+
+    // Coil
     def coil_version = "1.4.0"
     implementation "io.coil-kt:coil:$coil_version"
     implementation "io.coil-kt:coil-compose:$coil_version"
 
-    //Accompanist
+    // Accompanist
     def accompanist_version = "0.22.0-rc"
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
@@ -137,7 +145,7 @@ dependencies {
     implementation "io.ktor:ktor-client-cio:$ktor_version"
     implementation "io.ktor:ktor-client-serialization:$ktor_version"
     implementation "io.ktor:ktor-client-logging:$ktor_version"
-    implementation "ch.qos.logback:logback-classic:1.2.6"
+    implementation "ch.qos.logback:logback-classic:1.2.7"
 
     implementation 'com.amplifyframework:core:1.31.1'
 

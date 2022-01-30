@@ -1,5 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
@@ -11,21 +12,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.church.injilkeselamatan.audiorenungan.R
 
 @Composable
 fun DonationScreen(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colors.onBackground,
-    textSize: TextUnit = 16.sp,
-    onCopyClicked: () -> Unit
-) {
+    iconSize: Dp = 35.dp,
+    onCopyClicked: () -> Unit,
+
+    ) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -36,37 +37,28 @@ fun DonationScreen(
             contentPadding = PaddingValues(16.dp)
         ) {
             item {
-                Text(
-                    text = "Harta Sorgawi",
-                    color = textColor,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.h5
+                Image(
+                    painter = rememberImagePainter(data = R.drawable.share_icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
                 )
             }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
             item {
                 Text(
-                    text = """
-                         "Janganlah kamu mengumpulkan harta di bumi; di bumi ngengat dan karat 
-                         merusakkannya dan pencuri membongkar serta mencurinya.
-                         Tetapi kumpulkanlah bagimu harta di sorga; di sorga ngengat dan karat
-                         tidak merusakkannya dan pencuri tidak membongkar serta mencurinya.
-                          (Matius 6:19-20)
-                    """.trimIndent(),
+                    text = "SHARE KE BANYAK ORANG",
+                    color = textColor,
                     textAlign = TextAlign.Center,
-                    fontStyle = FontStyle.Italic,
-                    color = textColor,
-                    style = MaterialTheme.typography.body2,
-                    fontSize = textSize
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h6
                 )
             }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
             item {
                 Text(
                     text = """
-                        Apabila saudara mau mendukung pelayanan Renungan Audio ini,
-                        supaya renungan audio ini bisa menolong lebih banyak orang
-                        untuk hidup dalam Kehendak TUHAN dan hidup takut akan TUHAN.
+                        supaya lebih banyak orang yang mencari kehendak TUHAN, 
+                        menemukan tujuan hidup yang sejati,
+                        dan bertumbuh dewasa dalam Kristus Yesus TUHAN
                     """.trimIndent(),
                     color = textColor,
                     textAlign = TextAlign.Center,
@@ -75,12 +67,46 @@ fun DonationScreen(
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }
             item {
+                Image(
+                    painter = rememberImagePainter(data = R.drawable.pray),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
+                )
+            }
+            item {
                 Text(
-                    text = " Rekening pelayanan a/n Yosea Dwi Christiono",
+                    text = "DOAKAN",
                     color = textColor,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.subtitle1,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h6
+                )
+            }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item {
+                Image(
+                    painter = rememberImagePainter(data = R.drawable.handshake),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
+                )
+            }
+            item {
+                Text(
+                    text = "DUKUNGAN",
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h6
+                )
+            }
+            item {
+                Text(
+                    text = """
+                        Rekening pelayanan Yosea Dwi Christiono
+                    """.trimIndent(),
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle1
                 )
             }
             item {
@@ -88,7 +114,7 @@ fun DonationScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "BCA 252 082 7172",
+                        text = "BCA 252 092 999 4",
                         color = textColor,
                         textAlign = TextAlign.Center,
                         style = MaterialTheme.typography.subtitle1,
@@ -109,10 +135,29 @@ fun DonationScreen(
                     }
                 }
             }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item {
+                Image(
+                    painter = rememberImagePainter(data = R.drawable.email),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize)
+                )
+            }
             item {
                 Text(
-                    text = "Tuhan Yesus memberkati.",
+                    text = """
+                        Apabila ada kesaksian yang ingin dibagikan silahkan hubungi:
+                    """.trimIndent(),
+                    color = textColor,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.subtitle1
+                )
+            }
+            item {
+                Text(
+                    text = """
+                        oasisjiwa2022@gmail.com
+                    """.trimIndent(),
                     color = textColor,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.subtitle1

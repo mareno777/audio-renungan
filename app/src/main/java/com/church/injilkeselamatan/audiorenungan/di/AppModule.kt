@@ -70,7 +70,8 @@ object AppModule {
             getSongs = GetSongs(repository, musicSource),
             getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
             updateSong = UpdateSong(repository),
-            downloadSong = DownloadSong(context, downloadManager)
+            downloadSong = DownloadSong(context, downloadManager),
+            getFeaturedSong = GetFeaturedSong(repository)
         )
     }
 

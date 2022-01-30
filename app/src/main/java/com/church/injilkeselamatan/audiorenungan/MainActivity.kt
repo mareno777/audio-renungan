@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation
+package com.church.injilkeselamatan.audiorenungan
 
 import android.media.AudioManager
 import android.os.Bundle
@@ -41,11 +41,11 @@ import javax.inject.Inject
 @ExperimentalAnimationApi
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var connectionLiveData: ConnectionLiveData
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
     private val mainViewModel by viewModels<MainViewModel>()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -89,7 +89,9 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         composable(route = Screen.AlbumsScreen.route) {
-                            AlbumsScreen(navController = navController)
+                            AlbumsScreen(
+                                navController = navController
+                            )
                         }
                         composable(
                             route = Screen.EpisodeScreen.route + "/{album}",
@@ -120,7 +122,7 @@ class MainActivity : ComponentActivity() {
                 mainViewModel.fetchSession()
             }
         } catch (error: AuthException) {
-            Log.e("AuthQuickStart", "Signin failed", error)
+            Log.e(TAG, "Signin failed $error")
         }
     }
 }

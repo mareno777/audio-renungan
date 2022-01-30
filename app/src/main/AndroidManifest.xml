@@ -19,9 +19,9 @@
         </intent>
     </queries>
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:name=".MyApplication"
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -34,8 +34,10 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="myapp" />
             </intent-filter>
         </activity>
@@ -45,17 +47,16 @@
             android:value="com.church.injilkeselamatan.audiorenungan.cast.UampCastOptionsProvider" />
 
         <activity
-            android:name=".feature_music.presentation.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.App.Starting"
             tools:ignore="LockedOrientationActivity">
-
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT" />
@@ -83,7 +84,6 @@
             <!-- This is needed for Scheduler -->
             <intent-filter>
                 <action android:name="com.google.android.exoplayer.downloadService.action.RESTART" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>

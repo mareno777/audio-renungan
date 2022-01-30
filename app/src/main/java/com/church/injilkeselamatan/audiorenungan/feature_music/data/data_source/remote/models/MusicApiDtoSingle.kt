@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 data class MusicApiDtoSingle(
     val code: Int,
     @SerialName("data")
-    val music: MusicDtoSingle,
+    val music: MusicDto,
     val message: String
 )

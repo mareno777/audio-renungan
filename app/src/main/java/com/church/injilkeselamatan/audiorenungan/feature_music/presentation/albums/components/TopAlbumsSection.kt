@@ -1,6 +1,7 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
@@ -52,7 +53,10 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
             tint = if (isSystemInDarkTheme()) MaterialTheme.colors.onSurface else Color.Red,
             modifier = Modifier
                 .size(40.dp)
-                .clickable {
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) {
                     onProfileClick()
                 }
         )

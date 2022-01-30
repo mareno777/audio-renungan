@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/compose-model-1643382682639.xml" value="0.2673141891891892" />
         <entry key="..\:/AndroidStudioProjects/audiorenungan/app/src/main/res/drawable/ic_pause.xml" value="0.32685185185185184" />
         <entry key="..\:/AndroidStudioProjects/audiorenungan/app/src/main/res/drawable/ic_play_arrow.xml" value="0.32685185185185184" />
         <entry key="..\:/AndroidStudioProjects/audiorenungan/app/src/main/res/drawable/ic_skip_next.xml" value="0.20364583333333333" />
@@ -10,8 +11,11 @@
         <entry key="..\:/AndroidStudioProjects/audiorenungan/app/src/main/res/font/source_sans_pro.xml" value="0.32037037037037036" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.337037037037037" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.337037037037037" />
+        <entry key="app/src/main/res/drawable/ic_skip_previous.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/ic_wb_cloudy_24.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.1921875" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.183" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.183" />
       </map>
     </option>
   </component>
