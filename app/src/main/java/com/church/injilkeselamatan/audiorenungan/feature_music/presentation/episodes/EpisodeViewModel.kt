@@ -135,6 +135,12 @@ class EpisodeViewModel @Inject constructor(
                 )
                 initDownloadEvent()
             }
+            is EpisodesEvent.RemoveDownloadedEpisode -> {
+                Log.d(TAG, "mediaId to remove: ${event.song.id}")
+                event.song.id?.let {
+                    songUseCases.removeDownloadedSong(it)
+                }
+            }
             is EpisodesEvent.PlayToogle -> {
                 playMediaId(event.episode.id!!)
             }

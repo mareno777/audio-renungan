@@ -145,10 +145,12 @@ class PlayerViewModel @Inject constructor(
                 musicServiceConnection.transportControls.seekTo(event.position)
             }
             is PlayerEvents.FastForward -> {
-
+                val currPlaybackPosition = currentPlaybackPosition.value
+                musicServiceConnection.transportControls.seekTo(currPlaybackPosition + 10_000L)
             }
             is PlayerEvents.FastRewind -> {
-
+                val currPlaybackPosition = currentPlaybackPosition.value
+                musicServiceConnection.transportControls.seekTo(currPlaybackPosition - 10_000L)
             }
             is PlayerEvents.SetSleepTimer -> {
 

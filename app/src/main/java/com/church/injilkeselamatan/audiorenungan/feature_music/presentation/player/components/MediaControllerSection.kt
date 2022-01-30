@@ -24,6 +24,8 @@ fun MediaControllerSection(
     onPauseClicked: () -> Unit,
     onSkipToPrevious: () -> Unit,
     onSkipToNext: () -> Unit,
+    onForward: () -> Unit,
+    onRewind: () -> Unit,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -37,6 +39,18 @@ fun MediaControllerSection(
                 .size(iconSize)
                 .clickable {
                     onSkipToPrevious()
+                },
+            tint = iconColor
+        )
+        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+
+        Icon(
+            painterResource(id = R.drawable.ic_round_replay_10),
+            contentDescription = null,
+            modifier = Modifier
+                .size(iconSize)
+                .clickable {
+                    onRewind()
                 },
             tint = iconColor
         )
@@ -66,6 +80,19 @@ fun MediaControllerSection(
                     }
             )
         }
+
+        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+
+        Icon(
+            painterResource(id = R.drawable.ic_round_forward_10),
+            contentDescription = null,
+            modifier = Modifier
+                .size(iconSize)
+                .clickable {
+                    onForward()
+                },
+            tint = iconColor
+        )
 
         Spacer(modifier = Modifier.padding(horizontal = 8.dp))
 

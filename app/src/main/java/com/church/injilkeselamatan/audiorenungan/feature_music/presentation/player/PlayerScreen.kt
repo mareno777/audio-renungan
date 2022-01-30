@@ -46,11 +46,12 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
         modifier = Modifier.fillMaxSize()
     ) {
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
 
             TopSection(
-                modifier = Modifier.align(Alignment.TopCenter)
+                modifier = Modifier.align(Alignment.TopCenter),
+                mediaMetadataCompat = currentMediaMetadata
             ) {
                 navController.popBackStack()
             }
@@ -83,6 +84,8 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                     onPauseClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(false)) },
                     onSkipToPrevious = { viewModel.onEvent(PlayerEvents.SkipToPrevious) },
                     onSkipToNext = { viewModel.onEvent(PlayerEvents.SkipToNext) },
+                    onForward = { viewModel.onEvent(PlayerEvents.FastForward)},
+                    onRewind = { viewModel.onEvent(PlayerEvents.FastRewind)}
                 )
             }
             //on pager state navigate to

@@ -133,6 +133,9 @@ fun EpisodeScreen(
                     onDownloadClicked = {
                         viewModel.onEvent(EpisodesEvent.DownloadEpisode(song))
                     },
+                    onRemoveDownloadClicked = {
+                        viewModel.onEvent(EpisodesEvent.RemoveDownloadedEpisode(song))
+                    },
                     state = viewModel.onState(song.id!!),
                     mediaMetadata = mediaMetadata,
                     playbackState = playbackState,

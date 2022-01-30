@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,8 +23,8 @@ import androidx.navigation.navArgument
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.kotlin.core.Amplify
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.util.ConnectionLiveData
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.AlbumsScreen
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.DonationScreen
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.EpisodeScreen
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.PlayerScreen
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
@@ -33,7 +32,6 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @ExperimentalPagerApi
 @AndroidEntryPoint
@@ -49,11 +47,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        installSplashScreen().apply {
-            setKeepOnScreenCondition {
-                mainViewModel.isLoading.value
-            }
-        }
         super.onCreate(savedInstanceState)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -108,6 +101,11 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(route = Screen.PlayerScreen.route) {
                             PlayerScreen(navController)
+                        }
+                        composable(route = Screen.DonationScreen.route) {
+                            DonationScreen {
+                                mainViewModel.copyToClipboard()
+                            }
                         }
                     }
                 }

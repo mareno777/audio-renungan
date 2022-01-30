@@ -71,9 +71,17 @@ object AppModule {
             getDownloadedSongs = GetDownloadedSongs(repository, downloadManager),
             updateSong = UpdateSong(repository),
             downloadSong = DownloadSong(context, downloadManager),
+            removeDownloadedSong = RemoveDownloadedSong(context),
             getFeaturedSong = GetFeaturedSong(repository)
         )
     }
+
+    @Singleton
+    @Provides
+    fun provideAnotherUseCases(@ApplicationContext context: Context) =
+        AnotherUseCases(
+            CopyToClipboard(context)
+        )
 
     @Singleton
     @Provides

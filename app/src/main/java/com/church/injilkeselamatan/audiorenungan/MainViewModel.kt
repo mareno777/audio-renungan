@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotFoundException
 import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
@@ -14,24 +13,20 @@ import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_sourc
 import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.models.UpdateUserRequest
 import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.AnotherUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val anotherUseCases: AnotherUseCases
 ) : ViewModel() {
-
-    private val _isLoading = MutableStateFlow(true)
-    val isLoading = _isLoading.asStateFlow()
 
     private val _needSignIn = MutableSharedFlow<Boolean>()
     val needSignIn = _needSignIn.asSharedFlow()
@@ -40,11 +35,7 @@ class MainViewModel @Inject constructor(
     private var updateUserJob: Job? = null
 
     init {
-        viewModelScope.launch {
-            delay(2000)
-            _isLoading.emit(false)
-            fetchSession()
-        }
+        fetchSession()
     }
 
     fun fetchSession() {
@@ -64,8 +55,6 @@ class MainViewModel @Inject constructor(
                 Log.e("AuthQuickstart", "Failed to fetch auth session", error)
             } catch (error: UserNotFoundException) {
                 Log.e("AuthQuickstart", "User not Found", error)
-            } finally {
-                _isLoading.emit(false)
             }
         }
     }
@@ -79,7 +68,7 @@ class MainViewModel @Inject constructor(
                 val profilePicture = attributtes[0].value
                 val name = attributtes[1].value
                 val ipResult = userRepository.getIp().data?.ipAddress
-                    ?: "IpAddress not found ${generateRandomString()}"
+                    ?: "IpAddress not found"
                 val createUserRequest = CreateUserRequest(
                     email = email,
                     name = name,
@@ -124,7 +113,6 @@ class MainViewModel @Inject constructor(
                     is Resource.Success -> {
                         val dataUser = resource.data
                         Log.d(TAG, dataUser?.users.toString())
-                        _isLoading.emit(false)
                     }
                     is Resource.Error -> {
                         Log.e(TAG, "update User error: ${resource.message}")
@@ -163,15 +151,8 @@ class MainViewModel @Inject constructor(
         return phrase.toString()
     }
 
-    private fun generateRandomString(): String {
-        val saltChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        val salt = StringBuilder()
-        val rnd = Random
-        while (salt.length < 5) { // length of the random string.
-            val index = (rnd.nextFloat() * saltChars.length).toInt()
-            salt.append(saltChars[index])
-        }
-        return salt.toString()
+    fun copyToClipboard() {
+        anotherUseCases.copyToClipboard()
     }
 }
 

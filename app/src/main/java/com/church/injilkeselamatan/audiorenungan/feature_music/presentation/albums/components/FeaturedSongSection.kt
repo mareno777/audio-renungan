@@ -38,7 +38,7 @@ fun FeaturedSongSection(
     if (featuredSongState.song != null) {
         Column(modifier = modifier.padding(16.dp)) {
             Text(
-                text = "Featured Audio:",
+                text = "Renungan audio hari ini",
                 color = MaterialTheme.colors.onBackground,
                 style = MaterialTheme.typography.h6,
                 fontWeight = FontWeight.Bold

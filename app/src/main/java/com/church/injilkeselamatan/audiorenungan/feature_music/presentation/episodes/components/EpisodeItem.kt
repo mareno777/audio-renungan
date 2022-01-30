@@ -39,6 +39,7 @@ fun EpisodeItem(
     state: Int?,
     onPlayToggleClicked: () -> Unit,
     onDownloadClicked: () -> Unit,
+    onRemoveDownloadClicked: () -> Unit,
     playbackState: PlaybackStateCompat,
     mediaMetadata: MediaMetadataCompat,
     context: Context
@@ -133,8 +134,7 @@ fun EpisodeItem(
                     modifier = Modifier
                         .size(35.dp)
                         .clickable {
-                            // TODO: click to remove downloaded media
-
+                            onRemoveDownloadClicked()
                         }
                 )
             } else {
@@ -155,10 +155,11 @@ fun EpisodeItem(
         }
     }
 }
+
 fun millisToDuration(millis: Long): String {
     var minutes = TimeUnit.MILLISECONDS.toMinutes(millis)
     val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) -
             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis))
-    if(seconds.toInt() >= 50) minutes = TimeUnit.MILLISECONDS.toMinutes(millis + 60000L)
+    if (seconds.toInt() >= 50) minutes = TimeUnit.MILLISECONDS.toMinutes(millis + 60000L)
     return String.format("%02d Menit", minutes)
 }

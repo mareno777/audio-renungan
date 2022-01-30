@@ -7,6 +7,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,17 +26,19 @@ fun DonationScreen(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colors.onBackground,
     iconSize: Dp = 35.dp,
-    onCopyClicked: () -> Unit,
-
-    ) {
+    onCopyClicked: () -> Unit
+) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(16.dp)
+            contentPadding = PaddingValues(16.dp),
+            modifier = Modifier.align(Alignment.TopCenter)
         ) {
             item {
                 Image(
@@ -121,9 +125,8 @@ fun DonationScreen(
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(
-                        onClick = {
-                            onCopyClicked()
-                        }) {
+                        onClick = { onCopyClicked() }
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_content_copy),
                             contentDescription = "Salin nomor rekening",
@@ -163,6 +166,24 @@ fun DonationScreen(
                     style = MaterialTheme.typography.subtitle1
                 )
             }
+        }
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = 4.dp)
+        ) {
+            Text(
+                text = "Oasis Jiwa \u00A9 Yosea Christiono",
+                color = Color.Gray,
+                maxLines = 1
+            )
+            Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null,
+                tint = Color.Red,
+                modifier = Modifier.offset(x = 4.dp)
+            )
         }
     }
 }
