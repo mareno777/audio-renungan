@@ -41,10 +41,9 @@ fun TopAlbumsSection(modifier: Modifier = Modifier, onProfileClick: () -> Unit) 
                 fontSize = 24.sp
             )
             Text(
-                text = "Yosea Christiono",
-                fontFamily = sourceSansPro,
+                text = "\u00A9 Yosea Christiono",
                 color = Color.Gray,
-                fontSize = 16.sp
+                maxLines = 1
             )
         }
         Icon(

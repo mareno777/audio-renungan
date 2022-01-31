@@ -16,7 +16,7 @@ fun CategoriesSection(
     onNavigationClick: (Song) -> Unit
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(8.dp),
         modifier = modifier
     ) {
         items(cardItems.size) {

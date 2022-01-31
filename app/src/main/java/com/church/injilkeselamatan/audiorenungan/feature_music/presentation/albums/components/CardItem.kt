@@ -46,7 +46,7 @@ fun CardItem(
         Card(
             modifier = modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .height(150.dp)
                 .clickable {
                     onCardClicked(song)
                 },
@@ -55,7 +55,7 @@ fun CardItem(
         ) {
             Image(
                 painter = painterResource(id = painter),
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillBounds,
                 contentDescription = null
             )
             Box(
@@ -89,7 +89,7 @@ fun CardItem(
         Card(
             modifier = modifier
                 .fillMaxWidth()
-                .height(150.dp)
+                .height(100.dp)
                 .clickable {
                     onCardClicked(song)
                 },

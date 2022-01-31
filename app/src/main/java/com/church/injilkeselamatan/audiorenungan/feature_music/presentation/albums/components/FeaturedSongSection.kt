@@ -36,7 +36,7 @@ fun FeaturedSongSection(
     onRetryClicked: () -> Unit
 ) {
     if (featuredSongState.song != null) {
-        Column(modifier = modifier.padding(16.dp)) {
+        Column(modifier = modifier.padding(8.dp)) {
             Text(
                 text = "Renungan audio hari ini",
                 color = MaterialTheme.colors.onBackground,
