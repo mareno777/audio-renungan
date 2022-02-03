@@ -31,11 +31,17 @@ class MainViewModel @Inject constructor(
     private val _needSignIn = MutableSharedFlow<Boolean>()
     val needSignIn = _needSignIn.asSharedFlow()
 
+    val needShare = MutableSharedFlow<Boolean>()
+
+    private val _needUpdate = MutableSharedFlow<Boolean>()
+    val needUpdate = _needUpdate.asSharedFlow()
+
     private var registerJob: Job? = null
     private var updateUserJob: Job? = null
 
     init {
         fetchSession()
+        checkLatestVersion()
     }
 
     fun fetchSession() {
@@ -79,7 +85,6 @@ class MainViewModel @Inject constructor(
                 )
                 registerUser(createUserRequest)
             } catch (error: AuthException) {
-                //Amplify.Auth.signOut()
                 Log.e("AuthQuickstart", error.toString())
                 _needSignIn.emit(true)
             }
@@ -105,7 +110,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateUserCredentials(userUpdate: UpdateUserRequest) {
+    private fun updateUserCredentials(userUpdate: UpdateUserRequest) {
         updateUserJob?.cancel()
         updateUserJob = viewModelScope.launch {
             userRepository.updateCredentials(userUpdate).collect { resource ->
@@ -153,6 +158,26 @@ class MainViewModel @Inject constructor(
 
     fun copyToClipboard() {
         anotherUseCases.copyToClipboard()
+    }
+
+    fun shareIntent() {
+        viewModelScope.launch {
+            needShare.emit(true)
+        }
+    }
+
+    fun emailIntent() {
+        anotherUseCases.emailIntent()
+    }
+
+    private fun checkLatestVersion() {
+        viewModelScope.launch {
+            if (anotherUseCases.checkVersion.isLatestVersion()) {
+                _needUpdate.emit(false)
+            } else {
+                _needUpdate.emit(true)
+            }
+        }
     }
 }
 

@@ -1,6 +1,8 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layoutId
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -42,7 +45,6 @@ fun AlbumsScreen(
         val topSection = createRefFor("topSection")
         val featuredSection = createRefFor("featuredSection")
         val categoriesSection = createRefFor("categoriesSection")
-        val playingNowSection = createRefFor("playingNowSection")
 
         constrain(topSection) {
             top.linkTo(parent.top)
@@ -58,69 +60,67 @@ fun AlbumsScreen(
         }
         constrain(categoriesSection) {
             top.linkTo(featuredSection.bottom)
-            bottom.linkTo(playingNowSection.top)
+            bottom.linkTo(parent.bottom)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
             width = Dimension.fillToConstraints
             height = Dimension.fillToConstraints
         }
-        constrain(playingNowSection) {
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            bottom.linkTo(parent.bottom)
-        }
     }
     Scaffold(
         scaffoldState = scaffoldState,
     ) {
-        ConstraintLayout(
-            constraintSet = constraints,
-            modifier = Modifier.fillMaxSize()
-        ) {
 
-            val state by viewModel.state
+        val state by viewModel.state
+        val playbackState by viewModel.playbackState().collectAsState()
+        val mediaMetadata by viewModel.playingMetadata().collectAsState()
+        val recentSong by viewModel.recentSong
+        val featuredSongState by viewModel.featuredState
 
-            val playbackState by viewModel.playbackState().collectAsState()
-            val mediaMetadata by viewModel.playingMetadata().collectAsState()
-            val recentSong by viewModel.recentSong
-            val featuredSongState by viewModel.featuredState
-
-            TopAlbumsSection(modifier = Modifier.layoutId("topSection")) {
-                navController.navigate(Screen.DonationScreen.route)
-            }
-            FeaturedSongSection(
-                modifier = Modifier.layoutId("featuredSection"),
-                mediaMetadataCompat = mediaMetadata,
-                playbackState = playbackState,
-                featuredSongState = featuredSongState,
-                onRetryClicked = { viewModel.loadFeaturedSong() },
-                onPlayPauseClicked = { viewModel.onEvent(AlbumsEvent.PlayFeatured) }
-            )
-            when {
-                state.isLoading && state.songs.isEmpty() -> {
-                    LoadingSection(modifier = Modifier.layoutId("categoriesSection"))
+        Box {
+            ConstraintLayout(
+                constraintSet = constraints,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                TopAlbumsSection(modifier = Modifier.layoutId("topSection")) {
+                    navController.navigate(Screen.DonationScreen.route)
                 }
-                state.songs.isNotEmpty() -> {
-                    CategoriesSection(
-                        cardItems = state.songs,
-                        modifier = Modifier.layoutId("categoriesSection")
-                    ) { category ->
-                        navController.navigate(Screen.EpisodeScreen.route + "/${category.album}")
+                FeaturedSongSection(
+                    modifier = Modifier.layoutId("featuredSection"),
+                    mediaMetadataCompat = mediaMetadata,
+                    playbackState = playbackState,
+                    featuredSongState = featuredSongState,
+                    onRetryClicked = { viewModel.loadFeaturedSong() },
+                    onPlayPauseClicked = { viewModel.onEvent(AlbumsEvent.PlayFeatured) }
+                )
+                when {
+                    state.isLoading && state.songs.isEmpty() -> {
+                        LoadingSection(modifier = Modifier.layoutId("categoriesSection"))
+                    }
+                    state.songs.isNotEmpty() -> {
+                        CategoriesSection(
+                            cardItems = state.songs,
+                            modifier = Modifier.layoutId("categoriesSection")
+                        ) { category ->
+                            navController.navigate(Screen.EpisodeScreen.route + "/${category.album}")
+                        }
+                    }
+                    !state.isLoading && state.songs.isEmpty() -> {
+                        ErrorSection(
+                            modifier = Modifier.layoutId("categoriesSection"),
+                            errorMessage = state.errorMessage ?: "Unknown error occurred",
+                            onRetryClick = { viewModel.loadSongs() }
+                        )
                     }
                 }
-                !state.isLoading && state.songs.isEmpty() -> {
-                    ErrorSection(
-                        modifier = Modifier.layoutId("categoriesSection"),
-                        errorMessage = state.errorMessage ?: "Unknown error occurred",
-                        onRetryClick = { viewModel.loadSongs() }
-                    )
-                }
             }
-
             PlayingNowSection(
                 modifier = Modifier
-                    .layoutId("playingNowSection")
-                    .clickable {
+                    .align(Alignment.BottomCenter)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) {
                         navController.navigate(Screen.PlayerScreen.route)
                     },
                 playbackStateCompat = playbackState,

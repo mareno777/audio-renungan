@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,7 +25,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.di.Constants
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.PlayingNowSection
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.EpisodeItem
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.RemoveDownloadDialog
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
 
 @Composable
@@ -143,6 +147,20 @@ fun EpisodeScreen(
                 )
                 Divider()
             }
+        }
+        PlayingNowSection(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) {
+                    navController.navigate(Screen.PlayerScreen.route)
+                },
+            playbackStateCompat = playbackState,
+            mediaMetadataCompat = mediaMetadata
+        ) {
+            viewModel.onEvent(EpisodesEvent.PlayOrPause(it))
         }
     }
 }

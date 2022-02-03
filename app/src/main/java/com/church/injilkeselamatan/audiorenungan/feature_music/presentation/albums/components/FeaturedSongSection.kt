@@ -35,15 +35,17 @@ fun FeaturedSongSection(
     onPlayPauseClicked: () -> Unit,
     onRetryClicked: () -> Unit
 ) {
-    if (featuredSongState.song != null) {
-        Column(modifier = modifier.padding(8.dp)) {
-            Text(
-                text = "Renungan audio hari ini",
-                color = MaterialTheme.colors.onBackground,
-                style = MaterialTheme.typography.h6,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+    Column(
+        modifier = modifier.padding(8.dp)
+    ) {
+        Text(
+            text = "Renungan audio hari ini",
+            color = MaterialTheme.colors.onBackground,
+            style = MaterialTheme.typography.h6,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        if (featuredSongState.song != null) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -56,17 +58,18 @@ fun FeaturedSongSection(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(8.dp)
                 ) {
-                    Column {
-                        Text(
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        MarqueeText(
                             text = featuredSongState.song.title,
                             color = Color.White,
                             style = MaterialTheme.typography.body1,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = featuredSongState.song.album,
+                            text = featuredSongState.song.description.toString(),
                             color = Color.White,
                             style = MaterialTheme.typography.subtitle1
                         )
@@ -82,45 +85,51 @@ fun FeaturedSongSection(
                         },
                         tint = Color.White,
                         contentDescription = null,
-                        modifier = Modifier.clickable {
+                        modifier = Modifier
+                            .weight(0.1f)
+                            .clickable {
                                 onPlayPauseClicked()
                             }
                     )
                 }
 
             }
-        }
-    } else if (featuredSongState.errorMessage != null) {
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(16.dp),
-            shape = RoundedCornerShape(CornerSize(8.dp)),
-            elevation = 8.dp,
-            backgroundColor = Color.Red
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
+        } else if (featuredSongState.errorMessage != null) {
+            Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .padding(8.dp),
+                shape = RoundedCornerShape(CornerSize(8.dp)),
+                elevation = 8.dp,
+                backgroundColor = Color.Red
             ) {
-                Text(
-                    text = featuredSongState.errorMessage,
-                    color = Color.White,
-                    style = MaterialTheme.typography.body1
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_refresh),
-                    tint = Color.White,
-                    contentDescription = null,
-                    modifier = Modifier.clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        onRetryClicked()
-                    }
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = featuredSongState.errorMessage,
+                        color = Color.White,
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_refresh),
+                        tint = Color.White,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .weight(0.1f)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
+                                onRetryClicked()
+                            }
+                    )
+                }
             }
         }
     }

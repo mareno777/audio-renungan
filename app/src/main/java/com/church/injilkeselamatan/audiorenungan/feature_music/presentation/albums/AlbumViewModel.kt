@@ -133,9 +133,9 @@ class AlbumViewModel @Inject constructor(
         getSongsJob = songUseCases.getSongs().onEach { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    resource.data?.sortedBy { it.id }?.distinctBy { data ->
+                    resource.data?.distinctBy { data ->
                         data.album
-                    }?.let { albums ->
+                    }?.sortedBy { it.id }?.let { albums ->
                         _state.value = state.value.copy(
                             songs = albums,
                             isLoading = false,

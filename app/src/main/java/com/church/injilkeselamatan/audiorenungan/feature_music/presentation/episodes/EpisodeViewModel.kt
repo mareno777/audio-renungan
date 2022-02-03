@@ -144,6 +144,13 @@ class EpisodeViewModel @Inject constructor(
             is EpisodesEvent.PlayToogle -> {
                 playMediaId(event.episode.id!!)
             }
+            is EpisodesEvent.PlayOrPause -> {
+                if (event.isPlay) {
+                    musicServiceConnection.transportControls.play()
+                } else {
+                    musicServiceConnection.transportControls.play()
+                }
+            }
         }
     }
 

@@ -6,4 +6,5 @@ sealed class EpisodesEvent {
     data class DownloadEpisode(val song: MediaMetadataCompat) : EpisodesEvent()
     data class RemoveDownloadedEpisode(val song: MediaMetadataCompat) : EpisodesEvent()
     data class PlayToogle(val episode: MediaMetadataCompat, val isPlay: Boolean) : EpisodesEvent()
+    data class PlayOrPause(val isPlay: Boolean) : EpisodesEvent()
 }

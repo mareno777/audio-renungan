@@ -16,7 +16,6 @@ class MyApplication : Application() {
         super.onCreate()
 
         try {
-
             Amplify.addPlugin(AWSCognitoAuthPlugin())
             Amplify.configure(applicationContext)
             Log.i("MyAmplifyApp", "Initialized Amplify")

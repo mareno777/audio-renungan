@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -50,11 +51,13 @@ fun PlayingNowSection(
         elevation = 8.dp,
         modifier = modifier
             .fillMaxWidth()
+            .padding(8.dp)
             .mediaQuery(
                 comparator = Dimensions.Height lessThan 600.dp,
                 modifier = modifier.fillMaxHeight(0.1f)
             )
             .fillMaxHeight(0.08f),
+        shape = RoundedCornerShape(8.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,7 +84,7 @@ fun PlayingNowSection(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = mediaMetadataCompat.album ?: "",
+                        text = mediaMetadataCompat.displayDescription ?: "",
                         style = MaterialTheme.typography.subtitle2,
                         fontWeight = FontWeight.Normal,
                         color = Color.Gray

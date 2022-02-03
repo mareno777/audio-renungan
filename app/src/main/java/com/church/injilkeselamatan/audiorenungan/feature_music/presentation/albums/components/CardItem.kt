@@ -89,7 +89,7 @@ fun CardItem(
         Card(
             modifier = modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(150.dp)
                 .clickable {
                     onCardClicked(song)
                 },

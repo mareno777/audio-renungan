@@ -36,7 +36,6 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
@@ -51,9 +50,12 @@ import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
 import com.google.android.gms.cast.framework.CastContext
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.album
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayDescription
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 
 @Composable
@@ -55,7 +56,7 @@ fun TopSection(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = mediaMetadataCompat.album ?: "",
+                text = mediaMetadataCompat.displayDescription ?: "",
                 color = MaterialTheme.colors.onBackground,
                 maxLines = 1,
                 style = MaterialTheme.typography.subtitle1

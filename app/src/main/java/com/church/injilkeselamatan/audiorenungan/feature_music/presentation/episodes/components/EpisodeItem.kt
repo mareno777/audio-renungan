@@ -12,7 +12,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -45,6 +45,9 @@ fun EpisodeItem(
     context: Context
 ) {
 
+    var isVisible by remember {
+        mutableStateOf(false)
+    }
     val color = MaterialTheme.colors.primary.toArgb()
     val painter = rememberImagePainter(
         ImageRequest.Builder(context)
@@ -58,7 +61,7 @@ fun EpisodeItem(
             .clickable { onPlayToggleClicked() }
             .padding(16.dp)
     ) {
-        Row() {
+        Row {
             Image(
                 painter = painter,
                 contentDescription = null,
@@ -75,7 +78,7 @@ fun EpisodeItem(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "${song.album} • ${millisToDuration(song.duration)}",
+            text = "${song.displayDescription} • ${millisToDuration(song.duration)}",
             color = Color.Gray,
             style = MaterialTheme.typography.body2,
             maxLines = 1
@@ -134,7 +137,7 @@ fun EpisodeItem(
                     modifier = Modifier
                         .size(35.dp)
                         .clickable {
-                            onRemoveDownloadClicked()
+                            isVisible = true
                         }
                 )
             } else {
@@ -154,6 +157,16 @@ fun EpisodeItem(
 
         }
     }
+    RemoveDownloadDialog(
+        isVisible = isVisible,
+        onRemoveClicked = {
+          onRemoveDownloadClicked()
+            isVisible = false
+        },
+        onDismissClicked = {
+            isVisible = false
+        }
+    )
 }
 
 fun millisToDuration(millis: Long): String {

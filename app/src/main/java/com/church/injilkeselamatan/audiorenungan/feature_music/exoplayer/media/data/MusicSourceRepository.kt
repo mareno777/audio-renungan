@@ -29,6 +29,10 @@ class MusicSourceRepository(
     private var catalog = emptyList<MediaMetadataCompat>()
     private val musicDao = musicDatabase.musicDao()
 
+    companion object {
+        const val MEDIA_METADATA_DESCRIPTION = "com.injilkeselamatan.audiorenungan.description"
+    }
+
     override suspend fun load() {
         Log.d(TAG, "STATE_INITIALIZING")
         state = STATE_INITIALIZING
@@ -83,8 +87,7 @@ class MusicSourceRepository(
                 MediaMetadataCompat.Builder()
                     .from(song)
                     .apply {
-                        displayIconUri =
-                            song.imageUri // Used by ExoPlayer and Notification
+                        displayIconUri = song.imageUri // Used by ExoPlayer and Notification
                         albumArtUri = song.imageUri
                         albumArt = bitmap
                         displayIcon = bitmap
@@ -110,11 +113,12 @@ class MusicSourceRepository(
         mediaUri = jsonMusic.mediaUri
         albumArtUri = jsonMusic.imageUri
         flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+        putString(MEDIA_METADATA_DESCRIPTION, jsonMusic.description)
 
         // To make things easier for *displaying* these, set the display properties as well.
         displayTitle = jsonMusic.title
         displaySubtitle = jsonMusic.artist
-        displayDescription = jsonMusic.album
+        displayDescription = jsonMusic.description
         displayIconUri = jsonMusic.imageUri
         if (jsonMusic.duration >= 1000) {
             duration = jsonMusic.duration

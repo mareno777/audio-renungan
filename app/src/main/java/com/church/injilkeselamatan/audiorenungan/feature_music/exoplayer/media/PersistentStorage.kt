@@ -43,6 +43,7 @@ class PersistentStorage(val context: Context) {
         private val RECENT_TITLE_KEY = stringPreferencesKey("recent_title")
         private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
         private val RECENT_ALBUM_KEY = stringPreferencesKey("recent_album")
+        private val RECENT_DESCRIPTION_KEY = stringPreferencesKey("recent_description")
         private val RECENT_MEDIA_URI_KEY = stringPreferencesKey("recent_media_uri")
         private val RECENT_ICON_URI_KEY = stringPreferencesKey("recent_icon_uri")
         private val RECENT_POSITION_KEY = longPreferencesKey("recent_position")
@@ -64,6 +65,7 @@ class PersistentStorage(val context: Context) {
                 preferences[RECENT_TITLE_KEY] = description.title.toString()
                 preferences[RECENT_SUBTITLE_KEY] = description.artist.toString()
                 preferences[RECENT_ALBUM_KEY] = description.album.toString()
+                preferences[RECENT_DESCRIPTION_KEY] = description.displayDescription.toString()
                 preferences[RECENT_MEDIA_URI_KEY] = description.mediaUri.toString()
                 preferences[RECENT_ICON_URI_KEY] = description.displayIconUri.toString()
                 preferences[RECENT_POSITION_KEY] = position
@@ -91,7 +93,7 @@ class PersistentStorage(val context: Context) {
                         albumArtUri = preferences[RECENT_ICON_URI_KEY]
                         displayTitle = preferences[RECENT_TITLE_KEY]
                         displaySubtitle = preferences[RECENT_SUBTITLE_KEY]
-                        displayDescription = preferences[RECENT_ALBUM_KEY]
+                        displayDescription = preferences[RECENT_DESCRIPTION_KEY]
                         displayIconUri = preferences[RECENT_ICON_URI_KEY]
                         flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
                         downloadStatus = MediaDescriptionCompat.STATUS_NOT_DOWNLOADED

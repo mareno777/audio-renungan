@@ -78,9 +78,11 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideAnotherUseCases(@ApplicationContext context: Context) =
+    fun provideAnotherUseCases(@ApplicationContext context: Context, client: HttpClient) =
         AnotherUseCases(
-            CopyToClipboard(context)
+            copyToClipboard = CopyToClipboard(context),
+            checkVersion = CheckVersion(client),
+            emailIntent = EmailIntent(context)
         )
 
     @Singleton
