@@ -1,0 +1,62 @@
+{
+  "providers": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-oasisjiwa-dev-145232-authRole",
+      "UnauthRoleArn": "arn:aws:iam::324251956044:role/amplify-oasisjiwa-dev-145232-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::324251956044:role/amplify-oasisjiwa-dev-145232-authRole",
+      "Region": "ap-southeast-1",
+      "DeploymentBucketName": "amplify-oasisjiwa-dev-145232-deployment",
+      "UnauthRoleName": "amplify-oasisjiwa-dev-145232-unauthRole",
+      "StackName": "amplify-oasisjiwa-dev-145232",
+      "StackId": "arn:aws:cloudformation:ap-southeast-1:324251956044:stack/amplify-oasisjiwa-dev-145232/700c0f40-776a-11ec-971d-065fa9e11a4e",
+      "AmplifyAppId": "d1s73dzbdw5yh5"
+    }
+  },
+  "auth": {
+    "oasisjiwa63de8513": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false,
+      "frontendAuthConfig": {
+        "socialProviders": [
+          "GOOGLE"
+        ],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyMinLength": 8,
+          "passwordPolicyCharacters": []
+        },
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "output": {
+        "UserPoolId": "ap-southeast-1_QQyd5bilN",
+        "AppClientIDWeb": "7jsbp7q4p6u76jbue0ajlgfe0",
+        "AppClientID": "7jhkm2vcuer9nuba3ql8earr3v",
+        "HostedUIDomain": "oasis-jiwa-dev",
+        "IdentityPoolId": "ap-southeast-1:1d239e7b-c37f-4091-bdcf-224b6db301a4",
+        "UserPoolArn": "arn:aws:cognito-idp:ap-southeast-1:324251956044:userpool/ap-southeast-1_QQyd5bilN",
+        "IdentityPoolName": "oasisjiwa63de8513_identitypool_63de8513__dev",
+        "OAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"myapp://callback/\"],\"LogoutURLs\":[\"myapp://signout/\"]}",
+        "UserPoolName": "oasisjiwa63de8513_userpool_63de8513"
+      },
+      "lastPushTimeStamp": "2022-01-17T08:17:01.497Z",
+      "providerMetadata": {
+        "s3TemplateURL": "https://s3.amazonaws.com/amplify-oasisjiwa-dev-145232-deployment/amplify-cfn-templates/auth/oasisjiwa63de8513-cloudformation-template.json",
+        "logicalId": "authoasisjiwa63de8513"
+      },
+      "lastPushDirHash": "WexG9ePoGNRErdzRMt3YnCLXboA="
+    }
+  }
+}

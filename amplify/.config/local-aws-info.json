@@ -1,0 +1,7 @@
+{
+  "dev": {
+    "configLevel": "project",
+    "useProfile": false,
+    "awsConfigFilePath": "/Users/reno/.amplify/awscloudformation/s6Od0F7YRB"
+  }
+}
