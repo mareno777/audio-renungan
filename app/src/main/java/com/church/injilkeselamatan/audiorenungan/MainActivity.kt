@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan
 
-import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
@@ -146,13 +145,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun shareIntent() {
-        val text = """Download aplikasi Oasis Jiwa ini supaya lebih banyak orang hidup berjalan bersama TUHAN. https://injilkeselamatan.com/oasis-jiwa""".trimIndent()
-//        val intent = Intent(Intent.ACTION_SEND).apply {
-//            type = "text/plain"
-//            putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name))
-//            putExtra(Intent.EXTRA_TEXT, text)
-//        }
-//        startActivity(Intent.createChooser(intent, "Share Aplikasi Oasis Jiwa"))
+        val text =
+            """Download aplikasi Oasis Jiwa ini supaya lebih banyak orang hidup berjalan bersama TUHAN. https://injilkeselamatan.com/oasis-jiwa""".trimIndent()
         ShareCompat.IntentBuilder(this)
             .setType("text/plain")
             .setChooserTitle("Share Oasis Jiwa")

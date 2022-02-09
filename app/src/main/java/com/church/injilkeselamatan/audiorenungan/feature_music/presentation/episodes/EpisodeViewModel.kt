@@ -148,7 +148,7 @@ class EpisodeViewModel @Inject constructor(
                 if (event.isPlay) {
                     musicServiceConnection.transportControls.play()
                 } else {
-                    musicServiceConnection.transportControls.play()
+                    musicServiceConnection.transportControls.pause()
                 }
             }
         }

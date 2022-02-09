@@ -27,7 +27,7 @@
                 "Auth": {
                     "Default": {
                         "OAuth": {
-                            "WebDomain": "oasis-jiwa-dev.auth.ap-southeast-1.amazoncognito.com",
+                            "WebDomain": "oasis.injilkeselamatan.com",
                             "AppClientId": "7jhkm2vcuer9nuba3ql8earr3v",
                             "SignInRedirectURI": "myapp://callback/",
                             "SignOutRedirectURI": "myapp://signout/",

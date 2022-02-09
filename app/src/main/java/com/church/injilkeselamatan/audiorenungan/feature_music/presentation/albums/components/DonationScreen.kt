@@ -35,15 +35,12 @@ fun DonationScreen(
     onShareClicked: () -> Unit,
     onEmailClicked: () -> Unit
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier.align(Alignment.TopStart)
-        ) {
+        Column {
             Text(
                 text = stringResource(id = R.string.app_name),
                 fontFamily = sourceSansPro,
@@ -61,7 +58,7 @@ fun DonationScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             contentPadding = PaddingValues(16.dp),
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.weight(0.3f)
         ) {
             item {
                 Button(
@@ -204,7 +201,7 @@ fun DonationScreen(
                     color = if (isSystemInDarkTheme()) Color.White else Color.Blue,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     textDecoration = TextDecoration.Underline,
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier

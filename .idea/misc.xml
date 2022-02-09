@@ -11,8 +11,13 @@
         <entry key="..\:/AndroidStudioProjects/audiorenungan/app/src/main/res/font/source_sans_pro.xml" value="0.32037037037037036" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.337037037037037" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.337037037037037" />
+        <entry key="app/src/main/res/drawable/ic_outline_pause.xml" value="0.1445" />
+        <entry key="app/src/main/res/drawable/ic_outline_play.xml" value="0.1445" />
+        <entry key="app/src/main/res/drawable/ic_pause.xml" value="0.1445" />
+        <entry key="app/src/main/res/drawable/ic_play_arrow.xml" value="0.1445" />
         <entry key="app/src/main/res/drawable/ic_round_forward_10.xml" value="0.138" />
         <entry key="app/src/main/res/drawable/ic_round_replay_10.xml" value="0.138" />
+        <entry key="app/src/main/res/drawable/ic_skip_next.xml" value="0.1445" />
         <entry key="app/src/main/res/drawable/ic_skip_previous.xml" value="0.183" />
         <entry key="app/src/main/res/drawable/ic_wb_cloudy_24.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.1921875" />

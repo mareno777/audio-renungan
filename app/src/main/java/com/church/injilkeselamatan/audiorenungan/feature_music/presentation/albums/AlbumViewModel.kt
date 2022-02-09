@@ -18,7 +18,6 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.UAMP_ALBUMS_ROOT
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.FeaturedSongState
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
@@ -63,7 +62,6 @@ class AlbumViewModel @Inject constructor(
                 children: MutableList<MediaBrowserCompat.MediaItem>
             ) {
                 super.onChildrenLoaded(parentId, children)
-                Log.d(TAG, "callback: $parentId")
             }
 
             override fun onError(parentId: String, options: Bundle) {
