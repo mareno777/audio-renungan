@@ -84,7 +84,7 @@ class SongRepositoryImpl(
         } catch (e: UnresolvedAddressException) {
             emit(Resource.Error("Please check your internet connection"))
         } catch (e: ClientRequestException) {
-            emit(Resource.Error(e.message))
+            emit(Resource.Error("Please try again later"))
         } catch (e: ServerResponseException) {
             emit(Resource.Error(e.message ?: "Unknown error occurred"))
         } catch (e: ConnectTimeoutException) {

@@ -29,10 +29,6 @@ class MusicSourceRepository(
     private var catalog = emptyList<MediaMetadataCompat>()
     private val musicDao = musicDatabase.musicDao()
 
-    companion object {
-        const val MEDIA_METADATA_DESCRIPTION = "com.injilkeselamatan.audiorenungan.description"
-    }
-
     override suspend fun load() {
         Log.d(TAG, "STATE_INITIALIZING")
         state = STATE_INITIALIZING
@@ -113,7 +109,6 @@ class MusicSourceRepository(
         mediaUri = jsonMusic.mediaUri
         albumArtUri = jsonMusic.imageUri
         flag = MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
-        putString(MEDIA_METADATA_DESCRIPTION, jsonMusic.description)
 
         // To make things easier for *displaying* these, set the display properties as well.
         displayTitle = jsonMusic.title

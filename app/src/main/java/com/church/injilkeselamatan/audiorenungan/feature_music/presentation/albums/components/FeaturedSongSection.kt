@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
@@ -29,6 +30,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util
 @Composable
 fun FeaturedSongSection(
     modifier: Modifier = Modifier,
+    iconSize: Dp = 50.dp,
     mediaMetadataCompat: MediaMetadataCompat,
     playbackState: PlaybackStateCompat,
     featuredSongState: FeaturedSongState<Song>,
@@ -87,7 +89,11 @@ fun FeaturedSongSection(
                         contentDescription = null,
                         modifier = Modifier
                             .weight(0.1f)
-                            .clickable {
+                            .size(iconSize)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) {
                                 onPlayPauseClicked()
                             }
                     )

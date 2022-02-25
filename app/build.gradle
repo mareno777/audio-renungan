@@ -65,23 +65,28 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.4.0'
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.8.1'
+
     implementation "androidx.compose.compiler:compiler:$compose_version"
 
-    //implementation 'com.google.android.play:core:1.10.3'
+    implementation 'com.google.android.play:core:1.10.3'
+    implementation("com.google.android.play:core-ktx:1.8.1")
 
     // Navigation
     implementation "androidx.navigation:navigation-compose:2.4.0-rc01"
 
     // Lifecycle
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0"
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    def lifecycle_version = "2.4.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
     //Dagger - Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
@@ -112,7 +117,7 @@ dependencies {
     implementation "io.coil-kt:coil-compose:$coil_version"
 
     // Accompanist
-    def accompanist_version = "0.22.1-rc"
+    def accompanist_version = "0.23.0"
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
@@ -120,7 +125,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-insets:$accompanist_version"
 
     // Media for fix PendingIntent
-    implementation "androidx.media:media:1.4.3"
+    implementation "androidx.media:media:1.5.0"
 
     //Circular Progressbar
     implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
@@ -128,7 +133,7 @@ dependencies {
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
-    def room_version = "2.4.1"
+    def room_version = "2.4.2"
     kapt("androidx.room:room-compiler:$room_version")
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor "androidx.room:room-compiler:$room_version"
@@ -157,7 +162,6 @@ dependencies {
 
     //For hosted UI also:
     implementation 'com.amazonaws:aws-android-sdk-cognitoauth:2.37.1'
-
     implementation 'com.amplifyframework:aws-auth-cognito:1.31.1'
     implementation 'com.amplifyframework:core-kotlin:0.15.1'
 

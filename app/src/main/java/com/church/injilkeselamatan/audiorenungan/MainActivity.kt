@@ -1,5 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan
 
+import android.content.Intent
 import android.media.AudioManager
 import android.os.Bundle
 import android.util.Log
@@ -33,6 +34,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.epis
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.PlayerScreen
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRenunganTheme
+import com.church.injilkeselamatan.audiorenungan.feature_update.InAppUpdate
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,11 +51,14 @@ class MainActivity : ComponentActivity() {
 
     private val mainViewModel by viewModels<MainViewModel>()
 
+    private lateinit var inAppUpdate: InAppUpdate
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
 
         volumeControlStream = AudioManager.STREAM_MUSIC
+        inAppUpdate = InAppUpdate(this)
 
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -129,6 +134,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        inAppUpdate.onActivityResult(requestCode, resultCode)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        inAppUpdate.onResume()
     }
 
     private suspend fun signIn() {

@@ -208,9 +208,6 @@ class MusicService : MediaBrowserServiceCompat() {
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }
-//            if (currentPlayer.duration > 1000) {
-//                Toast.makeText(this, "${currentPlayer.duration}", Toast.LENGTH_SHORT).show()
-//            }
         }
 
         // The media library is built from a remote JSON file. We'll create the source here,
