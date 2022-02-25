@@ -4,10 +4,14 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import coil.ImageLoader
 import coil.util.CoilUtils
+import com.church.injilkeselamatan.audiorenungan.MyApplication
 import com.church.injilkeselamatan.audiorenungan.feature_account.data.repository.UserRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
+import com.church.injilkeselamatan.audiorenungan.feature_account.domain.use_case.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
@@ -107,8 +111,22 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideUserRepository(client: HttpClient): UserRepository =
-        UserRepositoryImpl(client)
+    fun provideUserRepository(
+        client: HttpClient,
+        @ApplicationContext context: Context): UserRepository =
+        UserRepositoryImpl(client, context)
+
+    @Singleton
+    @Provides
+    fun provideUserUseCases(userRepository: UserRepository): UserUseCases {
+        return UserUseCases(
+            saveUserInfo = SaveUserInfo(userRepository),
+            loadUserInfo = LoadUserInfo(userRepository),
+            userGetIp = UserGetIp(userRepository),
+            registerUser = RegisterUser(userRepository),
+            updateCredentials = UpdateCredentials(userRepository)
+        )
+    }
 
     @SuppressLint("HardwareIds")
     @Provides

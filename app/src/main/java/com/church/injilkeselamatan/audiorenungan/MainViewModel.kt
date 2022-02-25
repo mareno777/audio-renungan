@@ -9,12 +9,13 @@ import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
 import com.amplifyframework.auth.result.AuthSessionResult
 import com.amplifyframework.kotlin.core.Amplify
-import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.models.CreateUserRequest
-import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.models.UpdateUserRequest
-import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
+import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model.CreateUserRequest
+import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model.UpdateUserRequest
+import com.church.injilkeselamatan.audiorenungan.feature_account.domain.use_case.UserUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.AnotherUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.features.*
+import io.ktor.http.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,7 +25,7 @@ import kotlin.random.Random
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val userRepository: UserRepository,
+    private val userUseCases: UserUseCases,
     private val anotherUseCases: AnotherUseCases
 ) : ViewModel() {
 
@@ -36,7 +37,6 @@ class MainViewModel @Inject constructor(
     private val _needUpdate = MutableSharedFlow<Boolean>()
     val needUpdate = _needUpdate.asSharedFlow()
 
-    private var registerJob: Job? = null
     private var updateUserJob: Job? = null
 
     init {
@@ -73,8 +73,7 @@ class MainViewModel @Inject constructor(
                 val email = attributtes.last().value
                 val profilePicture = attributtes[0].value
                 val name = attributtes[1].value
-                val ipResult = userRepository.getIp().data?.ipAddress
-                    ?: "IpAddress not found"
+                val ipResult = userUseCases.userGetIp()
                 val createUserRequest = CreateUserRequest(
                     email = email,
                     name = name,
@@ -92,19 +91,14 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun registerUser(createUserRequest: CreateUserRequest) {
-        registerJob?.cancel()
-        registerJob = viewModelScope.launch {
-            userRepository.registerUser(createUserRequest).collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        val dataUser = resource.data
-                        Log.i(TAG, "users on success register ${dataUser?.message}")
-                        updateUserCredentials(createUserRequest.toUpdateUserRequest())
-                    }
-                    is Resource.Error -> {
-                        Log.e(TAG, "users on error register ${resource.message}")
-                    }
-                    is Resource.Loading -> Unit
+        val result = userUseCases.registerUser(createUserRequest)
+        if (result.isSuccess) {
+            updateUserCredentials(createUserRequest.toUpdateUserRequest())
+        }
+        when (val exception = result.exceptionOrNull()) {
+            is ClientRequestException -> {
+                if (exception.response.status == HttpStatusCode.MethodNotAllowed) {
+                    updateUserCredentials(createUserRequest.toUpdateUserRequest())
                 }
             }
         }
@@ -113,18 +107,7 @@ class MainViewModel @Inject constructor(
     private fun updateUserCredentials(userUpdate: UpdateUserRequest) {
         updateUserJob?.cancel()
         updateUserJob = viewModelScope.launch {
-            userRepository.updateCredentials(userUpdate).collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        val dataUser = resource.data
-                        Log.d(TAG, dataUser?.users.toString())
-                    }
-                    is Resource.Error -> {
-                        Log.e(TAG, "update User error: ${resource.message}")
-                    }
-                    is Resource.Loading -> Unit
-                }
-            }
+            userUseCases.updateCredentials(userUpdate)
         }
     }
 

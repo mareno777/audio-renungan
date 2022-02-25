@@ -27,7 +27,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import coil.Coil
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.google.android.exoplayer2.C
@@ -38,7 +37,7 @@ import kotlinx.coroutines.flow.map
 class PersistentStorage(val context: Context) {
 
     companion object {
-        private const val PREFERENCES_NAME = "audio_renungan"
+        private const val AUDIO_RENUNGAN = "audio_renungan"
         private val RECENT_MEDIA_ID_KEY = stringPreferencesKey("recent_media_id")
         private val RECENT_TITLE_KEY = stringPreferencesKey("recent_title")
         private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
@@ -53,7 +52,7 @@ class PersistentStorage(val context: Context) {
      * Store any data which must persist between restarts, such as the most recently played song.
      */
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AUDIO_RENUNGAN)
 
     suspend fun saveRecentSong(
         description: MediaMetadataCompat,

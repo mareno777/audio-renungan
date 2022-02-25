@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.models
+package com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
