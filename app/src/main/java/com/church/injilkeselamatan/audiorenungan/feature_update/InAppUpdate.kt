@@ -1,19 +1,16 @@
 package com.church.injilkeselamatan.audiorenungan.feature_update
 
 import android.app.Activity
-import android.content.Intent
 import android.content.IntentSender
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.common.IntentSenderForResultStarter
 import com.google.android.play.core.install.InstallState
 import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.google.android.play.core.ktx.requestAppUpdateInfo
 
 class InAppUpdate(private val activity: Activity) : InstallStateUpdatedListener {
 

@@ -14,13 +14,13 @@ data class CreateUserRequest(
     val profile: String
 ) {
     fun toUpdateUserRequest(): UpdateUserRequest {
-            return UpdateUserRequest(
-                email = email,
-                name = name,
-                phoneNumber = phoneNumber,
-                ipAddress = ipAddress,
-                model = model,
-                profile = profile,
-            )
+        return UpdateUserRequest(
+            email = email,
+            name = name,
+            phoneNumber = phoneNumber,
+            ipAddress = ipAddress,
+            model = model,
+            profile = profile,
+        )
     }
 }

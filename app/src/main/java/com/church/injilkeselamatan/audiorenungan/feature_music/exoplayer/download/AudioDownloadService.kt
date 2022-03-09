@@ -97,7 +97,7 @@ class AudioDownloadService : DownloadService
     }
 
     private fun getDownloadedMedia(): List<MediaItem> {
-        val mediaItems: MutableList<MediaItem> = mutableListOf()
+        val mediaItems: MutableList<MediaItem> = mutableListOf<MediaItem>()
 
         val downloadCursor = downloadMananger.downloadIndex.getDownloads()
 

@@ -1,7 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
 
 import android.support.v4.media.MediaMetadataCompat
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -15,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.album
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayDescription
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 

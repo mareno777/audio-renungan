@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components
 
-import android.content.Context
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.Image
@@ -95,7 +94,8 @@ fun EpisodeItem(
                 Icon(
                     painter = painterResource(
                         id = if (playbackState.isPlaying
-                            && mediaMetadata.id == song.id) R.drawable.ic_outline_pause
+                            && mediaMetadata.id == song.id
+                        ) R.drawable.ic_outline_pause
                         else R.drawable.ic_outline_play
                     ),
                     contentDescription = null,

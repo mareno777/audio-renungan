@@ -22,7 +22,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import com.church.injilkeselamatan.audiorenungan.LocalSpacing
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro

@@ -32,8 +32,9 @@ fun CategoriesSection(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .mediaQuery(Dimensions.Height lessThan 600.dp,
-                    Modifier.height(80.dp)
+                    .mediaQuery(
+                        Dimensions.Height lessThan 600.dp,
+                        Modifier.height(80.dp)
                     )
             )
         }

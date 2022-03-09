@@ -13,8 +13,6 @@ class DownloadListener : DownloadManager.Listener {
 
     val downloadComplated = MutableStateFlow(download as? Download)
 
-    private val onWaitingRequirements = MutableStateFlow(false)
-
     private val scope = CoroutineScope(Dispatchers.Default)
 
     override fun onDownloadChanged(
@@ -28,13 +26,6 @@ class DownloadListener : DownloadManager.Listener {
                 downloadComplated.emit(download)
             }
         }
-    }
-
-    override fun onWaitingForRequirementsChanged(
-        downloadManager: DownloadManager,
-        waitingForRequirements: Boolean
-    ) {
-        super.onWaitingForRequirementsChanged(downloadManager, waitingForRequirements)
     }
 }
 

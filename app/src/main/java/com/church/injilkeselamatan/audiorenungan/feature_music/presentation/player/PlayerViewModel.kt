@@ -1,23 +1,18 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
 
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.palette.graphics.Palette
 import coil.ImageLoader
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.MusicService
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -152,9 +147,7 @@ class PlayerViewModel @Inject constructor(
                 val currPlaybackPosition = currentPlaybackPosition.value
                 musicServiceConnection.transportControls.seekTo(currPlaybackPosition - 10_000L)
             }
-            is PlayerEvents.SetSleepTimer -> {
-
-            }
+            is PlayerEvents.SetSleepTimer -> Unit
         }
     }
 
@@ -167,14 +160,14 @@ class PlayerViewModel @Inject constructor(
         }
     }
 
-    fun calculateColorPalette(drawable: Drawable, onFinised: (Color) -> Unit) {
-        val bitmap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
-        Palette.from(bitmap).generate { palette ->
-            palette?.darkVibrantSwatch?.rgb?.let { colorValue ->
-                onFinised(Color(colorValue))
-            }
-        }
-    }
+//    fun calculateColorPalette(drawable: Drawable, onFinised: (Color) -> Unit) {
+//        val bitmap = (drawable as BitmapDrawable).bitmap.copy(Bitmap.Config.ARGB_8888, true)
+//        Palette.from(bitmap).generate { palette ->
+//            palette?.darkVibrantSwatch?.rgb?.let { colorValue ->
+//                onFinised(Color(colorValue))
+//            }
+//        }
+//    }
 }
 
 private const val TAG = "PlayerViewModel"

@@ -1,7 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
 
 import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text

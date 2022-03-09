@@ -6,14 +6,12 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resourc
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.album
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.MusicSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class GetSongs(
-    private val repository: SongRepository,
-    private val musicSource: MusicSource
+    private val repository: SongRepository
 ) {
 
     operator fun invoke(album: String? = null): Flow<Resource<List<Song>>> {
@@ -54,12 +52,14 @@ class GetSongs(
         return flow {
             emit(Resource.Loading<List<MediaMetadataCompat>>())
             if (album != null) {
-                emit(Resource.Success(musicSource.filter { it.album == album }.toList()))
+                emit(Resource.Success(repository.mediaMetadataCompats.filter { it.album == album }
+                    .toList()))
             } else {
-                emit(Resource.Success(musicSource.toList()))
+                emit(Resource.Success(repository.mediaMetadataCompats))
             }
-            Log.i(TAG, "get media metadata: ${musicSource.toList()}")
+            Log.i(TAG, "get media metadata: ${repository.mediaMetadataCompats}")
         }
     }
 }
+
 private const val TAG = "GetSongs"

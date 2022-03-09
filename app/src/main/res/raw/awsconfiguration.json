@@ -1,60 +1,60 @@
 {
-    "UserAgent": "aws-amplify-cli/0.1.0",
-    "Version": "0.1.0",
-    "IdentityManager": {
-        "Default": {}
-    },
-    "CredentialsProvider": {
-        "CognitoIdentity": {
-            "Default": {
-                "PoolId": "ap-southeast-1:1d239e7b-c37f-4091-bdcf-224b6db301a4",
-                "Region": "ap-southeast-1"
-            }
-        }
-    },
-    "CognitoUserPool": {
-        "Default": {
-            "PoolId": "ap-southeast-1_QQyd5bilN",
-            "AppClientId": "7jhkm2vcuer9nuba3ql8earr3v",
-            "Region": "ap-southeast-1"
-        }
-    },
-    "Auth": {
-        "Default": {
-            "OAuth": {
-                "WebDomain": "oasis.injilkeselamatan.com",
-                "AppClientId": "7jhkm2vcuer9nuba3ql8earr3v",
-                "SignInRedirectURI": "myapp://callback/",
-                "SignOutRedirectURI": "myapp://signout/",
-                "Scopes": [
-                    "phone",
-                    "email",
-                    "openid",
-                    "profile",
-                    "aws.cognito.signin.user.admin"
-                ]
-            },
-            "authenticationFlowType": "USER_SRP_AUTH",
-            "socialProviders": [
-                "GOOGLE"
-            ],
-            "usernameAttributes": [
-                "EMAIL"
-            ],
-            "signupAttributes": [
-                "EMAIL"
-            ],
-            "passwordProtectionSettings": {
-                "passwordPolicyMinLength": 8,
-                "passwordPolicyCharacters": []
-            },
-            "mfaConfiguration": "OFF",
-            "mfaTypes": [
-                "SMS"
-            ],
-            "verificationMechanisms": [
-                "EMAIL"
-            ]
-        }
+  "UserAgent": "aws-amplify-cli/0.1.0",
+  "Version": "0.1.0",
+  "IdentityManager": {
+    "Default": {}
+  },
+  "CredentialsProvider": {
+    "CognitoIdentity": {
+      "Default": {
+        "PoolId": "ap-southeast-1:1d239e7b-c37f-4091-bdcf-224b6db301a4",
+        "Region": "ap-southeast-1"
+      }
     }
+  },
+  "CognitoUserPool": {
+    "Default": {
+      "PoolId": "ap-southeast-1_QQyd5bilN",
+      "AppClientId": "7jhkm2vcuer9nuba3ql8earr3v",
+      "Region": "ap-southeast-1"
+    }
+  },
+  "Auth": {
+    "Default": {
+      "OAuth": {
+        "WebDomain": "oasis.injilkeselamatan.com",
+        "AppClientId": "7jhkm2vcuer9nuba3ql8earr3v",
+        "SignInRedirectURI": "myapp://callback/",
+        "SignOutRedirectURI": "myapp://signout/",
+        "Scopes": [
+          "phone",
+          "email",
+          "openid",
+          "profile",
+          "aws.cognito.signin.user.admin"
+        ]
+      },
+      "authenticationFlowType": "USER_SRP_AUTH",
+      "socialProviders": [
+        "GOOGLE"
+      ],
+      "usernameAttributes": [
+        "EMAIL"
+      ],
+      "signupAttributes": [
+        "EMAIL"
+      ],
+      "passwordProtectionSettings": {
+        "passwordPolicyMinLength": 8,
+        "passwordPolicyCharacters": []
+      },
+      "mfaConfiguration": "OFF",
+      "mfaTypes": [
+        "SMS"
+      ],
+      "verificationMechanisms": [
+        "EMAIL"
+      ]
+    }
+  }
 }

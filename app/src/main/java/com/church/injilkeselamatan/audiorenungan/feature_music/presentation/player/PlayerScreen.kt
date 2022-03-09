@@ -82,8 +82,8 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                     onPauseClicked = { viewModel.onEvent(PlayerEvents.PlayOrPause(false)) },
                     onSkipToPrevious = { viewModel.onEvent(PlayerEvents.SkipToPrevious) },
                     onSkipToNext = { viewModel.onEvent(PlayerEvents.SkipToNext) },
-                    onForward = { viewModel.onEvent(PlayerEvents.FastForward)},
-                    onRewind = { viewModel.onEvent(PlayerEvents.FastRewind)}
+                    onForward = { viewModel.onEvent(PlayerEvents.FastForward) },
+                    onRewind = { viewModel.onEvent(PlayerEvents.FastRewind) }
                 )
             }
             //on pager state navigate to

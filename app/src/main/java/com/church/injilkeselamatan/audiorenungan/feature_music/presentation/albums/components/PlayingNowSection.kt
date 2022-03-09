@@ -25,7 +25,10 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayDescription
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayIconUri
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
+import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Dimensions
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MarqueeText
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.lessThan

@@ -18,9 +18,9 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.
 
 import android.content.Context
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaMetadataCompat
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
 
 /**
@@ -47,7 +47,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.e
  */
 class BrowseTree(
     val context: Context,
-    musicSource: MusicSource,
+    songRepository: SongRepository,
     private val recentMediaId: String? = null
 ) {
     private val mediaIdToChildren = mutableMapOf<String, MutableList<MediaMetadataCompat>>()
@@ -98,7 +98,7 @@ class BrowseTree(
         rootList += artistMetadata
         mediaIdToChildren[UAMP_BROWSABLE_ROOT] = rootList
 
-        musicSource.forEach { mediaItem ->
+        songRepository.mediaMetadataCompats.forEach { mediaItem ->
             val albumMediaId = mediaItem.album.urlEncoded
             val albumChildren = mediaIdToChildren[albumMediaId] ?: buildAlbumRoot(mediaItem)
             albumChildren += mediaItem
@@ -141,7 +141,7 @@ class BrowseTree(
             artist = mediaItem.artist
             albumArt = mediaItem.albumArt
             albumArtUri = mediaItem.albumArtUri.toString()
-            flag = MediaItem.FLAG_BROWSABLE
+            flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
         }.build()
 
         // Adds this album to the 'Albums' category.
@@ -162,7 +162,7 @@ class BrowseTree(
             album = "Gospel"
             albumArt = mediaItem.albumArt
             albumArtUri = mediaItem.albumArtUri.toString()
-            flag = MediaItem.FLAG_BROWSABLE
+            flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
         }.build()
 
         // Adds this album to the 'Artist' category.

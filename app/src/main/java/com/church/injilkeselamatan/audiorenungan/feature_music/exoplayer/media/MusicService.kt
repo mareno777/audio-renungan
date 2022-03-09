@@ -1,19 +1,3 @@
-/*
- * Copyright 2017 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
 
 import android.annotation.SuppressLint
@@ -36,6 +20,9 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.PREFERENCES_POSITION
+import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.PersistentStorage
+import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
@@ -102,7 +89,7 @@ class MusicService : MediaBrowserServiceCompat() {
     lateinit var cachedDataSourceFactory: DataSource.Factory
 
     @Inject
-    lateinit var mediaSource: MusicSource
+    lateinit var songRepository: SongRepository
 
     @Inject
     lateinit var songUseCases: SongUseCases
@@ -354,7 +341,7 @@ class MusicService : MediaBrowserServiceCompat() {
         } else {
             // If the media source is ready, the results will be set synchronously here.
 
-            val resultsSent = mediaSource.whenReady { successfullyInitialized ->
+            val resultsSent = songRepository.whenReady { successfullyInitialized ->
                 if (successfullyInitialized) {
                     Log.d(TAG, "successfullyInitialized")
                     try {
@@ -396,9 +383,9 @@ class MusicService : MediaBrowserServiceCompat() {
         result: Result<List<MediaBrowserCompat.MediaItem>>
     ) {
 
-        val resultsSent = mediaSource.whenReady { successfullyInitialized ->
+        val resultsSent = songRepository.whenReady { successfullyInitialized ->
             if (successfullyInitialized) {
-                val resultsList = mediaSource.search(query, extras ?: Bundle.EMPTY)
+                val resultsList = songRepository.onSearch(query, extras ?: Bundle.EMPTY)
                     .map { mediaMetadata ->
                         MediaBrowserCompat.MediaItem(mediaMetadata.description, mediaMetadata.flag)
                     }
@@ -522,7 +509,10 @@ class MusicService : MediaBrowserServiceCompat() {
          */
         override fun getSupportedPrepareActions(): Long =
             PlaybackStateCompat.ACTION_PREPARE_FROM_MEDIA_ID or
-                    PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID
+                    PlaybackStateCompat.ACTION_PLAY_FROM_MEDIA_ID or
+                    PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH or
+                    PlaybackStateCompat.ACTION_PLAY_FROM_SEARCH
+
 
         override fun onPrepare(playWhenReady: Boolean) {
             //execute from notification
@@ -551,16 +541,17 @@ class MusicService : MediaBrowserServiceCompat() {
                 )
                     ?: C.TIME_UNSET
 
-            mediaSource.whenReady {
-                val itemToPlay = mediaSource.find { item ->
+            songRepository.whenReady {
+                val itemToPlay = songRepository.mediaMetadataCompats.find { item ->
                     item.id == mediaId
                 }
                 if (itemToPlay == null) {
                     Log.w(TAG, "Content not found: MediaID=$mediaId")
                     // TODO: Notify caller of the error.
                     serviceScope.launch {
-                        mediaSource.load()
-                        val newItemToPlay = mediaSource.find { it.id == mediaId }
+                        songRepository.getSongs(true)
+                        val newItemToPlay =
+                            songRepository.mediaMetadataCompats.find { it.id == mediaId }
                         preparePlaylist(
                             metadataList = buildPlaylist(),
                             itemToPlay = newItemToPlay,
@@ -587,11 +578,12 @@ class MusicService : MediaBrowserServiceCompat() {
          * - Play electronic music on UAMP
          * - Play music on UAMP
          *
-         * For details on how search is handled, see [AbstractMusicSource.search].
+         * For details on how search is handled, see [SongRepository.onSearch].
          */
         override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) {
-            mediaSource.whenReady {
-                val metadataList = mediaSource.search(query, extras ?: Bundle.EMPTY)
+            songRepository.whenReady {
+                songRepository.getSongs(true)
+                val metadataList = songRepository.onSearch(query, extras ?: Bundle.EMPTY)
                 if (metadataList.isNotEmpty()) {
                     preparePlaylist(
                         metadataList,
@@ -615,8 +607,8 @@ class MusicService : MediaBrowserServiceCompat() {
                 "connect" -> {
                     Log.d(TAG, "connecting")
                     serviceScope.launch {
-                        mediaSource.load()
-                        Log.d(TAG, mediaSource.toList().size.toString())
+                        songRepository.getSongs(true)
+                        Log.d(TAG, "${songRepository.mediaMetadataCompats.toList().size}")
                     }
                     true
                 }
@@ -625,7 +617,7 @@ class MusicService : MediaBrowserServiceCompat() {
         }
 
         private fun buildPlaylist(/* item: MediaMetadataCompat */): List<MediaMetadataCompat> =
-            mediaSource.toList()
+            songRepository.mediaMetadataCompats.toList()
     }
 
     /**

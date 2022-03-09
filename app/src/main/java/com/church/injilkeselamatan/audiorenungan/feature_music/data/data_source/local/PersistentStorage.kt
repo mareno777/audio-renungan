@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media
+package com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local
 
 import android.content.Context
 import android.support.v4.media.MediaBrowserCompat

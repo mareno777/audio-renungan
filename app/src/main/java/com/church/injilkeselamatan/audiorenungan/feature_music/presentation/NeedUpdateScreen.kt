@@ -1,7 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
@@ -16,21 +15,21 @@ import androidx.compose.ui.text.style.TextAlign
 @Composable
 fun NeedUpdateScreen() {
     val uriHandler = LocalUriHandler.current
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                text = "Aplikasi perlu diperbarui agar dapat digunakan",
-                color = MaterialTheme.colors.onBackground,
-                style = MaterialTheme.typography.h5,
-                textAlign = TextAlign.Center
-            )
-            Button(onClick = {
-                uriHandler.openUri("https://play.google.com/store/apps/details?id=com.church.injilkeselamatan.audiorenungan")
-            }) {
-                Text(text = "Update Aplikasi", color = MaterialTheme.colors.onBackground)
-            }
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Text(
+            text = "Aplikasi perlu diperbarui agar dapat digunakan",
+            color = MaterialTheme.colors.onBackground,
+            style = MaterialTheme.typography.h5,
+            textAlign = TextAlign.Center
+        )
+        Button(onClick = {
+            uriHandler.openUri("https://play.google.com/store/apps/details?id=com.church.injilkeselamatan.audiorenungan")
+        }) {
+            Text(text = "Update Aplikasi", color = MaterialTheme.colors.onBackground)
         }
+    }
 }
