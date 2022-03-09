@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SongRepository {
 
-    fun getSongs(fromDbOnly: Boolean): Flow<Resource<List<Song>>>
+    fun getSongs(fromDbSource: Boolean): Flow<Resource<List<Song>>>
 
     fun getFeaturedSong(): Flow<Resource<Song>>
 

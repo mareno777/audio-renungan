@@ -27,11 +27,11 @@ class SongRepositoryImpl(
     private val endpointUrl = "${BuildConfig.BASE_URL}/audio"
     private val musicDao = musicDatabase.musicDao()
 
-    override fun getSongs(fromDbOnly: Boolean): Flow<Resource<List<Song>>> = flow {
+    override fun getSongs(fromDbSource: Boolean): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         val songs = musicDao.getAllSongs().map { it.toSong() }
 
-        if (fromDbOnly) {
+        if (fromDbSource) {
             emit(Resource.Success(songs))
         } else {
             emit(Resource.Loading(data = songs))

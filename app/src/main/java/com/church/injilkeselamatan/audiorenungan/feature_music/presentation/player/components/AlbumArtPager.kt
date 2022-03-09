@@ -2,12 +2,14 @@ package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.pla
 
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -37,7 +39,8 @@ fun AlbumArtPager(
             .height(300.dp),
         count = songs.size
     ) { page ->
-        Card(modifier = Modifier
+        Card(
+            modifier = Modifier
             .graphicsLayer {
 
                 val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
@@ -57,8 +60,9 @@ fun AlbumArtPager(
                     1f - pageOffset.coerceIn(0f, 1f)
                 )
             }
-            .aspectRatio(1f)
-            .clip(RoundedCornerShape(8.dp))
+            .aspectRatio(1f),
+            shape = RoundedCornerShape(8.dp),
+            elevation = 4.dp
         ) {
             Box {
                 Image(

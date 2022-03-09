@@ -1,9 +1,9 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
 
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,81 +31,60 @@ fun MediaControllerSection(
         horizontalArrangement = Arrangement.SpaceAround,
         modifier = modifier
     ) {
-
-        Icon(
-            painterResource(id = R.drawable.ic_skip_previous),
-            contentDescription = null,
-            modifier = Modifier
-                .size(iconSize)
-                .clickable {
-                    onSkipToPrevious()
-                },
-            tint = iconColor
-        )
-        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-
-        Icon(
-            painterResource(id = R.drawable.ic_round_replay_10),
-            contentDescription = null,
-            modifier = Modifier
-                .size(iconSize)
-                .clickable {
-                    onRewind()
-                },
-            tint = iconColor
-        )
-
-        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-
-        if (playbackStateCompat?.isPlaying == true) {
+        IconButton(onClick = { onSkipToPrevious() }) {
             Icon(
-                painterResource(id = R.drawable.ic_pause),
+                painterResource(id = R.drawable.ic_skip_previous),
                 contentDescription = null,
-                tint = MaterialTheme.colors.onSurface,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clickable {
-                        onPauseClicked()
-                    }
-            )
-        } else {
-            Icon(
-                painterResource(id = R.drawable.ic_play_arrow),
-                contentDescription = null,
-                tint = MaterialTheme.colors.onSurface,
-                modifier = Modifier
-                    .size(iconSize)
-                    .clickable {
-                        onPlayClicked()
-                    }
+                modifier = Modifier.size(iconSize),
+                tint = iconColor
             )
         }
-
         Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-
-        Icon(
-            painterResource(id = R.drawable.ic_round_forward_10),
-            contentDescription = null,
-            modifier = Modifier
-                .size(iconSize)
-                .clickable {
-                    onForward()
-                },
-            tint = iconColor
-        )
-
+        IconButton(onClick = { onRewind() }) {
+            Icon(
+                painterResource(id = R.drawable.ic_round_replay_10),
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                tint = iconColor
+            )
+        }
         Spacer(modifier = Modifier.padding(horizontal = 8.dp))
-
-        Icon(
-            painterResource(id = R.drawable.ic_skip_next),
-            contentDescription = null,
-            modifier = Modifier
-                .size(iconSize)
-                .clickable {
-                    onSkipToNext()
-                },
-            tint = iconColor
-        )
-
+        if (playbackStateCompat?.isPlaying == true) {
+            IconButton(onClick = { onPauseClicked() }) {
+                Icon(
+                    painterResource(id = R.drawable.ic_pause),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize),
+                    tint = MaterialTheme.colors.onSurface
+                )
+            }
+        } else {
+            IconButton(onClick = { onPlayClicked() }) {
+                Icon(
+                    painterResource(id = R.drawable.ic_play_arrow),
+                    contentDescription = null,
+                    modifier = Modifier.size(iconSize),
+                    tint = MaterialTheme.colors.onSurface
+                )
+            }
+        }
+        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+        IconButton(onClick = { onForward() }) {
+            Icon(
+                painterResource(id = R.drawable.ic_round_forward_10),
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                tint = iconColor
+            )
+        }
+        Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+        IconButton(onClick = { onSkipToNext() }) {
+            Icon(
+                painterResource(id = R.drawable.ic_skip_next),
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                tint = iconColor
+            )
+        }
     }
 }

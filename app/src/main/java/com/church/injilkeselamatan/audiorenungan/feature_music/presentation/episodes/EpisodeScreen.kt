@@ -1,6 +1,5 @@
 package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,7 +25,6 @@ import com.church.injilkeselamatan.audiorenungan.di.Constants
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.PlayingNowSection
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.EpisodeItem
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.RemoveDownloadDialog
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
 
@@ -41,8 +38,8 @@ fun EpisodeScreen(
     var isExpanded by remember {
         mutableStateOf(false)
     }
-    val maxProgress by viewModel.maxProgress.collectAsState(1f)
-    val downloadedLength by viewModel.downloadedLength.collectAsState(0f)
+    val maxProgress by viewModel.totalBytesToDownload.collectAsState(1f)
+    val downloadedLength by viewModel.bytesDownloaded.collectAsState(0f)
 
     val description = when (viewModel.currentSelectedAlbum) {
         "Pohon Kehidupan" -> Constants.DESC_PK
@@ -50,19 +47,13 @@ fun EpisodeScreen(
         "Saat Teduh Bersama Tuhan" -> Constants.DESC_STBT
         else -> ""
     }
+
     val onDownloadComplated by viewModel.onDownloadComplated().collectAsState()
-
-    val context = LocalContext.current
-
     val mediaMetadata by viewModel.playingMetadata().collectAsState()
     val playbackState by viewModel.currentPlaybackstate().collectAsState()
 
     LaunchedEffect(onDownloadComplated) {
         viewModel.loadDownloadedEpisodes()
-        Log.d(
-            "EpisodeScreen",
-            "download complated: ${onDownloadComplated?.request?.customCacheKey}"
-        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -126,8 +117,8 @@ fun EpisodeScreen(
 
                 EpisodeItem(
                     song = song,
-                    maxProgress = maxProgress,
-                    downloadedLength = downloadedLength,
+                    totalBytesToDownload = maxProgress,
+                    bytesDownloaded = downloadedLength,
                     downloaded = downloadedState.songs.any {
                         it.id == song.id
                     },
@@ -142,10 +133,16 @@ fun EpisodeScreen(
                     },
                     state = viewModel.onState(song.id!!),
                     mediaMetadata = mediaMetadata,
-                    playbackState = playbackState,
-                    context = context
+                    playbackState = playbackState
                 )
                 Divider()
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                )
             }
         }
         PlayingNowSection(

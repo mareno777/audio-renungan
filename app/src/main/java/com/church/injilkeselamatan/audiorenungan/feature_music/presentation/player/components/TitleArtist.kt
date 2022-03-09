@@ -17,8 +17,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util
 
 @Composable
 fun TitleArtist(
-    mediaMetadataCompat: MediaMetadataCompat,
-    playbackStateCompat: PlaybackStateCompat
+    mediaMetadataCompat: MediaMetadataCompat
 ) {
     Box(contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

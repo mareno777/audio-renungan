@@ -35,6 +35,8 @@ object ServiceModule {
     ): ExoPlayer {
         return ExoPlayer.Builder(context)
             .setMediaSourceFactory(DefaultMediaSourceFactory(cacheDataSourceFactory))
+            .setSeekBackIncrementMs(10_000)
+            .setSeekForwardIncrementMs(10_000)
             .build().apply {
                 setAudioAttributes(audioAttributes, true)
                 setHandleAudioBecomingNoisy(true)

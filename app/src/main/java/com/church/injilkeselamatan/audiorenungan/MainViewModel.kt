@@ -104,10 +104,13 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun updateUserCredentials(userUpdate: UpdateUserRequest) {
+    private fun updateUserCredentials(updateUserRequest: UpdateUserRequest) {
         updateUserJob?.cancel()
         updateUserJob = viewModelScope.launch {
-            userUseCases.updateCredentials(userUpdate)
+            userUseCases.saveUserInfo(
+                updateUserRequest.toUserInfo()
+            )
+            userUseCases.updateCredentials(updateUserRequest)
         }
     }
 
@@ -163,5 +166,3 @@ class MainViewModel @Inject constructor(
         }
     }
 }
-
-private const val TAG = "MainViewModel"

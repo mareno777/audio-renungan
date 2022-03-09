@@ -9,6 +9,7 @@ import android.util.Log
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.size.PixelSize
+import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.toSong
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
@@ -63,6 +64,8 @@ class MusicSourceRepository(
                 .map { song ->
                     val coilRequest = ImageRequest.Builder(context)
                         .data(song.imageUri)
+                        .error(R.mipmap.ic_launcher)
+                        .fallback(R.mipmap.ic_launcher)
                         .allowHardware(false)
                         .size(PixelSize(512, 512))
                         .allowConversionToBitmap(true)

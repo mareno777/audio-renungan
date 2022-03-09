@@ -16,11 +16,10 @@ import androidx.compose.ui.text.style.TextAlign
 @Composable
 fun NeedUpdateScreen() {
     val uriHandler = LocalUriHandler.current
-    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.fillMaxSize()
         ) {
             Text(
                 text = "Aplikasi perlu diperbarui agar dapat digunakan",
@@ -31,8 +30,7 @@ fun NeedUpdateScreen() {
             Button(onClick = {
                 uriHandler.openUri("https://play.google.com/store/apps/details?id=com.church.injilkeselamatan.audiorenungan")
             }) {
-                Text(text = "Update Aplikasi", color =  MaterialTheme.colors.onBackground)
+                Text(text = "Update Aplikasi", color = MaterialTheme.colors.onBackground)
             }
         }
-    }
 }

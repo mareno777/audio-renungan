@@ -33,8 +33,8 @@ class EpisodeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val downloadedLength = MutableStateFlow(0f)
-    val maxProgress = MutableStateFlow(1f)
+    val bytesDownloaded = MutableStateFlow(0f)
+    val totalBytesToDownload = MutableStateFlow(1f)
 
     private val _state = mutableStateOf(SongsState<MediaMetadataCompat>())
     val state: State<SongsState<MediaMetadataCompat>> = _state
@@ -164,8 +164,8 @@ class EpisodeViewModel @Inject constructor(
                 while (true) {
                     delay(100L)
                     val download = downloadManager.currentDownloads[0]
-                    maxProgress.emit(download.contentLength.toFloat())
-                    downloadedLength.emit(download.bytesDownloaded.toFloat())
+                    totalBytesToDownload.emit(download.contentLength.toFloat())
+                    bytesDownloaded.emit(download.bytesDownloaded.toFloat())
                     loadDownloadedEpisodes()
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -175,10 +175,10 @@ class EpisodeViewModel @Inject constructor(
         }
     }
 
-    fun onState(songId: String): Int? {
+    fun onState(songId: String): Int {
         return downloadManager.currentDownloads.find { download ->
             download.request.id == songId
-        }?.state
+        }?.state ?: -1
     }
 
     fun onDownloadComplated(): StateFlow<Download?> {

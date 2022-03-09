@@ -12,8 +12,8 @@ android {
         applicationId "com.church.injilkeselamatan.audiorenungan"
         minSdk 21
         targetSdk 31
-        versionCode 6
-        versionName "1.1"
+        versionCode 16
+        versionName "10.1.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -126,9 +126,6 @@ dependencies {
 
     // Media for fix PendingIntent
     implementation "androidx.media:media:1.5.0"
-
-    //Circular Progressbar
-    implementation 'com.mikhaellopez:circularprogressbar:3.1.0'
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"

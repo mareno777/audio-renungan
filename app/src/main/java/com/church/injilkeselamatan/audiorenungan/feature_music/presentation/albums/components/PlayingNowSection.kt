@@ -87,7 +87,8 @@ fun PlayingNowSection(
                         text = mediaMetadataCompat.displayDescription ?: "",
                         style = MaterialTheme.typography.subtitle2,
                         fontWeight = FontWeight.Normal,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }

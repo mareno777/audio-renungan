@@ -4,11 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import coil.ImageLoader
 import coil.util.CoilUtils
-import com.church.injilkeselamatan.audiorenungan.MyApplication
 import com.church.injilkeselamatan.audiorenungan.feature_account.data.repository.UserRepositoryImpl
 import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
 import com.church.injilkeselamatan.audiorenungan.feature_account.domain.use_case.*
@@ -113,7 +110,8 @@ object AppModule {
     @Provides
     fun provideUserRepository(
         client: HttpClient,
-        @ApplicationContext context: Context): UserRepository =
+        @ApplicationContext context: Context
+    ): UserRepository =
         UserRepositoryImpl(client, context)
 
     @Singleton

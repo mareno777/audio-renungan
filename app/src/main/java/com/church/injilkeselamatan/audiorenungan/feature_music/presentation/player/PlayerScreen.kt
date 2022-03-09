@@ -48,7 +48,6 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
         Box(
             modifier = Modifier.fillMaxSize(),
         ) {
-
             TopSection(
                 modifier = Modifier.align(Alignment.TopCenter),
                 mediaMetadataCompat = currentMediaMetadata
@@ -70,8 +69,7 @@ fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hilt
                 Spacer(modifier = Modifier.height(8.dp))
                 TitleArtist(
                     mediaMetadataCompat = if (currentMediaMetadata == NOTHING_PLAYING) recentSong
-                    else currentMediaMetadata,
-                    playbackStateCompat = curPlaybackState
+                    else currentMediaMetadata
                 )
                 SeekbarSection(
                     curPlaybackPosition = curPlaybackPosition,

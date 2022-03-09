@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.church.injilkeselamatan.audiorenungan.LocalSpacing
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
 
@@ -35,10 +36,12 @@ fun DonationScreen(
     onShareClicked: () -> Unit,
     onEmailClicked: () -> Unit
 ) {
+    val spacing = LocalSpacing.current
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .padding(spacing.medium)
     ) {
         Column {
             Text(
@@ -55,10 +58,11 @@ fun DonationScreen(
             )
         }
         LazyColumn(
-            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(16.dp),
-            modifier = Modifier.weight(0.3f)
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .weight(0.3f)
+                .padding(top = spacing.medium)
         ) {
             item {
                 Button(
@@ -70,16 +74,15 @@ fun DonationScreen(
                         contentDescription = null,
                         tint = Color.White
                     )
-                    Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.width(spacing.small))
                     Text(
                         text = "Share Link",
-                        color = Color.White
+                        color = Color.White,
+                        style = MaterialTheme.typography.button
                     )
                 }
             }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+            item { Spacer(modifier = Modifier.height(spacing.medium)) }
             item {
                 Text(
                     text = "SHARE KE BANYAK ORANG",
@@ -90,7 +93,7 @@ fun DonationScreen(
                     modifier = Modifier.offset(y = (-12).dp)
                 )
             }
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { Spacer(modifier = Modifier.height(spacing.small)) }
             item {
                 Text(
                     text = """
@@ -105,11 +108,10 @@ fun DonationScreen(
                     modifier = Modifier.offset(y = (-10).dp)
                 )
             }
-
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { Spacer(modifier = Modifier.height(spacing.medium)) }
             item {
                 Image(
-                    painter = rememberImagePainter(data = R.drawable.pray),
+                    painter = painterResource(R.drawable.pray),
                     contentDescription = null,
                     modifier = Modifier.size(iconSize)
                 )
@@ -123,10 +125,10 @@ fun DonationScreen(
                     style = MaterialTheme.typography.h6
                 )
             }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(spacing.medium)) }
             item {
                 Image(
-                    painter = rememberImagePainter(data = R.drawable.handshake),
+                    painter = painterResource(R.drawable.handshake),
                     contentDescription = null,
                     modifier = Modifier.size(iconSize)
                 )
@@ -140,6 +142,7 @@ fun DonationScreen(
                     style = MaterialTheme.typography.h6
                 )
             }
+            item { Spacer(modifier = Modifier.height(spacing.small)) }
             item {
                 Text(
                     text = """
@@ -150,9 +153,10 @@ fun DonationScreen(
                     style = MaterialTheme.typography.subtitle1
                 )
             }
+            item { Spacer(modifier = Modifier.height(spacing.small)) }
             item {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "BCA 252 092 999 4",
@@ -162,23 +166,23 @@ fun DonationScreen(
                         fontWeight = FontWeight.Bold
                     )
                     IconButton(
-                        onClick = { onCopyClicked() }
+                        onClick = { onCopyClicked() },
+                        modifier = Modifier
+                            .size(22.dp)
+                            .offset(x = 5.dp)
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_content_copy),
+                            painter = painterResource(R.drawable.ic_content_copy),
                             contentDescription = "Salin nomor rekening",
-                            tint = MaterialTheme.colors.onBackground,
-                            modifier = Modifier
-                                .size(22.dp)
-                                .offset(x = (-5).dp)
+                            tint = MaterialTheme.colors.onBackground
                         )
                     }
                 }
             }
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { Spacer(modifier = Modifier.height(spacing.medium)) }
             item {
                 Image(
-                    painter = rememberImagePainter(data = R.drawable.email),
+                    painter = painterResource(R.drawable.email),
                     contentDescription = null,
                     modifier = Modifier.size(iconSize)
                 )

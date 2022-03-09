@@ -4,6 +4,7 @@ import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -29,17 +30,16 @@ fun TopSection(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Icon(
-            Icons.Rounded.KeyboardArrowLeft,
-            contentDescription = null,
-            modifier = Modifier
-                .size(35.dp)
-                .align(Alignment.CenterStart)
-                .clickable {
-                    onBackClicked()
-                },
-            tint = MaterialTheme.colors.onSurface
-        )
+        IconButton(onClick = { onBackClicked() }) {
+            Icon(
+                Icons.Rounded.KeyboardArrowLeft,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Alignment.CenterStart),
+                tint = MaterialTheme.colors.onSurface
+            )
+        }
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
