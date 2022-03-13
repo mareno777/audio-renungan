@@ -13,6 +13,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/account" />
+            <option value="$PROJECT_DIR$/account/account_data" />
             <option value="$PROJECT_DIR$/account/account_domain" />
             <option value="$PROJECT_DIR$/account/account_presentation" />
             <option value="$PROJECT_DIR$/app" />

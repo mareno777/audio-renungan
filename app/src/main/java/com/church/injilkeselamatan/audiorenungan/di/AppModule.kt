@@ -6,9 +6,6 @@ import android.content.Context
 import android.provider.Settings
 import coil.ImageLoader
 import coil.util.CoilUtils
-import com.church.injilkeselamatan.audiorenungan.feature_account.data.repository.UserRepositoryImpl
-import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
-import com.church.injilkeselamatan.audiorenungan.feature_account.domain.use_case.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.PersistentStorage
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.repository.SongRepositoryImpl
@@ -96,34 +93,6 @@ object AppModule {
                 .build()
         }
         .build()
-
-//    @Singleton
-//    @Provides
-//    fun provideMusicSourceRepository(
-//        @ApplicationContext context: Context,
-//        musicDatabase: MusicDatabase,
-//        imageLoader: ImageLoader
-//    ): MusicSource = MusicSourceRepository(musicDatabase, context, imageLoader)
-
-    @Singleton
-    @Provides
-    fun provideUserRepository(
-        client: HttpClient,
-        @ApplicationContext context: Context
-    ): UserRepository =
-        UserRepositoryImpl(client, context)
-
-    @Singleton
-    @Provides
-    fun provideUserUseCases(userRepository: UserRepository): UserUseCases {
-        return UserUseCases(
-            saveUserInfo = SaveUserInfo(userRepository),
-            loadUserInfo = LoadUserInfo(userRepository),
-            userGetIp = UserGetIp(userRepository),
-            registerUser = RegisterUser(userRepository),
-            updateCredentials = UpdateCredentials(userRepository)
-        )
-    }
 
     @SuppressLint("HardwareIds")
     @Provides

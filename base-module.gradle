@@ -2,6 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
+apply plugin: 'kotlinx-serialization'
 
 android {
     compileSdk ProjectConfig.compileSdk
@@ -35,6 +36,8 @@ android {
 dependencies {
     kapt DaggerHilt.hiltCompiler
     implementation DaggerHilt.hiltAndroid
+
+    implementation Datastore.version
 
 //    testImplementation Testing.junit4
 //    testImplementation Testing.junitAndroidExt

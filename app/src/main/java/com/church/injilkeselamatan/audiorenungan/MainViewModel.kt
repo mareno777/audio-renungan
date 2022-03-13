@@ -9,9 +9,9 @@ import com.amplifyframework.auth.AuthException
 import com.amplifyframework.auth.cognito.AWSCognitoAuthSession
 import com.amplifyframework.auth.result.AuthSessionResult
 import com.amplifyframework.kotlin.core.Amplify
-import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model.CreateUserRequest
-import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model.UpdateUserRequest
-import com.church.injilkeselamatan.audiorenungan.feature_account.domain.use_case.UserUseCases
+import com.church.injilkeselamatan.account_domain.model.CreateUserRequest
+import com.church.injilkeselamatan.account_domain.model.UpdateUserRequest
+import com.church.injilkeselamatan.account_domain.use_case.UserUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.AnotherUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.features.*
@@ -91,15 +91,18 @@ class MainViewModel @Inject constructor(
 
     private suspend fun registerUser(createUserRequest: CreateUserRequest) {
         val result = userUseCases.registerUser(createUserRequest)
+        Log.i(TAG, "registering")
         if (result.isSuccess) {
             updateUserCredentials(createUserRequest.toUpdateUserRequest())
         }
         when (val exception = result.exceptionOrNull()) {
             is ClientRequestException -> {
+                Log.i(TAG, "updating credentials")
                 if (exception.response.status == HttpStatusCode.MethodNotAllowed) {
                     updateUserCredentials(createUserRequest.toUpdateUserRequest())
                 }
             }
+            else -> Log.i(TAG, "registering unsuccess $exception")
         }
     }
 
@@ -109,7 +112,9 @@ class MainViewModel @Inject constructor(
             userUseCases.saveUserInfo(
                 updateUserRequest.toUserInfo()
             )
+            Log.i(TAG, "updating credentials")
             userUseCases.updateCredentials(updateUserRequest)
+            Log.i(TAG, "update user credentials success")
         }
     }
 
@@ -166,3 +171,4 @@ class MainViewModel @Inject constructor(
         }
     }
 }
+private const val TAG = "MainViewModel"

@@ -21,14 +21,13 @@ import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.core.dataStoreAudio
+import com.church.injilkeselamatan.core.dataStoreUser
 import com.google.android.exoplayer2.C
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,7 +36,6 @@ import kotlinx.coroutines.flow.map
 class PersistentStorage(val context: Context) {
 
     companion object {
-        private const val AUDIO_RENUNGAN = "audio_renungan"
         private val RECENT_MEDIA_ID_KEY = stringPreferencesKey("recent_media_id")
         private val RECENT_TITLE_KEY = stringPreferencesKey("recent_title")
         private val RECENT_SUBTITLE_KEY = stringPreferencesKey("recent_subtitle")
@@ -52,14 +50,13 @@ class PersistentStorage(val context: Context) {
      * Store any data which must persist between restarts, such as the most recently played song.
      */
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AUDIO_RENUNGAN)
 
     suspend fun saveRecentSong(
         description: MediaMetadataCompat,
         position: Long
     ) {
         try {
-            context.dataStore.edit { preferences ->
+            context.dataStoreAudio.edit { preferences ->
                 preferences[RECENT_MEDIA_ID_KEY] = description.id.toString()
                 preferences[RECENT_TITLE_KEY] = description.title.toString()
                 preferences[RECENT_SUBTITLE_KEY] = description.artist.toString()
@@ -77,7 +74,7 @@ class PersistentStorage(val context: Context) {
     }
 
     fun loadRecentSong(): Flow<MediaMetadataCompat> {
-        return context.dataStore.data.map { preferences ->
+        return context.dataStoreUser.data.map { preferences ->
             val mediaId = preferences[RECENT_MEDIA_ID_KEY]
             if (mediaId != null) {
                 Log.d(TAG, "load: ${preferences[RECENT_POSITION_KEY]}")

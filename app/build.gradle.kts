@@ -86,8 +86,9 @@ dependencies {
 
     implementation(project(Modules.core))
     implementation(project(Modules.coreUi))
-//    implementation(project(Modules.accountDomain))
-//    implementation(project(Modules.accountPresentation))
+    implementation(project(Modules.accountData))
+    implementation(project(Modules.accountDomain))
+    implementation(project(Modules.accountPresentation))
 //    implementation(project(Modules.audioData))
 //    implementation(project(Modules.audioDomain))
 //    implementation(project(Modules.audioPresentation))

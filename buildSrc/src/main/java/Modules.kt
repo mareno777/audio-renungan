@@ -4,6 +4,7 @@ object Modules {
     const val core = ":core"
     const val coreUi = ":core-ui"
 
+    const val accountData = ":account:account_data"
     const val accountDomain = ":account:account_domain"
     const val accountPresentation = ":account:account_presentation"
 
