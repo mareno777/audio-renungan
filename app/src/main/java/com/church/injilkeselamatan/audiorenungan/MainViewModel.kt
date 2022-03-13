@@ -40,7 +40,6 @@ class MainViewModel @Inject constructor(
     private var updateUserJob: Job? = null
 
     init {
-        fetchSession()
         checkLatestVersion()
     }
 
@@ -122,22 +121,22 @@ class MainViewModel @Inject constructor(
         } else capitalize(manufacturer) + " " + model
     }
 
-    private fun capitalize(str: String): String {
-        if (str.isEmpty()) {
-            return str
+    private fun capitalize(value: String): String {
+        if (value.isEmpty()) {
+            return value
         }
-        val arr = str.toCharArray()
+        val charArray = value.toCharArray()
         var capitalizeNext = true
         val phrase = StringBuilder()
-        for (c in arr) {
-            if (capitalizeNext && Character.isLetter(c)) {
-                phrase.append(Character.toUpperCase(c))
+        for (char in charArray) {
+            if (capitalizeNext && Character.isLetter(char)) {
+                phrase.append(Character.toUpperCase(char))
                 capitalizeNext = false
                 continue
-            } else if (Character.isWhitespace(c)) {
+            } else if (Character.isWhitespace(char)) {
                 capitalizeNext = true
             }
-            phrase.append(c)
+            phrase.append(char)
         }
         return phrase.toString()
     }
@@ -160,6 +159,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             if (anotherUseCases.checkVersion.isLatestVersion()) {
                 _needUpdate.emit(false)
+                fetchSession()
             } else {
                 _needUpdate.emit(true)
             }

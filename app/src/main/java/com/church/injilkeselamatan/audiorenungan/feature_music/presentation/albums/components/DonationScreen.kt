@@ -96,7 +96,7 @@ fun DonationScreen(
             item {
                 Text(
                     text = """
-                        supaya lebih banyak orang 
+                        Supaya lebih banyak orang 
                         yang mencari kehendak TUHAN, 
                         menemukan tujuan hidup yang sejati,
                         dan bertumbuh dewasa dalam Kristus Yesus TUHAN

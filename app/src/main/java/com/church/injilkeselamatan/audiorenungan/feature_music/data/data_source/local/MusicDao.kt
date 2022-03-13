@@ -17,7 +17,4 @@ interface MusicDao {
 
     @Query("DELETE FROM MusicDbEntity")
     suspend fun deleteAllSongs()
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveRecentSong(song: MusicDbEntity)
 }

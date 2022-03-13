@@ -8,11 +8,21 @@
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleHome" value="$USER_HOME$/Developer/gradle-7.3" />
-        <option name="gradleJvm" value="azul-11" />
+        <option name="gradleJvm" value="azul-11 (3)" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/account" />
+            <option value="$PROJECT_DIR$/account/account_domain" />
+            <option value="$PROJECT_DIR$/account/account_presentation" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/audio" />
+            <option value="$PROJECT_DIR$/audio/audio_data" />
+            <option value="$PROJECT_DIR$/audio/audio_domain" />
+            <option value="$PROJECT_DIR$/audio/audio_presentation" />
+            <option value="$PROJECT_DIR$/buildSrc" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core-ui" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

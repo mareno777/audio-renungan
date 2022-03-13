@@ -117,9 +117,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable(route = Screen.DonationScreen.route) {
                                 DonationScreen(
-                                    onCopyClicked = { mainViewModel.copyToClipboard() },
-                                    onShareClicked = { mainViewModel.shareIntent() },
-                                    onEmailClicked = { mainViewModel.emailIntent() }
+                                    onCopyClicked = mainViewModel::copyToClipboard,
+                                    onShareClicked =  mainViewModel::shareIntent,
+                                    onEmailClicked =  mainViewModel::emailIntent
                                 )
                             }
                         }

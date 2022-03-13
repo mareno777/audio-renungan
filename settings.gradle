@@ -5,5 +5,18 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Audio Renungan"
+rootProject.name = "Oasis Jiwa"
 include ':app'
+include ':core'
+include ':core-ui'
+include ':audio'
+include ':audio:audio_data'
+include ':audio:audio_domain'
+include ':audio:audio_presentation'
+//include ':account'
+//include ':account:account_data'
+//include ':account:account_domain'
+//include ':account:account_presentation'
+include ':account'
+include ':account:account_domain'
+include ':account:account_presentation'

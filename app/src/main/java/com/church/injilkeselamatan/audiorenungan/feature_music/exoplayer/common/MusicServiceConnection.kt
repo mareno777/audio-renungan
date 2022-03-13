@@ -44,7 +44,6 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     val networkFailure = MutableLiveData<Boolean>()
         .apply { postValue(false) }
 
-    val rootMediaId: String get() = mediaBrowser.root
     private val scope = CoroutineScope(Dispatchers.IO)
 
     val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
@@ -61,6 +60,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     ).apply {
         connect()
     }
+    val rootMediaId: String get() = mediaBrowser.root
     private lateinit var mediaController: MediaControllerCompat
 
     fun subscribe(parentId: String, callback: MediaBrowserCompat.SubscriptionCallback) {

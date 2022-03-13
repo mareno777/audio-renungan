@@ -6,7 +6,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.church.injilkeselamatan.audiorenungan.BuildConfig
 import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.local.model.UserInfo
 import com.church.injilkeselamatan.audiorenungan.feature_account.data.data_source.remote.model.*
 import com.church.injilkeselamatan.audiorenungan.feature_account.domain.repository.UserRepository
@@ -23,7 +22,7 @@ import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class UserRepositoryImpl(
@@ -31,7 +30,7 @@ class UserRepositoryImpl(
     private val context: Context
 ) : UserRepository {
 
-    private val endpointUrl = "${BuildConfig.BASE_URL}/users"
+    private val endpointUrl = "http://aws.injilkeselamatan.com:8080/users"
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_info")
 
     override suspend fun getUsers(): Result<List<UserDto>> {
@@ -121,6 +120,6 @@ class UserRepositoryImpl(
                         profile = preferences[PROFILE] ?: ""
                     )
                 } else null
-            }.first()
+            }.firstOrNull()
     }
 }

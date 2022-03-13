@@ -8,17 +8,16 @@ import io.ktor.client.request.*
 import io.ktor.network.sockets.*
 import java.nio.channels.UnresolvedAddressException
 
-
 class CheckVersion(private val client: HttpClient) {
 
     private val currentVersion = BuildConfig.VERSION_CODE
-    private val endpoint = BuildConfig.BASE_URL
+    private val endpoint = "http://aws.injilkeselamatan.com:8080"
 
     suspend fun isLatestVersion(): Boolean {
         return try {
             val response =
                 client.get<VersionResponseDto>("$endpoint/version").versionResponse.version
-            response <= currentVersion
+            currentVersion >= response
         } catch (e: UnresolvedAddressException) {
             Log.e("CheckVersion", "$e")
             true

@@ -11,7 +11,6 @@ import android.util.Log
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.size.PixelSize
-import com.church.injilkeselamatan.audiorenungan.BuildConfig
 import com.church.injilkeselamatan.audiorenungan.R
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.MusicDatabase
 import com.church.injilkeselamatan.audiorenungan.feature_music.data.data_source.local.models.MusicDbEntity
@@ -40,7 +39,7 @@ class SongRepositoryImpl(
     private val context: Context
 ) : SongRepository {
 
-    private val endpointUrl = "${BuildConfig.BASE_URL}/audio"
+    private val endpointUrl = "http://aws.injilkeselamatan.com:8080/audio"
     private val musicDao = musicDatabase.musicDao()
 
     override var mediaMetadataCompats: List<MediaMetadataCompat> = emptyList()
