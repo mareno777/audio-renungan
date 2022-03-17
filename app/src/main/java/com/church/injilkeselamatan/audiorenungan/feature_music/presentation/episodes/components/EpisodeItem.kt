@@ -20,7 +20,7 @@ import coil.compose.rememberImagePainter
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.core.util.extensions.*
 import com.google.android.exoplayer2.offline.Download
 import java.util.concurrent.TimeUnit
 

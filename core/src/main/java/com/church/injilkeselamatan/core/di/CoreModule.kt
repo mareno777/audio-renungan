@@ -1,8 +1,11 @@
 package com.church.injilkeselamatan.core.di
 
+import android.content.Context
+import com.church.injilkeselamatan.core.util.ConnectionLiveData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -27,4 +30,9 @@ object CoreModule {
             }
         }
     }
+
+    @Singleton
+    @Provides
+    fun provideConnectionLiveData(@ApplicationContext context: Context) =
+        ConnectionLiveData(context)
 }

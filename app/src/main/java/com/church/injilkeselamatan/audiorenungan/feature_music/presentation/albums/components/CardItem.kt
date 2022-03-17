@@ -21,8 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.church.injilkeselamatan.audio_domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Dimensions
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MediaQuery
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.greaterThan

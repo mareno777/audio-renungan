@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.ImageLoader
 import coil.compose.rememberImagePainter
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.displayIcon
+import com.church.injilkeselamatan.core.util.extensions.displayIcon
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState

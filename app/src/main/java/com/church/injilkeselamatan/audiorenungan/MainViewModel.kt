@@ -12,7 +12,7 @@ import com.amplifyframework.kotlin.core.Amplify
 import com.church.injilkeselamatan.account_domain.model.CreateUserRequest
 import com.church.injilkeselamatan.account_domain.model.UpdateUserRequest
 import com.church.injilkeselamatan.account_domain.use_case.UserUseCases
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.AnotherUseCases
+import com.church.injilkeselamatan.audio_domain.use_case.AnotherUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.features.*
 import io.ktor.http.*
@@ -161,8 +161,9 @@ class MainViewModel @Inject constructor(
     }
 
     private fun checkLatestVersion() {
+        val currentVersion = BuildConfig.VERSION_CODE
         viewModelScope.launch {
-            if (anotherUseCases.checkVersion.isLatestVersion()) {
+            if (anotherUseCases.checkVersion.isLatestVersion(currentVersion)) {
                 _needUpdate.emit(false)
                 fetchSession()
             } else {

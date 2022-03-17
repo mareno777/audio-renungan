@@ -12,7 +12,11 @@ dependencies {
  "implementation"(KtorClient.logging)
  "implementation"(KtorClient.logback)
 
-// "kapt"(Room.runtime)
-// "implementation"(Room.compiler)
-// "implementation"(Room.ktx)
+ "implementation"(ExoPlayer.exoPlayer)
+
+ "implementation"(Coil.core)
+
+ "kapt"(Room.compiler)
+ "implementation"(Room.runtime)
+ "implementation"(Room.ktx)
 }

@@ -1,4 +1,6 @@
 <resources>
+    <string name="notification_channel_download">Downloads</string>
+    <string name="notification_description_download">Downloading media</string>
     <string name="app_name">Oasis Jiwa</string>
     <string name="allowed_caller_log">
         Caller has a valid certificate, but its package doesn\'t match any expected package for the
@@ -9,6 +11,4 @@
     </string>
     <string name="notification_channel">Now Playing</string>
     <string name="notification_channel_description">Shows what music is currently playing</string>
-    <string name="notification_channel_download">Downloads</string>
-    <string name="notification_description_download">Downloading media</string>
 </resources>

@@ -8,4 +8,8 @@ dependencies {
     "implementation"(KtorClient.serialization)
     "implementation"(KtorClient.logging)
     "implementation"(KtorClient.logback)
+
+    "implementation"(Media.version)
+
+    "implementation"(ExoPlayer.exoPlayer)
 }

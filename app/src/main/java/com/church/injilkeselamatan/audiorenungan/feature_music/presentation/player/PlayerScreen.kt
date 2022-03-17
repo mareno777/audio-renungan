@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
+import com.church.injilkeselamatan.core.util.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.*
+import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 

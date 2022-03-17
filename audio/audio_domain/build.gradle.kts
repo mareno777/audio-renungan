@@ -3,16 +3,10 @@ apply {
 }
 
 dependencies {
-// "implementation"(project(Modules.core))
-// "implementation"(Coroutines.coroutinesAndroid)
+ "implementation"(project(Modules.core))
 
-// "implementation"(KtorClient.core)
-// "implementation"(KtorClient.cio)
-// "implementation"(KtorClient.serialization)
-// "implementation"(KtorClient.logging)
-// "implementation"(KtorClient.logback)
-//
-// "kapt"(Room.runtime)
-// "implementation"(Room.compiler)
-// "implementation"(Room.ktx)
+ "implementation"(Media.version)
+
+ "implementation"(ExoPlayer.exoPlayer)
+// "implementation"(Coroutines.coroutinesAndroid)
 }

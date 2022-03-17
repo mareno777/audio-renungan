@@ -15,7 +15,7 @@ import com.church.injilkeselamatan.account_domain.repository.UserRepository.Comp
 import com.church.injilkeselamatan.account_domain.repository.UserRepository.Companion.PHONE_NUMBER
 import com.church.injilkeselamatan.account_domain.repository.UserRepository.Companion.PROFILE
 import com.church.injilkeselamatan.account_domain.repository.UserRepository.Companion.UPDATED_AT
-import com.church.injilkeselamatan.core.dataStoreUser
+import com.church.injilkeselamatan.core.util.dataStoreUser
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.request.*
@@ -28,7 +28,7 @@ class UserRepositoryImpl(
     private val context: Context
 ) : UserRepository {
 
-    private val endpointUrl = "http://aws.injilkeselamatan.com:8080/users"
+    private val endpointUrl = "https://aws.injilkeselamatan.com:8443/users"
 
     override suspend fun getUsers(): Result<List<User>> {
         return try {

@@ -19,9 +19,9 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.NOTHING_PLAYING
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.*
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
+import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import kotlinx.coroutines.flow.collectLatest
 
 

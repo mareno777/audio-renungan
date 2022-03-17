@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
+import com.church.injilkeselamatan.core.util.extensions.isPlaying
 
 @Composable
 fun MediaControllerSection(

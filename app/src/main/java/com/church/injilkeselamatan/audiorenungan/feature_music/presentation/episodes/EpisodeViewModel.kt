@@ -5,17 +5,18 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.church.injilkeselamatan.audiorenungan.feature_music.data.util.Resource
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.use_case.SongUseCases
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.common.MusicServiceConnection
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.download.DownloadListener
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.*
+import com.church.injilkeselamatan.audio_domain.model.Song
+import com.church.injilkeselamatan.audio_domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
-import com.google.android.exoplayer2.offline.Download
+import com.church.injilkeselamatan.audiorenungan.services.AudioDownloadService
+import com.church.injilkeselamatan.core.MusicServiceConnection
+import com.church.injilkeselamatan.core.download.DownloadListener
+import com.church.injilkeselamatan.core.util.Resource
+import com.church.injilkeselamatan.core.util.extensions.*
 import com.google.android.exoplayer2.offline.DownloadManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -138,7 +139,7 @@ class EpisodeViewModel @Inject constructor(
             is EpisodesEvent.RemoveDownloadedEpisode -> {
                 Log.d(TAG, "mediaId to remove: ${event.song.id}")
                 event.song.id?.let {
-                    songUseCases.removeDownloadedSong(it)
+                    songUseCases.removeDownloadedSong(it, AudioDownloadService::class.java)
                 }
             }
             is EpisodesEvent.PlayToogle -> {
@@ -156,7 +157,7 @@ class EpisodeViewModel @Inject constructor(
 
     private fun initDownloadEvent(firstTime: Boolean = false) {
         if (firstTime) {
-            songUseCases.downloadSong.initiateService()
+            songUseCases.downloadSong.initiateService(AudioDownloadService::class.java)
         }
         downloadingJob?.cancel()
         downloadingJob = viewModelScope.launch {
@@ -181,8 +182,8 @@ class EpisodeViewModel @Inject constructor(
         }?.state ?: -1
     }
 
-    fun onDownloadComplated(): StateFlow<Download?> {
-        return downloadListener.downloadComplated.asStateFlow()
+    fun onDownloadComplated(): LiveData<Boolean> {
+        return downloadListener.downloadComplated
     }
 
     private fun playMediaId(mediaId: String) {
@@ -205,7 +206,7 @@ class EpisodeViewModel @Inject constructor(
     }
 
     private fun downloadSong(mediaId: String, mediaUri: String, title: String) {
-        songUseCases.downloadSong(mediaId, mediaUri, title)
+        songUseCases.downloadSong(mediaId, mediaUri, title, AudioDownloadService::class.java)
     }
 }
 

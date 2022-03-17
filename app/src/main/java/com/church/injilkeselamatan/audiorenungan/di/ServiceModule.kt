@@ -1,8 +1,6 @@
 package com.church.injilkeselamatan.audiorenungan.di
 
 import android.content.Context
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.repository.SongRepository
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.library.BrowseTree
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -42,13 +40,6 @@ object ServiceModule {
                 setHandleAudioBecomingNoisy(true)
             }
     }
-
-    @ServiceScoped
-    @Provides
-    fun provideBrowseTree(
-        @ApplicationContext context: Context,
-        songRepository: SongRepository
-    ) = BrowseTree(context, songRepository)
 }
 
 

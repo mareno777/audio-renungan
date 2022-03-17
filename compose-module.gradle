@@ -52,6 +52,9 @@ dependencies {
     kapt DaggerHilt.hiltCompiler
     implementation DaggerHilt.hiltAndroid
 
+    implementation Coroutines.core
+    implementation Coroutines.coroutinesAndroid
+
 //    testImplementation Testing.junit4
 //    testImplementation Testing.junitAndroidExt
 //    testImplementation Testing.truth

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.church.injilkeselamatan.audiorenungan.di.Constants
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.PlayingNowSection
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.components.EpisodeItem
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.productSansGoogle
+import com.church.injilkeselamatan.core.util.extensions.id
 
 @Composable
 fun EpisodeScreen(
@@ -48,7 +49,7 @@ fun EpisodeScreen(
         else -> ""
     }
 
-    val onDownloadComplated by viewModel.onDownloadComplated().collectAsState()
+    val onDownloadComplated = viewModel.onDownloadComplated().observeAsState()
     val mediaMetadata by viewModel.playingMetadata().collectAsState()
     val playbackState by viewModel.currentPlaybackstate().collectAsState()
 

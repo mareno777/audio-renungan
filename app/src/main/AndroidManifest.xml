@@ -4,9 +4,8 @@
     package="com.church.injilkeselamatan.audiorenungan">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
 
     <queries>
         <intent>
@@ -19,15 +18,13 @@
         </intent>
     </queries>
 
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <application
         android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AudioRenungan"
-        android:usesCleartextTraffic="true">
+        android:theme="@style/Theme.AudioRenungan">
 
         <activity
             android:name="com.amplifyframework.auth.cognito.activities.HostedUIRedirectActivity"
@@ -82,7 +79,7 @@
         </activity>
 
         <service
-            android:name=".feature_music.exoplayer.media.MusicService"
+            android:name=".services.MusicService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaPlayback"
@@ -92,7 +89,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".feature_music.exoplayer.download.AudioDownloadService"
+            android:name=".services.AudioDownloadService"
             android:exported="false">
 
             <!-- This is needed for Scheduler -->
@@ -104,7 +101,8 @@
         <service
             android:name="com.google.android.exoplayer2.scheduler.PlatformScheduler$PlatformSchedulerService"
             android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:permission="android.permission.BIND_JOB_SERVICE">
+        </service>
 
         <receiver
             android:name="androidx.media.session.MediaButtonReceiver"

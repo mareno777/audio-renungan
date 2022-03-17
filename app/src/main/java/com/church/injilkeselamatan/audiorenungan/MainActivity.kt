@@ -36,6 +36,7 @@ import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRen
 import com.church.injilkeselamatan.audiorenungan.feature_update.InAppUpdate
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalPagerApi
@@ -55,6 +56,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
+
 
         volumeControlStream = AudioManager.STREAM_MUSIC
         inAppUpdate = InAppUpdate(this)
@@ -98,6 +101,7 @@ class MainActivity : ComponentActivity() {
                                 AlbumsScreen(
                                     navController = navController
                                 )
+                                //GoogleScreen()
                             }
                             composable(
                                 route = Screen.EpisodeScreen.route + "/{album}",
@@ -118,8 +122,8 @@ class MainActivity : ComponentActivity() {
                             composable(route = Screen.DonationScreen.route) {
                                 DonationScreen(
                                     onCopyClicked = mainViewModel::copyToClipboard,
-                                    onShareClicked =  mainViewModel::shareIntent,
-                                    onEmailClicked =  mainViewModel::emailIntent
+                                    onShareClicked = mainViewModel::shareIntent,
+                                    onEmailClicked = mainViewModel::emailIntent
                                 )
                             }
                         }

@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.artist
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.title
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MarqueeText
+import com.church.injilkeselamatan.core.util.extensions.artist
+import com.church.injilkeselamatan.core.util.extensions.title
 
 @Composable
 fun TitleArtist(

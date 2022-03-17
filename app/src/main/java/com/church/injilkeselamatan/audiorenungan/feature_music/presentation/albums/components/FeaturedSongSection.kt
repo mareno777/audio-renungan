@@ -20,12 +20,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.church.injilkeselamatan.audio_domain.model.Song
 import com.church.injilkeselamatan.audiorenungan.R
-import com.church.injilkeselamatan.audiorenungan.feature_music.domain.model.Song
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.id
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.extensions.isPlaying
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.FeaturedSongState
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.MarqueeText
+import com.church.injilkeselamatan.core.util.extensions.id
+import com.church.injilkeselamatan.core.util.extensions.isPlaying
 
 @Composable
 fun FeaturedSongSection(
