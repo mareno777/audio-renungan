@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.church.injilkeselamatan.audiorenungan.feature_music.ui.sourceSansPro
+import com.church.injilkeselamatan.audiorenungan.core_ui.sourceSansPro
 import com.church.injilkeselamatan.core.util.extensions.displayDescription
 
 @Composable

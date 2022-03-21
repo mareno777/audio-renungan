@@ -6,7 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import com.church.injilkeselamatan.audiorenungan.core_ui.Dimensions
+import com.church.injilkeselamatan.audiorenungan.core_ui.Spacing
 import com.church.injilkeselamatan.audiorenungan.core_ui.LocalSpacing
 
 private val DarkColorPalette = darkColors(
@@ -40,7 +40,7 @@ fun AudioRenunganTheme(
     } else {
         LightColorPalette
     }
-    CompositionLocalProvider(LocalSpacing provides Dimensions()) {
+    CompositionLocalProvider(LocalSpacing provides Spacing()) {
 
         MaterialTheme(
             colors = colors,

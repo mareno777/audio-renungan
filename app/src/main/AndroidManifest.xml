@@ -4,7 +4,6 @@
     package="com.church.injilkeselamatan.audiorenungan">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 
     <queries>

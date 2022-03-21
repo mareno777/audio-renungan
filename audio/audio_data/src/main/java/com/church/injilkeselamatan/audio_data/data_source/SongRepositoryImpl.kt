@@ -10,12 +10,15 @@ import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
 import coil.ImageLoader
 import coil.request.ImageRequest
+import com.church.injilkeselamatan.audio_data.R
 import com.church.injilkeselamatan.audio_data.data_source.local.MusicDatabase
+import com.church.injilkeselamatan.audio_data.data_source.local.PersistentStorage
 import com.church.injilkeselamatan.audio_data.data_source.local.model.toDbEntity
 import com.church.injilkeselamatan.audio_data.data_source.local.model.toSong
 import com.church.injilkeselamatan.audio_data.data_source.remote.model.*
 import com.church.injilkeselamatan.audio_domain.model.Song
 import com.church.injilkeselamatan.audio_domain.repository.SongRepository
+import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import com.church.injilkeselamatan.core.util.Resource
 import com.church.injilkeselamatan.core.util.extensions.*
 import io.ktor.client.*
@@ -24,6 +27,7 @@ import io.ktor.client.request.*
 import io.ktor.network.sockets.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import java.nio.channels.UnresolvedAddressException
@@ -33,6 +37,7 @@ class SongRepositoryImpl(
     musicDatabase: MusicDatabase,
     private val client: HttpClient,
     private val imageLoader: ImageLoader,
+    private val persistentStorage: PersistentStorage,
     private val context: Context
 ) : SongRepository {
 
@@ -94,6 +99,10 @@ class SongRepositoryImpl(
             }
         }
         mediaMetadataCompats = updateCatalog(songs) ?: emptyList()
+    }
+
+    override suspend fun loadRecentSong(): MediaMetadataCompat {
+        return persistentStorage.loadRecentSong().firstOrNull() ?: NOTHING_PLAYING
     }
 
     override fun whenReady(performAction: (Boolean) -> Unit): Boolean {
@@ -231,6 +240,8 @@ class SongRepositoryImpl(
                 .map { song ->
                     val coilRequest = ImageRequest.Builder(context)
                         .data(song.imageUri)
+                        .fallback(R.drawable.ic_album)
+                        .error(R.drawable.ic_album)
                         .allowHardware(false)
                         .size(512, 512)
                         .allowConversionToBitmap(true)

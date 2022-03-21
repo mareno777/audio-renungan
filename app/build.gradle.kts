@@ -76,7 +76,6 @@ android {
             implementation(Compose.navigation)
             implementation(Compose.hiltNavigationCompose)
             implementation(Compose.viewModelCompose)
-            implementation ("androidx.compose.runtime:runtime-livedata:1.1.1")
 
             testImplementation("junit:junit:4.13.2")
             androidTestImplementation("androidx.test.ext:junit:1.1.3")

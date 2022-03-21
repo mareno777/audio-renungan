@@ -7,9 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
-import com.church.injilkeselamatan.audio_data.data_source.local.PersistentStorage
 import com.church.injilkeselamatan.audio_domain.use_case.SongUseCases
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.SongsState
+import com.church.injilkeselamatan.audio_presentation.SongsState
 import com.church.injilkeselamatan.audiorenungan.services.MusicService
 import com.church.injilkeselamatan.core.MusicServiceConnection
 import com.church.injilkeselamatan.core.NOTHING_PLAYING
@@ -25,9 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PlayerViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
-    private val getSongUseCases: SongUseCases,
-    private val imageLoader: ImageLoader,
-    private val savedSong: PersistentStorage
+    private val songUseCases: SongUseCases,
+    private val imageLoader: ImageLoader
 
 ) : ViewModel() {
 
@@ -64,13 +62,13 @@ class PlayerViewModel @Inject constructor(
 
     private fun loadRecentSong() {
         viewModelScope.launch {
-            _recentSong.emit(savedSong.loadRecentSong().first())
+            _recentSong.emit(songUseCases.loadRecentSong())
         }
     }
 
     private fun loadSongs() {
         loadingJob?.cancel()
-        loadingJob = getSongUseCases.getSongs.getMediaMetadataCompats().onEach { resource ->
+        loadingJob = songUseCases.getSongs.getMediaMetadataCompats().onEach { resource ->
 
             when (resource) {
                 is Resource.Success -> {
@@ -94,9 +92,9 @@ class PlayerViewModel @Inject constructor(
                     )
                 }
             }
-            if (musicServiceConnection.nowPlaying.value == NOTHING_PLAYING) {
-                savedSong.loadRecentSong().first()
-            }
+//            if (musicServiceConnection.nowPlaying.value == NOTHING_PLAYING) {
+//                songUseCases.loadRecentSong().first()
+//            }
         }.launchIn(viewModelScope)
     }
 

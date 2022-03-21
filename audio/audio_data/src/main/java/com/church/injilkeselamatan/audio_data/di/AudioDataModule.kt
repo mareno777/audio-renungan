@@ -15,7 +15,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import javax.inject.Singleton
@@ -35,8 +34,7 @@ object AudioDataModule {
     @Provides
     fun providePersistentStorage(
         @ApplicationContext context: Context
-    ) =
-        PersistentStorage(context)
+    ): PersistentStorage = PersistentStorage(context)
 
     @OptIn(ExperimentalCoilApi::class)
     @Singleton
@@ -64,9 +62,10 @@ object AudioDataModule {
         database: MusicDatabase,
         client: HttpClient,
         imageLoader: ImageLoader,
+        persistentStorage: PersistentStorage,
         @ApplicationContext context: Context
     ): SongRepository =
-        SongRepositoryImpl(database, client, imageLoader, context)
+        SongRepositoryImpl(database, client, imageLoader, persistentStorage, context)
 
 
     @Singleton

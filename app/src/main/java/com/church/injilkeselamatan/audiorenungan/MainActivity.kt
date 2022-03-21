@@ -27,11 +27,11 @@ import androidx.navigation.navArgument
 import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.kotlin.core.Amplify
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.NeedUpdateScreen
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.AlbumsScreen
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.albums.components.DonationScreen
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.episodes.EpisodeScreen
+import com.church.injilkeselamatan.audio_presentation.albums.AlbumsScreen
+import com.church.injilkeselamatan.audio_presentation.albums.components.DonationScreen
+import com.church.injilkeselamatan.audio_presentation.episodes.EpisodeScreen
 import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.PlayerScreen
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.util.Screen
+import com.church.injilkeselamatan.core.navigation.Screen
 import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRenunganTheme
 import com.church.injilkeselamatan.audiorenungan.feature_update.InAppUpdate
 import com.google.accompanist.pager.ExperimentalPagerApi

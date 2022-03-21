@@ -14,6 +14,8 @@ interface SongRepository {
 
     fun getFeaturedSong(): Flow<Resource<Song>>
 
+    suspend fun loadRecentSong(): MediaMetadataCompat
+
     fun whenReady(performAction: (Boolean) -> Unit): Boolean
 
     fun onSearch(query: String, extras: Bundle): List<MediaMetadataCompat>

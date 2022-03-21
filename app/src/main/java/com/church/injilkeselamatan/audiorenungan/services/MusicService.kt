@@ -26,7 +26,7 @@ import com.church.injilkeselamatan.audio_domain.helper.MEDIA_SEARCH_SUPPORTED
 import com.church.injilkeselamatan.audio_domain.helper.UAMP_BROWSABLE_ROOT
 import com.church.injilkeselamatan.audio_domain.helper.UAMP_RECENT_ROOT
 import com.church.injilkeselamatan.audio_domain.repository.SongRepository
-import com.church.injilkeselamatan.audiorenungan.feature_music.exoplayer.media.NotificationManager
+import com.church.injilkeselamatan.audio_presentation.NotificationManager
 import com.church.injilkeselamatan.core.NETWORK_FAILURE
 import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import com.church.injilkeselamatan.core.util.extensions.*
@@ -50,7 +50,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MusicService : MediaBrowserServiceCompat() {
-
 
     private lateinit var notificationManager: NotificationManager
 
