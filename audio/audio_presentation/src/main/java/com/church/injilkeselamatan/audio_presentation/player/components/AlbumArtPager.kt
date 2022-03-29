@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
+package com.church.injilkeselamatan.audio_presentation.player.components
 
 import android.support.v4.media.MediaMetadataCompat
 import androidx.compose.foundation.Image
@@ -12,14 +12,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import coil.ImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.church.injilkeselamatan.core.util.extensions.displayIcon
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import kotlin.math.absoluteValue
-
 
 @ExperimentalPagerApi
 @Composable
@@ -63,8 +62,8 @@ fun AlbumArtPager(
         ) {
             Box {
                 Image(
-                    painter = rememberImagePainter(
-                        data = songs[page].displayIcon,
+                    painter = rememberAsyncImagePainter(
+                        model = songs[page].displayIcon,
                         imageLoader = imageLoader
                     ),
                     contentDescription = null,

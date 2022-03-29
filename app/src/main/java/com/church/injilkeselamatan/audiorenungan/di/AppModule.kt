@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.provider.Settings
+import com.church.injilkeselamatan.audio_domain.use_case.ServiceSongState
 import com.church.injilkeselamatan.audiorenungan.services.MusicService
 import com.church.injilkeselamatan.core.MusicServiceConnection
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ServiceScoped
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -22,10 +24,7 @@ object AppModule {
     fun provideMusicServiceConnection(@ApplicationContext context: Context) =
         MusicServiceConnection(context, ComponentName(context, MusicService::class.java))
 
-
-    @SuppressLint("HardwareIds")
-    @Provides
     @Singleton
-    fun provideHardwareId(@ApplicationContext context: Context): String =
-        Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+    @Provides
+    fun provideServiceSongState(): ServiceSongState = ServiceSongState()
 }

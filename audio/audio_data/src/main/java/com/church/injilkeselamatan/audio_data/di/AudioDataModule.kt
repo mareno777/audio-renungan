@@ -1,6 +1,8 @@
 package com.church.injilkeselamatan.audio_data.di
 
+import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import coil.ImageLoader
 import coil.annotation.ExperimentalCoilApi
@@ -30,11 +32,19 @@ object AudioDataModule {
             .fallbackToDestructiveMigration()
             .build()
 
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(
+        app: Application
+    ): SharedPreferences {
+        return app.getSharedPreferences("audio_shared_pref", Context.MODE_PRIVATE)
+    }
+
     @Singleton
     @Provides
     fun providePersistentStorage(
-        @ApplicationContext context: Context
-    ): PersistentStorage = PersistentStorage(context)
+        sharedPref: SharedPreferences
+    ): PersistentStorage = PersistentStorage(sharedPref)
 
     @OptIn(ExperimentalCoilApi::class)
     @Singleton

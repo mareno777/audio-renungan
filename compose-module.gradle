@@ -41,6 +41,7 @@ android {
 dependencies {
     implementation Compose.compiler
     implementation Compose.ui
+    implementation Compose.uiUtil
     implementation Compose.uiToolingPreview
     implementation Compose.hiltNavigationCompose
     implementation Compose.material
@@ -50,6 +51,11 @@ dependencies {
     implementation Compose.activityCompose
     implementation Compose.constraintLayoutCompose
     implementation Compose.liveData
+    implementation Accompanist.pager
+    implementation Accompanist.insets
+    implementation Accompanist.navigationMaterial
+    implementation Accompanist.pagerIndicators
+    implementation Accompanist.systemUiController
 
     kapt DaggerHilt.hiltCompiler
     implementation DaggerHilt.hiltAndroid

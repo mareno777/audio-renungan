@@ -50,6 +50,7 @@ class SongRepositoryImpl(
         val songs = musicDao.getAllSongs().map { it.toSong() }
 
         if (fromDbSource) {
+            mediaMetadataCompats = updateCatalog(songs) ?: emptyList()
             emit(Resource.Success(songs))
         } else {
             emit(Resource.Loading(data = songs))
@@ -101,8 +102,8 @@ class SongRepositoryImpl(
         mediaMetadataCompats = updateCatalog(songs) ?: emptyList()
     }
 
-    override suspend fun loadRecentSong(): MediaMetadataCompat {
-        return persistentStorage.loadRecentSong().firstOrNull() ?: NOTHING_PLAYING
+    override fun loadRecentSong(): MediaMetadataCompat {
+        return persistentStorage.loadRecentSong() ?: NOTHING_PLAYING
     }
 
     override fun whenReady(performAction: (Boolean) -> Unit): Boolean {

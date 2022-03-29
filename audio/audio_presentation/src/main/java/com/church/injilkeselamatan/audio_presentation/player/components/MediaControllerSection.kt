@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
+package com.church.injilkeselamatan.audio_presentation.player.components
 
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.layout.*
@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.church.injilkeselamatan.audiorenungan.R
+import com.church.injilkeselamatan.audio_presentation.R
 import com.church.injilkeselamatan.core.util.extensions.isPlaying
 
 @Composable

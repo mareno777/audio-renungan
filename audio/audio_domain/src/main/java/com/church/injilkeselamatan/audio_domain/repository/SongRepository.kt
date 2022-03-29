@@ -14,7 +14,7 @@ interface SongRepository {
 
     fun getFeaturedSong(): Flow<Resource<Song>>
 
-    suspend fun loadRecentSong(): MediaMetadataCompat
+    fun loadRecentSong(): MediaMetadataCompat
 
     fun whenReady(performAction: (Boolean) -> Unit): Boolean
 
@@ -23,6 +23,7 @@ interface SongRepository {
     suspend fun updateSong(song: Song): Resource<String>
 
     suspend fun checkVersion(currentVersion: Int): Boolean
+
 //    suspend fun updateDuration(
 //        mediaId: String,
 //        updateSongDto: UpdateSongDto

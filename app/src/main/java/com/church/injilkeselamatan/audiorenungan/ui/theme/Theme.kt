@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme
+package com.church.injilkeselamatan.audiorenungan.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme

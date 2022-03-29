@@ -26,9 +26,9 @@ import com.church.injilkeselamatan.audio_domain.helper.MEDIA_SEARCH_SUPPORTED
 import com.church.injilkeselamatan.audio_domain.helper.UAMP_BROWSABLE_ROOT
 import com.church.injilkeselamatan.audio_domain.helper.UAMP_RECENT_ROOT
 import com.church.injilkeselamatan.audio_domain.repository.SongRepository
+import com.church.injilkeselamatan.audio_domain.use_case.ServiceSongState
 import com.church.injilkeselamatan.audio_presentation.NotificationManager
 import com.church.injilkeselamatan.core.NETWORK_FAILURE
-import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import com.church.injilkeselamatan.core.util.extensions.*
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.ext.cast.CastPlayer
@@ -39,12 +39,8 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.gms.cast.framework.CastContext
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -73,6 +69,9 @@ class MusicService : MediaBrowserServiceCompat() {
     @Inject
     lateinit var songRepository: SongRepository
 
+    @Inject
+    lateinit var serviceSongState: ServiceSongState
+
     /**
      * This must be `by lazy` because the source won't initially be ready.
      * See [MusicService.onLoadChildren] to see where it's accessed (and first
@@ -82,11 +81,6 @@ class MusicService : MediaBrowserServiceCompat() {
     lateinit var browseTree: BrowseTree
 
     private var recentSong: MediaMetadataCompat? = null
-
-    companion object {
-        val curSongDuration = MutableStateFlow(0L)
-        val curSongIndex = MutableStateFlow(0)
-    }
 
     private var isForegroundService = false
 
@@ -167,10 +161,8 @@ class MusicService : MediaBrowserServiceCompat() {
             PlayerNotificationListener()
         ) {
             //on playback change
-            serviceScope.launch {
-                curSongDuration.emit(currentPlayer.duration)
-                curSongIndex.emit(currentPlayer.currentMediaItemIndex)
-            }
+            serviceSongState.curSongDuration.value = currentPlayer.duration
+            serviceSongState.curSongIndex.value = currentPlayer.currentMediaItemIndex
             if (!mediaSession.isActive) {
                 mediaSession.isActive = true
             }
@@ -178,9 +170,9 @@ class MusicService : MediaBrowserServiceCompat() {
 
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
-        serviceScope.launch {
-            recentSong = storage.loadRecentSong().first()
-        }
+
+        recentSong = storage.loadRecentSong()
+
 
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession)
@@ -217,17 +209,19 @@ class MusicService : MediaBrowserServiceCompat() {
     }
 
     override fun onDestroy() {
-        mediaSession.run {
-            isActive = false
-            release()
-        }
-
-        // Cancel coroutines when the service is going away.
-        serviceJob.cancel()
-
-        // Free ExoPlayer resources.
-        exoPlayer.removeListener(playerListener)
-        exoPlayer.release()
+        Log.i(TAG, "SERVICE DESTROYED")
+        super.onDestroy()
+//        mediaSession.run {
+//            isActive = false
+//            release()
+//        }
+//
+//        // Cancel coroutines when the service is going away.
+//        serviceJob.cancel()
+//
+//        // Free ExoPlayer resources.
+//        exoPlayer.removeListener(playerListener)
+//        exoPlayer.release()
     }
 
     /**
@@ -260,6 +254,7 @@ class MusicService : MediaBrowserServiceCompat() {
          */
         val isRecentRequest = rootHints?.getBoolean(EXTRA_RECENT) ?: false
         val browserRootPath = if (isRecentRequest) UAMP_RECENT_ROOT else UAMP_BROWSABLE_ROOT
+        Log.i(TAG, "is recent request = $isRecentRequest, root path = $browserRootPath")
         return BrowserRoot(browserRootPath, rootExtras)
     }
 
@@ -279,7 +274,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
         if (parentMediaId == UAMP_RECENT_ROOT) {
 
-            if (recentSong != null && recentSong != NOTHING_PLAYING) {
+            if (recentSong != null) {
                 result.sendResult(
                     listOf(
                         MediaBrowserCompat.MediaItem(
@@ -291,6 +286,7 @@ class MusicService : MediaBrowserServiceCompat() {
             } else {
                 result.detach()
             }
+            Log.i(TAG, "parent media = $parentMediaId, recent song = ${recentSong?.title}")
 
 
         } else {
@@ -311,7 +307,7 @@ class MusicService : MediaBrowserServiceCompat() {
                     }
 
                 } else {
-                    Log.d(TAG, "not successfullyInitialized")
+                    Log.i(TAG, "not successfullyInitialized")
                     mediaSession.sendSessionEvent(NETWORK_FAILURE, null)
                     result.sendResult(null)
                 }
@@ -324,9 +320,15 @@ class MusicService : MediaBrowserServiceCompat() {
             // See [MediaItemFragmentViewModel.subscriptionCallback] for how this is passed to the
             // UI/displayed in the [RecyclerView].
             if (!resultsSent) {
-                result.detach()
+                try {
+                    result.detach()
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
+                }
             }
+            Log.i(TAG, "parent media = $parentMediaId, result send = $resultsSent")
         }
+        Log.i(TAG, "parent media = $parentMediaId")
     }
 
     /**
@@ -420,13 +422,11 @@ class MusicService : MediaBrowserServiceCompat() {
         val description = currentPlaylistItems[currentPlayer.currentMediaItemIndex]
         val position = currentPlayer.currentPosition
 
-        serviceScope.launch {
-            storage.saveRecentSong(
-                description,
-                position
-            )
-            recentSong = storage.loadRecentSong().first() // prevent bug
-        }
+        storage.saveRecentSong(
+            description,
+            position
+        )
+        //recentSong = storage.loadRecentSong().first() // prevent bug
     }
 
     private inner class UampCastSessionAvailabilityListener : SessionAvailabilityListener {
@@ -472,7 +472,7 @@ class MusicService : MediaBrowserServiceCompat() {
         override fun onPrepare(playWhenReady: Boolean) {
             //execute from notification
 
-            Log.d(TAG, "onPrepare: ${recentSong?.title.toString()}")
+            Log.i(TAG, "onPrepare: ${recentSong?.title.toString()}")
             if (recentSong != null) {
                 onPrepareFromMediaId(
                     recentSong!!.id!!,
@@ -503,16 +503,18 @@ class MusicService : MediaBrowserServiceCompat() {
                 if (itemToPlay == null) {
                     Log.w(TAG, "Content not found: MediaID=$mediaId")
                     // TODO: Notify caller of the error.
-                    serviceScope.launch {
-                        songRepository.getSongs(true)
+                    serviceScope.launch() {
+                        withContext(Dispatchers.IO) {
+                            songRepository.getSongs(true).first()
+                        }
                         val newItemToPlay =
                             songRepository.mediaMetadataCompats.find { it.id == mediaId }
-                        preparePlaylist(
-                            metadataList = buildPlaylist(),
-                            itemToPlay = newItemToPlay,
-                            playWhenReady = playWhenReady,
-                            playbackStartPositionMs = playbackStartPositionMs
-                        )
+                            preparePlaylist(
+                                metadataList = buildPlaylist(),
+                                itemToPlay = newItemToPlay,
+                                playWhenReady = playWhenReady,
+                                playbackStartPositionMs = playbackStartPositionMs
+                            )
                     }
                 } else {
 

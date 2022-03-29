@@ -68,13 +68,16 @@ class AlbumViewModel @Inject constructor(
         }
 
     init {
+        loadRecentSong()
         loadSongs()
         loadFeaturedSong()
     }
 
     private fun loadRecentSong() {
         viewModelScope.launch {
-            _recentSong.value = songUseCases.loadRecentSong()
+            val mediaMetadataCompat = songUseCases.loadRecentSong()
+            _recentSong.value = mediaMetadataCompat
+            Log.i(TAG, "load recent song ${mediaMetadataCompat.id}")
         }
     }
 
@@ -139,7 +142,6 @@ class AlbumViewModel @Inject constructor(
                     }
                     Log.d(TAG, "isPrepared: $isPrepared")
                     if (!isPrepared) {
-                        loadRecentSong()
                         musicServiceConnection.subscribe(mediaId, subscriptionCallback)
                         musicServiceConnection.sendCommand("connect", null)
                         Log.d(TAG, "subscribe, $mediaId")
@@ -164,9 +166,6 @@ class AlbumViewModel @Inject constructor(
                 }
 
             }
-//            if (musicServiceConnection.nowPlaying.value == NOTHING_PLAYING) {
-//                songUseCases.loadRecentSong()
-//            }
         }.launchIn(viewModelScope)
     }
 

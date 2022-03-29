@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components
+package com.church.injilkeselamatan.audio_presentation.player.components
 
 import android.widget.SeekBar
 import androidx.compose.foundation.layout.Row

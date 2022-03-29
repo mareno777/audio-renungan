@@ -1,16 +1,17 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
+package com.church.injilkeselamatan.audio_presentation.player
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.church.injilkeselamatan.core.util.extensions.id
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.components.*
+import com.church.injilkeselamatan.audio_presentation.player.components.*
 import com.church.injilkeselamatan.core.NOTHING_PLAYING
+import com.church.injilkeselamatan.core.util.extensions.id
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 
@@ -19,10 +20,10 @@ import com.google.accompanist.pager.rememberPagerState
 fun PlayerScreen(navController: NavController, viewModel: PlayerViewModel = hiltViewModel()) {
 
 
-    val curSongDuration by viewModel.curSongDuration.collectAsState()
+    val curSongDuration by viewModel.currentSongDuration().observeAsState(0L)
     val curPlaybackState by viewModel.playbackState().collectAsState()
     val songsState by viewModel.songs
-    val currentSongIndex by viewModel.curSongIndex.collectAsState()
+    val currentSongIndex by viewModel.currentSongIndex().observeAsState(-1)
     val currentMediaMetadata by viewModel.playingMediaMetadata().collectAsState()
     val recentSong by viewModel.recentSong.collectAsState()
     val curPlaybackPosition by viewModel.currentPlaybackPosition.collectAsState()

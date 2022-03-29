@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
+package com.church.injilkeselamatan.audio_presentation.player
 
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
+import com.church.injilkeselamatan.audio_domain.use_case.ServiceSongState
 import com.church.injilkeselamatan.audio_domain.use_case.SongUseCases
 import com.church.injilkeselamatan.audio_presentation.SongsState
-import com.church.injilkeselamatan.audiorenungan.services.MusicService
 import com.church.injilkeselamatan.core.MusicServiceConnection
 import com.church.injilkeselamatan.core.NOTHING_PLAYING
 import com.church.injilkeselamatan.core.util.Resource
@@ -25,21 +25,16 @@ import javax.inject.Inject
 class PlayerViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection,
     private val songUseCases: SongUseCases,
+    private val serviceSongState: ServiceSongState,
     private val imageLoader: ImageLoader
-
 ) : ViewModel() {
 
-    val curSongDuration = MusicService.curSongDuration.asStateFlow()
 
     private val _songs = mutableStateOf(SongsState<MediaMetadataCompat>())
     val songs: State<SongsState<MediaMetadataCompat>> = _songs
 
     private val _recentSong = MutableStateFlow(NOTHING_PLAYING)
     val recentSong = _recentSong.asStateFlow()
-
-
-    private val _curSongIndex = MusicService.curSongIndex
-    val curSongIndex = _curSongIndex.asStateFlow()
 
     private val _currentPlaybackPosition = MutableStateFlow(0L)
     val currentPlaybackPosition = _currentPlaybackPosition.asStateFlow()
@@ -59,6 +54,10 @@ class PlayerViewModel @Inject constructor(
     fun playbackState(): StateFlow<PlaybackStateCompat> {
         return musicServiceConnection.playbackState
     }
+
+    fun currentSongDuration() = serviceSongState.curSongDuration
+
+    fun currentSongIndex() = serviceSongState.curSongIndex
 
     private fun loadRecentSong() {
         viewModelScope.launch {

@@ -26,23 +26,23 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.amplifyframework.auth.AuthProvider
 import com.amplifyframework.kotlin.core.Amplify
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.NeedUpdateScreen
 import com.church.injilkeselamatan.audio_presentation.albums.AlbumsScreen
 import com.church.injilkeselamatan.audio_presentation.albums.components.DonationScreen
 import com.church.injilkeselamatan.audio_presentation.episodes.EpisodeScreen
-import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player.PlayerScreen
-import com.church.injilkeselamatan.core.navigation.Screen
-import com.church.injilkeselamatan.audiorenungan.feature_music.ui.theme.AudioRenunganTheme
+import com.church.injilkeselamatan.audio_presentation.player.PlayerScreen
+import com.church.injilkeselamatan.audiorenungan.feature_music.presentation.NeedUpdateScreen
 import com.church.injilkeselamatan.audiorenungan.feature_update.InAppUpdate
+import com.church.injilkeselamatan.audiorenungan.ui.theme.AudioRenunganTheme
+import com.church.injilkeselamatan.core.navigation.Screen
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @ExperimentalPagerApi
-@AndroidEntryPoint
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     companion object {

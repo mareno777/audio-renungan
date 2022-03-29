@@ -1,4 +1,4 @@
-package com.church.injilkeselamatan.audiorenungan.feature_music.presentation.player
+package com.church.injilkeselamatan.audio_presentation.player
 
 sealed class PlayerEvents {
     data class PlayOrPause(val isPlay: Boolean) : PlayerEvents()

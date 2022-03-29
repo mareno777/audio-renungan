@@ -83,7 +83,7 @@ android {
             androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
 
             debugImplementation(Compose.uiTooling)
-            debugImplementation(LeakCanary.version)
+            //debugImplementation(LeakCanary.version)
 
             implementation(Google.playCore)
             implementation(Google.playCoreKtx)
